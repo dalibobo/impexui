@@ -1,0 +1,149 @@
+<html>
+ <head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>Document</title>
+ </head>
+	<link href="../css/impexs-default.css" rel="stylesheet" type="text/css">
+ <body>
+	<button :click="changeDir()">{{dir}}</button>
+	<table>
+		<tbody>
+			<tr x-each="datas as d => orderBy:'pspr':dir">
+				<td align='center'>{{d.psName}}</td>
+				<td align='right'>{{d.pspr}}</td>
+			</tr>
+		</tbody>
+	</table>
+	<impex-table-page id="table1"></impex-table-page>
+
+<table>
+	<thead>
+		<tr>
+			<th style="text-align:center;">序号</th>
+			<th style="text-align:center;" :click="sortBy('index');">index</th>
+			<th style="text-align:center;" :click="sortBy('name');">name</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr x-each="datas2 as d => orderBy:stuOrder['orderKey']:stuOrder['orderDir']">
+			<td align='center'>{{$index + 1}}</td>
+			<td align='center'>{{d.index}}</td>
+			<td align='right'>{{d.name}}</td>
+		</tr>
+	</tbody>
+</table>
+<impex-table-page id="ttrr"></impex-table-page>
+
+
+<ul>
+	<li x-each="list as d => orderBy:'hours':dir">{{d.psName}}{{d.hours}}</li>
+</ul>
+
+<script type="text/javascript" src="../impex.all.js"></script>
+<script type="text/javascript" src="../build/impexs.all.js"></script>
+<script type="text/javascript" src="../src/impex.util.js"></script>
+<script type="text/javascript" src="../src/impex.component.js"></script>
+<script type="text/javascript" src="../src/impex.directive.js"></script>
+<script type="text/javascript" src="../src/impex.filter.js"></script>
+
+<script type="text/javascript">
+var page = {
+	pageSize : 10,//每页条数
+	pageNo : 1,//当前页码
+	pageSize2 : 10,//每页条数
+	pageNo2 : 1,//当前页码
+	dir: "asc",
+	//设置分页显示状态
+	flushPage: function(curPage,total,pageid) {
+		//广播刷新分页显示状态
+		this.broadcast('impex.table.refresh',{
+        	index: curPage,
+            recordNum: total,
+            pageCount: Math.ceil(total/this.pageSize),
+        },pageid);
+	},
+	flushPage2: function(curPage,total,pageid) {
+		//广播刷新分页显示状态
+		this.broadcast('impex.table.refresh',{
+        	index: curPage,
+            recordNum: total,
+            pageCount: Math.ceil(total/this.pageSize2),
+        },pageid);
+	},
+	onDisplay:function(){
+		// this.load('table1');
+		// this.load2('ttrr');
+		//监听分页换页  （一个页面多个分页组件，监听名字后添加组件id）
+        this.on('impex.table.goto.table1',function(target,index, pageSize,pageid){
+        	this.pageNo = index;
+         	this.pageSize = pageSize;
+        	//请求数据
+         	this.load(pageid);
+        });
+		//（一个页面多个分页组件，监听名字后添加组件id）
+		this.on('impex.table.goto.ttrr',function(target,index, pageSize,pageid){
+        	this.pageNo2 = index;
+         	this.pageSize2 = pageSize;
+        	//请求数据
+         	this.load2(pageid);
+        });
+		
+		var ds = [];
+		for (var i = 0; i < this.datas.length; i++) {
+			ds.push({
+				psName: this.datas[i].psName,
+				hours: this.datas[i].hours
+			});
+		}
+		this.list = ds;
+	},
+	datas:[],
+	datas2:[],
+	load:function(pageid){
+		this.datas=[];
+		for(i=parseInt(this.pageNo-1)*this.pageSize+1;i<((parseInt(this.pageNo-1)*this.pageSize+1)+parseInt(this.pageSize));i++){
+			if (i % 2 === 0) { 
+				this.datas.push({index:i});
+			}else{
+				this.datas.push({index:i,name:i});
+			}
+		}
+		//设置点前分页组件状态
+		this.flushPage(this.pageNo,200,pageid);
+	},
+
+	load2:function(pageid){
+		this.datas2=[];
+		for(i=parseInt(this.pageNo2-1)*this.pageSize2+1;i<((parseInt(this.pageNo2-1)*this.pageSize2+1)+parseInt(this.pageSize2));i++){
+			this.datas2.push({index:i,name:"我是"+i+"号2"})
+		}
+		//设置点前分页组件状态
+		this.flushPage2(this.pageNo2,200,pageid);
+	},
+	sortBy:function(key) {
+        if(!key)return;
+
+        this.stuOrder.orderKey = key;
+        var lastDir = this.stuOrder.orderDir;
+        if(!lastDir || lastDir==='desc'){
+            this.stuOrder.orderDir = 'asc'; 
+        }else{
+            this.stuOrder.orderDir = 'desc';
+        }
+    },
+	changeDir: function() {
+		if (this.dir === "asc") {
+			this.dir = "desc";
+		}else{
+			this.dir = "asc";
+		}
+	},
+	datas: [{"dayCap":12.4768,"dayGridCap":12.4096,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":81.39,"scatterRadiant":5.8,"statDate":"2016-02-04","state":0,"theoryCap":15.2474,"tiltTotalRadiant":5.07,"totalRadiant":3.47},{"dayCap":8.939,"dayGridCap":8.8648,"directRadiant":0.1,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":45.25,"scatterRadiant":5.9,"statDate":"2016-02-05","state":0,"theoryCap":19.5918,"tiltTotalRadiant":6.51,"totalRadiant":4.09},{"dayCap":1.8718,"dayGridCap":1.792,"directRadiant":0.08,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":11.64,"scatterRadiant":6.41,"statDate":"2016-02-06","state":0,"theoryCap":15.3978,"tiltTotalRadiant":5.12,"totalRadiant":3.45},{"dayCap":1.589,"dayGridCap":1.5064,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":7.79,"scatterRadiant":8.29,"statDate":"2016-02-07","state":0,"theoryCap":19.3412,"tiltTotalRadiant":6.43,"totalRadiant":4.18},{"dayCap":1.883,"dayGridCap":1.8032,"directRadiant":0.1,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":9.67,"scatterRadiant":9.63,"statDate":"2016-02-08","state":0,"theoryCap":18.6477,"tiltTotalRadiant":6.2,"totalRadiant":4.23},{"dayCap":1.5736,"dayGridCap":1.4952,"directRadiant":0.1,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":9.13,"scatterRadiant":9.96,"statDate":"2016-02-09","state":0,"theoryCap":16.3836,"tiltTotalRadiant":5.45,"totalRadiant":3.86},{"dayCap":1.799,"dayGridCap":1.7248,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":19.66,"scatterRadiant":8.41,"statDate":"2016-02-10","state":0,"theoryCap":8.7725,"tiltTotalRadiant":2.92,"totalRadiant":2.7},{"dayCap":6.1642,"dayGridCap":6.0872,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":82.61,"scatterRadiant":7.21,"statDate":"2016-02-11","state":0,"theoryCap":7.3689,"tiltTotalRadiant":2.45,"totalRadiant":2.33},{"dayCap":1.5764,"dayGridCap":1.5008,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":17.66,"scatterRadiant":7.3,"statDate":"2016-02-12","state":0,"theoryCap":8.4968,"tiltTotalRadiant":2.83,"totalRadiant":2.31},{"dayCap":2.1504,"dayGridCap":2.072,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":13.16,"scatterRadiant":12.41,"statDate":"2016-02-13","state":0,"theoryCap":15.7403,"tiltTotalRadiant":5.23,"totalRadiant":3.77},{"dayCap":6.608,"dayGridCap":6.5296,"directRadiant":0.1,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":33.66,"scatterRadiant":15.22,"statDate":"2016-02-14","state":0,"theoryCap":19.3997,"tiltTotalRadiant":6.45,"totalRadiant":4.43},{"dayCap":10.8318,"dayGridCap":10.7576,"directRadiant":0.1,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":50.61,"scatterRadiant":15.58,"statDate":"2016-02-15","state":0,"theoryCap":21.2544,"tiltTotalRadiant":7.07,"totalRadiant":4.51},{"dayCap":18.8048,"dayGridCap":18.7376,"directRadiant":0.1,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":85.47,"scatterRadiant":15.67,"statDate":"2016-02-16","state":0,"theoryCap":21.9228,"tiltTotalRadiant":7.29,"totalRadiant":4.52},{"dayCap":10.7604,"dayGridCap":10.6848,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":59.59,"scatterRadiant":14.26,"statDate":"2016-02-17","state":0,"theoryCap":17.9292,"tiltTotalRadiant":5.96,"totalRadiant":4.26},{"dayCap":6.874,"dayGridCap":6.8152,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":63.38,"scatterRadiant":9.1,"statDate":"2016-02-18","state":0,"theoryCap":10.7525,"tiltTotalRadiant":3.58,"totalRadiant":2.92},{"dayCap":8.68,"dayGridCap":8.6408,"directRadiant":0.08,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":57.59,"scatterRadiant":13.51,"statDate":"2016-02-19","state":0,"theoryCap":15.0051,"tiltTotalRadiant":4.99,"totalRadiant":4.06},{"dayCap":15.5008,"dayGridCap":15.4448,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":79.75,"scatterRadiant":13.51,"statDate":"2016-02-20","state":0,"theoryCap":19.3662,"tiltTotalRadiant":6.44,"totalRadiant":4.13},{"dayCap":5.2262,"dayGridCap":5.1688,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":69.98,"scatterRadiant":6.24,"statDate":"2016-02-21","state":0,"theoryCap":7.3856,"tiltTotalRadiant":2.46,"totalRadiant":1.94},{"dayCap":9.184,"dayGridCap":9.1168,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":64.72,"scatterRadiant":11.01,"statDate":"2016-02-22","state":0,"theoryCap":14.0861,"tiltTotalRadiant":4.68,"totalRadiant":3.41},{"dayCap":10.7282,"dayGridCap":10.6568,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":62.04,"scatterRadiant":14.04,"statDate":"2016-02-23","state":0,"theoryCap":17.1773,"tiltTotalRadiant":5.71,"totalRadiant":4.22},{"dayCap":9.681,"dayGridCap":9.6152,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":46.46,"scatterRadiant":15.99,"statDate":"2016-02-24","state":0,"theoryCap":20.6946,"tiltTotalRadiant":6.88,"totalRadiant":4.64},{"dayCap":5.6462,"dayGridCap":5.6,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":30.75,"scatterRadiant":14.98,"statDate":"2016-02-25","state":0,"theoryCap":18.2133,"tiltTotalRadiant":6.06,"totalRadiant":4.42},{"dayCap":7.406,"dayGridCap":7.3864,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":44.27,"scatterRadiant":15.3,"statDate":"2016-02-26","state":0,"theoryCap":16.6844,"tiltTotalRadiant":5.55,"totalRadiant":4.47},{"dayCap":3.5882,"dayGridCap":3.5672,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":26.45,"scatterRadiant":9.9,"statDate":"2016-02-27","state":0,"theoryCap":13.4845,"tiltTotalRadiant":4.48,"totalRadiant":3.07},{"dayCap":11.613,"dayGridCap":11.5808,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":68.65,"scatterRadiant":11.35,"statDate":"2016-02-28","state":0,"theoryCap":16.8682,"tiltTotalRadiant":5.61,"totalRadiant":3.33},{"dayCap":10.9284,"dayGridCap":10.9032,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":61.24,"scatterRadiant":16.25,"statDate":"2016-02-29","state":0,"theoryCap":17.8039,"tiltTotalRadiant":5.92,"totalRadiant":4.72},{"dayCap":13.8936,"dayGridCap":13.8712,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":79.82,"scatterRadiant":14.33,"statDate":"2016-03-01","state":0,"theoryCap":17.3778,"tiltTotalRadiant":5.78,"totalRadiant":4.28},{"dayCap":14.4242,"dayGridCap":14.4032,"directRadiant":0.11,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":75.28,"scatterRadiant":17.5,"statDate":"2016-03-02","state":0,"theoryCap":19.1323,"tiltTotalRadiant":6.36,"totalRadiant":5.02},{"dayCap":11.494,"dayGridCap":11.4632,"directRadiant":0.13,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":62.39,"scatterRadiant":16.99,"statDate":"2016-03-03","state":0,"theoryCap":18.372,"tiltTotalRadiant":6.11,"totalRadiant":4.9},{"dayCap":5.6042,"dayGridCap":5.5608,"directRadiant":0.08,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":61.63,"scatterRadiant":8.06,"statDate":"2016-03-04","state":0,"theoryCap":9.0231,"tiltTotalRadiant":3,"totalRadiant":2.51},{"dayCap":7.9954,"dayGridCap":7.9464,"directRadiant":0.08,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":60.5,"scatterRadiant":8.72,"statDate":"2016-03-05","state":0,"theoryCap":13.1336,"tiltTotalRadiant":4.37,"totalRadiant":2.71},{"dayCap":5.9822,"dayGridCap":5.9304,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":38.49,"scatterRadiant":15.25,"statDate":"2016-03-06","state":0,"theoryCap":15.4061,"tiltTotalRadiant":5.12,"totalRadiant":4.58},{"dayCap":15.631,"dayGridCap":15.5736,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":82.37,"scatterRadiant":16.32,"statDate":"2016-03-07","state":0,"theoryCap":18.9067,"tiltTotalRadiant":6.29,"totalRadiant":4.78},{"dayCap":10.2578,"dayGridCap":10.1808,"directRadiant":0.07,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":61.54,"scatterRadiant":13.85,"statDate":"2016-03-08","state":0,"theoryCap":16.5424,"tiltTotalRadiant":5.5,"totalRadiant":4.18},{"dayCap":7.105,"dayGridCap":7.028,"directRadiant":0.07,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":68.45,"scatterRadiant":8.32,"statDate":"2016-03-09","state":0,"theoryCap":10.268,"tiltTotalRadiant":3.41,"totalRadiant":2.59},{"dayCap":10.6988,"dayGridCap":10.64,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":53.6,"scatterRadiant":19.08,"statDate":"2016-03-10","state":0,"theoryCap":19.8508,"tiltTotalRadiant":6.6,"totalRadiant":5.4},{"dayCap":4.8076,"dayGridCap":4.7376,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":30.29,"scatterRadiant":15.87,"statDate":"2016-03-11","state":0,"theoryCap":15.64,"tiltTotalRadiant":5.2,"totalRadiant":4.67},{"dayCap":1.7234,"dayGridCap":1.6632,"directRadiant":0.06,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":13.53,"scatterRadiant":10.01,"statDate":"2016-03-12","state":0,"theoryCap":12.2898,"tiltTotalRadiant":4.09,"totalRadiant":3.11},{"dayCap":18.5724,"dayGridCap":18.5304,"directRadiant":0,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":84.4,"scatterRadiant":0,"statDate":"2016-03-13","state":0,"theoryCap":21.9562,"tiltTotalRadiant":7.3,"totalRadiant":5.55},{"dayCap":2.3366,"dayGridCap":2.3072,"directRadiant":0.1,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":15.9,"scatterRadiant":15.06,"statDate":"2016-03-14","state":0,"theoryCap":14.5122,"tiltTotalRadiant":4.83,"totalRadiant":4.47},{"dayCap":17.29,"dayGridCap":17.2704,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":85.42,"scatterRadiant":19.24,"statDate":"2016-03-15","state":0,"theoryCap":20.2184,"tiltTotalRadiant":6.72,"totalRadiant":5.48},{"dayCap":9.6264,"dayGridCap":9.6096,"directRadiant":0.08,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":68.87,"scatterRadiant":11.52,"statDate":"2016-03-16","state":0,"theoryCap":13.9524,"tiltTotalRadiant":4.64,"totalRadiant":3.51},{"dayCap":12.8548,"dayGridCap":12.8408,"directRadiant":0.07,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":74.25,"scatterRadiant":14.28,"statDate":"2016-03-17","state":0,"theoryCap":17.2943,"tiltTotalRadiant":5.75,"totalRadiant":4.37},{"dayCap":7.9926,"dayGridCap":7.9632,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":41.88,"scatterRadiant":19.25,"statDate":"2016-03-18","state":0,"theoryCap":19.0153,"tiltTotalRadiant":6.32,"totalRadiant":5.54},{"dayCap":6.3952,"dayGridCap":6.3728,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":47.38,"scatterRadiant":14.61,"statDate":"2016-03-19","state":0,"theoryCap":13.4511,"tiltTotalRadiant":4.47,"totalRadiant":4.4},{"dayCap":2.317,"dayGridCap":2.296,"directRadiant":0.09,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":42.28,"scatterRadiant":5.04,"statDate":"2016-03-20","state":0,"theoryCap":5.4306,"tiltTotalRadiant":1.81,"totalRadiant":1.58},{"dayCap":1.9404,"dayGridCap":1.9264,"directRadiant":0.05,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":70.95,"scatterRadiant":2.91,"statDate":"2016-03-21","state":0,"theoryCap":2.7153,"tiltTotalRadiant":0.9,"totalRadiant":0.89},{"dayCap":1.036,"dayGridCap":1.0192,"directRadiant":0.03,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":53.04,"scatterRadiant":1.57,"statDate":"2016-03-22","state":0,"theoryCap":1.9216,"tiltTotalRadiant":0.64,"totalRadiant":0.49},{"dayCap":2.569,"dayGridCap":2.5312,"directRadiant":0.03,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":60.11,"scatterRadiant":3.48,"statDate":"2016-03-23","state":0,"theoryCap":4.2108,"tiltTotalRadiant":1.4,"totalRadiant":1.06},{"dayCap":13.3476,"dayGridCap":13.328,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":68.35,"scatterRadiant":0.27,"statDate":"2016-03-24","state":0,"theoryCap":19.4999,"tiltTotalRadiant":6.48,"totalRadiant":4.93},{"dayCap":13.8418,"dayGridCap":13.8264,"directRadiant":0,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":69.36,"scatterRadiant":0,"statDate":"2016-03-25","state":0,"theoryCap":19.9344,"tiltTotalRadiant":6.63,"totalRadiant":4.19},{"dayCap":19.8604,"dayGridCap":19.8408,"directRadiant":0,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":81.13,"scatterRadiant":0,"statDate":"2016-03-26","state":0,"theoryCap":24.4543,"tiltTotalRadiant":8.13,"totalRadiant":5.62},{"dayCap":8.2726,"dayGridCap":8.2488,"directRadiant":0,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":39.68,"scatterRadiant":0,"statDate":"2016-03-27","state":0,"theoryCap":20.7865,"tiltTotalRadiant":6.91,"totalRadiant":5.23},{"dayCap":5.7386,"dayGridCap":5.712,"directRadiant":0.06,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":31.89,"scatterRadiant":15.43,"statDate":"2016-03-28","state":0,"theoryCap":17.9125,"tiltTotalRadiant":5.96,"totalRadiant":4.53},{"dayCap":13.755,"dayGridCap":13.7144,"directRadiant":0.08,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":70.09,"scatterRadiant":16.06,"statDate":"2016-03-29","state":0,"theoryCap":19.5668,"tiltTotalRadiant":6.51,"totalRadiant":4.73},{"directRadiant":3,"psCode":5,"psName":"中卫太科","psRealCapacity":30.077,"pspr":0,"scatterRadiant":4,"statDate":"2016-04-27","state":0,"theoryCap":1.6427,"tiltTotalRadiant":0.56,"totalRadiant":0.28}]
+};
+
+var Page = impex.render(document.body, page);
+
+</script>
+ </body>
+</html>
+
