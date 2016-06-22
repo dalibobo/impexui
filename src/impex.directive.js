@@ -183,17 +183,20 @@ impex.directive('submit',{
 		this.form = form;
 		// 表单初始化验证标记
 		form.__initCheck = true;
-		form.validate = function() {
+		form.validate = function(delay) {
+			var dy = delay || 0;
 			var that = this;
-			var coms = that.__coms;
-			if (!coms) {
+			setTimeout(function() {
+				var coms = that.__coms;
+				if (!coms) {
+					that.__initCheck = false;
+					return;
+				}
+				for (var i = coms.length;i--;) {
+					coms[i].validate();
+				}
 				that.__initCheck = false;
-				return;
-			}
-			for (var i = coms.length;i--;) {
-				coms[i].validate();
-			}
-			that.__initCheck = false;
+			}, dy);
 		}
 		setTimeout(function() {
 			form.validate();
