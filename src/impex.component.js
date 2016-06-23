@@ -157,17 +157,18 @@ impex.component('impex-area', {
 	class: "",
 	scss: "",
 	value: "",
-	$template: '<div class="impex-area {{=class}}">\
+	id: "",
+	$template: '<div class="impex-area {{=class}}" id="{{=id}}">\
 				<select class="{{scss}}" name="{{=pname}}" :change="pchange(this)">\
-					<option x-each="ps as p" value="{{$index}}">{{p.p}}</option>\
+					<option x-each="ps as p" value="{{p.p}}">{{p.p}}</option>\
 				</select>\
 				<select class="{{scss}}" name="{{=cname}}" :change="cchange(this)">\
-					<option x-each="cs as c" value="{{$index}}">{{c.n}}</option>\
+					<option x-each="cs as c" value="{{c.n}}">{{c.n}}</option>\
 				</select>\
 				<select class="{{scss}}" name="{{=aname}}" :change="achange(this)" x-show="as.length > 0">\
-					<option x-each="as as a" value="{{$index}}">{{a.s}}</option>\
+					<option x-each="as as a" value="{{a.s}}">{{a.s}}</option>\
 				</select>\
-				<input x-if="!name" type="hidden" name="{{=name}}" value="{{value}}">\
+				<input x-if="name" type="hidden" name="{{=name}}" value="{{value}}">\
 				</div>', 
 	onInit: function() {
 		this.ps = _impex_areaList;
@@ -177,7 +178,7 @@ impex.component('impex-area', {
 	},
 	// 设置隐藏域值
 	setHiddenValue: function(a, b, c) {
-		if (!this.name) {
+		if (this.name) {
 			var v = "";
 			v += this.ps[a].p;
 			if (this.cs.length > 0) {
@@ -190,8 +191,13 @@ impex.component('impex-area', {
 		this.value = v;
 	},
 	pchange: function(com) {
-		var v = com.$view.el.value;
-		this.cs = this.ps[v].c;
+		var v = "";
+		if (com.$view) {
+			v = com.$view.el.selectedIndex;
+		}else{
+			v = com;
+		}
+		this.cs = this.ps[v].c || [];
 		this.as = this.cs[0].a || [];
 		var el = this.$view.el;
 		setTimeout(function() {
@@ -199,13 +205,13 @@ impex.component('impex-area', {
 			var pselect = ss[0];
 			var cselect = ss[1];
 			var aselect = ss[2];
-			cselect.options[0].selected = true;
-			aselect.options[0].selected = true;
+			if (cselect.options.length != 0) cselect.options[0].selected = true;
+			if (aselect.options.length != 0) aselect.options[0].selected = true;
 		}, 10);
 		this.setHiddenValue(v, 0, 0);
 	},
 	cchange: function(com) {
-		var v = com.$view.el.value;
+		var v = com.$view.el.selectedIndex;
 		this.as = this.cs[v].a || [];
 		var el = this.$view.el;
 		var ss = el.querySelectorAll("select");
@@ -213,12 +219,66 @@ impex.component('impex-area', {
 			var aselect = ss[2];
 			aselect.options[0].selected = true;
 		}, 10);
-		this.setHiddenValue(ss[0].value, v, 0);
+		this.setHiddenValue(ss[0].selectedIndex, v, 0);
 	},
 	achange: function(com) {
 		var el = this.$view.el;
 		var ss = el.querySelectorAll("select");
-		var v = com.$view.el.value;
-		this.setHiddenValue(ss[0].value, ss[1].value, v);
+		var v = com.$view.el.selectedIndex;
+		this.setHiddenValue(ss[0].selectedIndex, ss[1].selectedIndex, v);
+	},
+	setValue: function(p, c, a) {
+		var ss = this.$view.el.querySelectorAll("select");
+		var pselect = ss[0];
+		
+		var pv, po;
+		for (var i = this.ps.length; i--;) {
+			if (this.ps[i].p == p) {
+				pv = i;
+				po = this.ps[i];
+			}
+		}
+		if (!pv) {
+			pselect.options[0].selected = true;
+			po = this.ps[0];
+		}else{
+			pselect.options[pv].selected = true;
+		}
+		
+		
+		if (!po) {
+			this.cs = [];
+		}else{
+			this.cs = po.c || [];
+		}
+		var cv, co;
+		for (var i = this.cs.length; i--;) {
+			if (this.cs[i].n == c) {
+				cv = i;
+				co = this.cs[i];
+			}
+		}
+
+		if (!co) {
+			this.as = [];
+		}else{
+			this.as = co.a || [];
+		}
+		var av;
+		for (var i = this.as.length; i--;) {
+			if (this.as[i].s == a) {
+				av = i;
+			}
+		}
+		
+		var el = this.$view.el;
+		setTimeout(function() {
+			var ss = el.querySelectorAll("select");
+			var cselect = ss[1];
+			var aselect = ss[2];
+			if (cselect.options.length != 0) cselect.options[cv].selected = true;
+			if (aselect.options.length != 0) aselect.options[av].selected = true;
+		}, 10);
+		this.setHiddenValue(pv, cv, av);
 	}
 });
