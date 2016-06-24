@@ -1,0 +1,105 @@
+.impexs-component-tabe-page{
+	
+}
+.impexs-component-tabe-page .pagination {
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+}
+.impexs-component-tabe-page .pagination li {
+    cursor: pointer;
+    display: inline;
+    font-size: 10px;
+    padding: 4px 8px;
+    margin-left: 0;
+    margin-right: 5px;
+    border-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border-top-left-radius: 2px;
+    background-color: transparent;
+    border: 1px solid #e4e4e4;
+}
+.impexs-component-tabe-page .pagination li {
+    font-size: 13px;
+}
+.impexs-component-tabe-page .pagination .select {
+    background-color: transparent!important;
+    border: 0px!important;
+    padding: 0px!important;
+    cursor: default!important;
+    height: 25px;
+}
+.impexs-component-tabe-page .pagination .select select {
+    padding: 3px 2px;
+}
+
+.impexs-component-tabe-page .pagination .goto {
+    background-color: transparent!important;
+    border: 0px!important;
+    padding: 0px!important;
+    cursor: default!important;
+}
+
+.impexs-component-tabe-page .pagination .goto input {
+    width: 40px;
+    text-align: center;
+    height: 25px;
+}
+
+
+.impexs-component-tabe-page .pagination .goto  .btn, .btn-default, .btn-default:focus, .btn:focus {
+    border-color: #ddd;
+    border-bottom-color: #cecece;
+    background: #f4f4f4;
+    background-image: -webkit-linear-gradient(top,#f4f4f4 0,#eaeaea 100%);
+    background-image: linear-gradient(to bottom,#f4f4f4 0,#eaeaea 100%);
+    background-repeat: repeat-x;
+}
+.impexs-component-tabe-page .pagination .goto  .btn-sm {
+    font-size: 12px;
+    line-height: 15px;
+    padding: 4px 9px;
+}
+
+.impexs-component-tabe-page .pagination .goto .btn {
+    text-shadow: none;
+    line-height: 15px;
+    font-weight: 400;
+    padding: 7px 12px;
+    outline: 0!important;
+}
+.impexs-component-tabe-page .pagination .active {
+    background: #64bed8;
+    border-color: #64bed8;
+    z-index: 2;
+    color: #fff;
+    cursor: default;
+}
+.impexs-component-tabe-page .pagination .disabled:hover {
+    border-color: #ddd;
+    cursor: not-allowed;
+}
+.impexs-component-tabe-page .pagination>li:hover {
+    color: #205f82;
+    background-color: #eee;
+    border-color: #ddd;
+}
+
+.x-order .sorticon:AFTER{
+	display: inline;
+    padding: 0 13px 0 0;
+	content: "";
+    background: url('images/grid_icons.png') no-repeat -64px center;
+}
+.x-order .sorticon.sorticon-asc:AFTER{
+	display: inline;
+    padding: 0 13px 0 0;
+	content: "";
+    background: url('images/grid_icons.png') no-repeat 0px center;
+}
+.x-order .sorticon.sorticon-desc:AFTER{
+	display: inline;
+    padding: 0 13px 0 0;
+	content: "";	
+    background: url('images/grid_icons.png') no-repeat -16px center;
+}
