@@ -1,0 +1,27 @@
+{
+  "name": "imlazy",
+  "version": "0.0.1",
+  "description": "懒人开发",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dalibobo/imlazy.git"
+  },
+  "author": "winki",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dalibobo/imlazy/issues"
+  },
+  "homepage": "https://github.com/dalibobo/imlazy#readme",
+  "devDependencies": {
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-connect": "^0.11.2",
+    "grunt-contrib-jshint": "^0.11.3",
+    "grunt-contrib-sass": "^0.9.2",
+    "grunt-contrib-uglify": "^0.11.0",
+    "grunt-contrib-watch": "^0.6.1"
+  }
+}
