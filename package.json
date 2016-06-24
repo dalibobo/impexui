@@ -1,21 +1,21 @@
 {
-  "name": "imlazy",
-  "version": "0.0.1",
-  "description": "懒人开发",
+  "name": "impexui",
+  "version": "0.1.0",
+  "description": "impexui",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dalibobo/imlazy.git"
+    "url": "git+https://github.com/dalibobo/impexui.git"
   },
   "author": "winki",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/dalibobo/imlazy/issues"
+    "url": "https://github.com/dalibobo/impexui/issues"
   },
-  "homepage": "https://github.com/dalibobo/imlazy#readme",
+  "homepage": "https://github.com/dalibobo/impexui#readme",
   "devDependencies": {
     "grunt-contrib-concat": "^0.5.1",
     "grunt-contrib-connect": "^0.11.2",
