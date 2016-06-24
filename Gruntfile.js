@@ -2,8 +2,8 @@ module.exports = function(grunt) {
 	var path = ".";
 	var build = path + "/";
 	var src = path + "/src";
-	var allPath = build + '/impexs.js';
-	var minPath = build + "/impexs.min.js";
+	var allPath = build + '/impexui.all.js';
+	var minPath = build + "/impexui.min.js";
 	
 	var cfiles = {};
 	cfiles[allPath] = [
@@ -11,12 +11,13 @@ module.exports = function(grunt) {
 		src + "/impex.service.js",
 		src + "/impex.directive.js",
 		src + "/impex.filter.js",
+		src + "/area.js",
 		src + "/impex.component.js",
 		src + "/is.min.js",
 		src + "/underscore-min.js"
 	];
 	var ufiles = {};
-	ufiles[minPath] = build + '/impexs.js';
+	ufiles[minPath] = build + '/impexui.all.js';
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 		concat: {
@@ -33,7 +34,7 @@ module.exports = function(grunt) {
 			}
 		},
 		jshint: {
-			all: [build + '/impexs.js']
+			all: [build + '/impexui.all.js']
 		}
 	});
 	
