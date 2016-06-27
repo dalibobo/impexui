@@ -1,6 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>YEUI - 首页</title>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/prettify/prettify.css">
+	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/css/kube.css">
+	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/css/main.css">
+	<style>
+		body{margin:10px;}
+	</style>
+</head>
+  
+<body>
 <h1>文档说明</h1>
 <p>impexui组件具有属性、方法和事件。</p>
 <h4>属性</h4>
 <h4>方法</h4>
 <h4>事件</h4>
-<!--<pre name="code" class="prettyprint linenums"><b>mmmm</b></pre>-->
+<pre name="code" class="prettyprint linenums">
+<h1>文档说明</h1>
+<p>impexui组件具有属性、方法和事件。</p>
+<h4>属性</h4>
+<h4>方法</h4>
+<h4>事件</h4>
+</pre>
+<script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="http://www.jeasyui.com/prettify/prettify.js"></script>
+<script>
+	window.onload = function() {
+		$(".prettyprint.linenums").each(function(){
+			var html = $(this).html();
+			html = html.replace(/</g, "&lt;");
+			html = html.replace(/>/g, "&gt;");
+			$(this).html(html);
+		});
+		prettyPrint();
+	}
+</script>
+</body>
+</html>

@@ -13,6 +13,8 @@
   	<style type="text/css">
   		html{height:100%;}
   		body{height:100%;margin:0px;}
+		iframe{width:100%;height:100%;}
+		iframe body{margin:10px;}
   	</style>
   </head>
   
@@ -24,9 +26,7 @@
 			<ul id="com_tree"></ul>
 		</div>
 		<div data-options="region:'center'">
-			<div class="easyui-tabs" id="mainTab" fit="true" border="false">
-				<div title="欢迎页" href="welcome.html" class="content-doc"></div>
-			</div>
+			<div class="easyui-tabs" id="mainTab" fit="true" border="false"></div>
 		</div>
 	</div>
 	<script type="text/javascript">
@@ -71,37 +71,40 @@
 			$('#com_tree').tree({
 				data: COM_TREE_DATA
 			});
+			
+			$('#mainTab').tabs('add', {
+				title: "欢迎页",
+				content:'<iframe src="welcome.html"></iframe>'
+			});
+			
+			
 			$('#com_tree').tree({
 				onClick: function(node){
 					if (node.href) {
 						if ($('#mainTab').tabs('exists', node.text)){
 							$('#mainTab').tabs('select', node.text);
 						}else{
-							$('#mainTab').tabs('add',{
+							$('#mainTab').tabs('add', {
 								title: node.text,
-								href: node.href,
-								closable:true,
-								bodyCls:'content-doc',
-								extractor:function(data){
-									data = $.fn.panel.defaults.extractor(data);
-									var tmp = $('<div></div>').html(data);
-									data = tmp.find('#content').html();
-									tmp.remove();
-									return data;
-								}
+								content:'<iframe src="'+ node.href +'"></iframe>',
+								closable: true
 							});
 						}
-					}		
+					}
 				}
 			});
 			
 			$('#mainTab').tabs({
 				onLoad:function(panel){
 					$(".prettyprint.linenums").each(function(){
-						var html = $(this).html();
-						html = html.replace(/</g, "&lt;");
-						html = html.replace(/>/g, "&gt;");
-						$(this).html(html);
+						var data = $(this).html();
+						data = data.replace(/(\r\n|\r|\n)/g, '\n');
+						if (data.indexOf('\t') == 0){
+							data = data.replace(/^\t/, '');
+							data = data.replace(/\n\t/g, '\n');
+						}
+						data = data.replace(/\t/g, '    ');
+						$(this).text(data);
 					});
 					prettyPrint();
 				}
