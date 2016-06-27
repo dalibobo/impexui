@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>YEUI - 首页</title>
+    <meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/metro/easyui.css">
+	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/prettify/prettify.css">
+	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/css/kube.css">
+	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/css/main.css">
+  	<script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.min.js"></script>
+  	<script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="http://www.jeasyui.com/prettify/prettify.js"></script>
+  	<style type="text/css">
+  		html{height:100%;}
+  		body{height:100%;margin:0px;}
+  	</style>
+  </head>
+  
+  <body>
+	<div id="ye_layout" style="width:100%;height:100%;visibility:hidden;">
+		<div data-options="region:'north'" style="height:66px"></div>
+		<div data-options="region:'west',split:true,hideCollapsedContent:false" 
+			style="width:20%;min-width:200px;padding:5px;" title="组件">
+			<ul id="com_tree"></ul>
+		</div>
+		<div data-options="region:'center'">
+			<div class="easyui-tabs" id="mainTab" fit="true" border="false">
+				<div title="欢迎页" href="welcome.html" class="content-doc"></div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		// 组件菜单
+		var COM_TREE_DATA = [
+			{
+				"id": 1,
+				"text":"基本",
+				"iconCls":"icon-base",
+				children: [
+					{
+						id: 1001,
+						text: "分页组件",
+						href: "base/pagination.html"
+					}
+				]
+			},{
+				id: 2,
+				"text":"布局",
+				iconCls: "icon-layout"
+			},{
+				id: 3,
+				text: "菜单和按钮",
+				iconCls: "icon-menu"
+			},{
+				id: 4,
+				text: "表单",
+				iconCls: "icon-form"
+			},{
+				id: 5,
+				text: "数据表格和树",
+				iconCls: "icon-datagrid"
+			}
+		];
+		
+		$(document).ready(function() {
+			var layout = $("#ye_layout");
+			layout.layout();
+			layout.css({visibility: "visible"});
+			
+			// 加载组件树
+			$('#com_tree').tree({
+				data: COM_TREE_DATA
+			});
+			$('#com_tree').tree({
+				onClick: function(node){
+					if (node.href) {
+						if ($('#mainTab').tabs('exists', node.text)){
+							$('#mainTab').tabs('select', node.text);
+						}else{
+							$('#mainTab').tabs('add',{
+								title: node.text,
+								href: node.href,
+								closable:true,
+								bodyCls:'content-doc',
+								extractor:function(data){
+									data = $.fn.panel.defaults.extractor(data);
+									var tmp = $('<div></div>').html(data);
+									data = tmp.find('#content').html();
+									tmp.remove();
+									return data;
+								}
+							});
+						}
+					}		
+				}
+			});
+			
+			$('#mainTab').tabs({
+				onLoad:function(panel){
+					$(".prettyprint.linenums").each(function(){
+						var html = $(this).html();
+						html = html.replace(/</g, "&lt;");
+						html = html.replace(/>/g, "&gt;");
+						$(this).html(html);
+					});
+					prettyPrint();
+				}
+			});
+		});
+	</script>
+</body>
+</html>
