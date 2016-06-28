@@ -14,7 +14,7 @@
 <body>
 <h1>省市县三级级联</h1>
 <p>省、市、县三级级联选择控件。</p>
-<h4>样例</h4>
+<h4>样例图</h4>
 <img src="../image/form-area.png"/>
 <h4>使用案例</h4>
 <p>创建一个组件</p>
@@ -23,25 +23,35 @@
 </pre>
 <h4>属性</h4>
 <x-doc-table rows="proRows"></x-doc-table>
-<table class="doc-table">
-<tbody><tr>
-<th><strong>名称</strong></th>
-<th><strong>类型</strong></th>
-<th><strong>描述</strong></th>
-<th><strong>默认值</strong></th>
-</tr>
-<tr>
-<td>width</td>
-<td>number</td>
-<td>The width of the component.</td>
-<td>auto</td>
-</tr>
-</table>
 <h4>方法</h4>
+<x-doc-table rows="methodRows"></x-doc-table>
 <h4>事件</h4>
+<p>没有事件</p>
 <script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.min.js"></script>
 <script type="text/javascript" src="http://www.jeasyui.com/prettify/prettify.js"></script>
 <script type="text/javascript" src="http://impexjs.org/js/impex.all.js"></script>
 <script type="text/javascript" src="../main.js"></script>
+<script>
+	// 初始化impex
+	function initImpex() {
+		page = impex.render(document.body, {
+			proRows: [
+				{name: "id", type: "String", descr: "组件id，通过该属性可获取组件的数据模型", default: ""},
+				{
+					name: "name", 
+					type: "String", 
+					descr: "组件名称。<br/>如果设置了组件名称，会自动创建一个同名的隐藏域，隐藏域会提交到服务器，值为“陕西,西安,雁塔区”<br>如果不设置则不会创建隐藏域", 
+					default: ""
+				},
+				{name: "pname", type: "String", descr: "省份下拉选择框的name属性", default: ""},
+				{name: "cname", type: "String", descr: "城市下拉选择框的name属性", default: ""},
+				{name: "aname", type: "String", descr: "县/区下拉选择框的name属性", default: ""}
+			],
+			methodRows: [
+				{name: "setValue", parameter: "province, city, area", descr: "设置值，参数是：<div>province: 省</div><div>province: 市</div><div>province: 县</div>"}
+			]
+		});
+	}
+</script>
 </body>
 </html>
