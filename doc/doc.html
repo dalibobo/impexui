@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>YEUI - 首页</title>
+    <title>impexui - 首页</title>
     <meta charset="UTF-8">
 	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/metro/easyui.css">
 	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/prettify/prettify.css">
@@ -54,7 +54,14 @@
 			},{
 				id: 4,
 				text: "表单",
-				iconCls: "icon-form"
+				iconCls: "icon-form",
+				children: [
+					{
+						id: 4001,
+						text: "省市县级联组件",
+						href: "form/area.html"
+					}
+				]
 			},{
 				id: 5,
 				text: "数据表格和树",

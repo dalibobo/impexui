@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>YEUI - 首页</title>
+	<title>impexui - 欢迎页</title>
 	<meta charset="UTF-8">
 	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/prettify/prettify.css">
 	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/css/kube.css">
@@ -26,16 +26,6 @@
 </pre>
 <script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.min.js"></script>
 <script type="text/javascript" src="http://www.jeasyui.com/prettify/prettify.js"></script>
-<script>
-	window.onload = function() {
-		$(".prettyprint.linenums").each(function(){
-			var html = $(this).html();
-			html = html.replace(/</g, "&lt;");
-			html = html.replace(/>/g, "&gt;");
-			$(this).html(html);
-		});
-		prettyPrint();
-	}
-</script>
+<script type="text/javascript" src="main.js"></script>
 </body>
 </html>
