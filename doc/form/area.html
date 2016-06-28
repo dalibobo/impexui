@@ -14,7 +14,7 @@
 <body>
 <h1>省市县三级级联</h1>
 <p>省、市、县三级级联选择控件。</p>
-<h4>样例图</h4>
+<h4>样例图 <a :click="openDemo()" title="查看demo" style="cursor:pointer;text-decoration:underline;">（demo）</a></h4>
 <img src="../image/form-area.png"/>
 <h4>使用案例</h4>
 <p>创建一个组件</p>
@@ -49,7 +49,10 @@
 			],
 			methodRows: [
 				{name: "setValue", parameter: "province, city, area", descr: "设置值，参数是：<div>province: 省</div><div>province: 市</div><div>province: 县</div>"}
-			]
+			],
+			openDemo: function() {
+				top.parent.window.openPage('省市县三级级联 - demo', '../demo/area/area.html')
+			}
 		});
 	}
 </script>

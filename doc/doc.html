@@ -117,6 +117,18 @@
 				}
 			});
 		});
+		
+		function openPage(name, url) {
+			if ($('#mainTab').tabs('exists', name)){
+				$('#mainTab').tabs('select', name);
+			}else{
+				$('#mainTab').tabs('add', {
+					title: name,
+					content:'<iframe src="'+ url +'"></iframe>',
+					closable: true
+				});
+			}
+		}
 	</script>
 </body>
 </html>
