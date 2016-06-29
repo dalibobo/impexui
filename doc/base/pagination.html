@@ -1,3 +1,66 @@
-<div id="content">
-	<h1>分页组件</h1>
-</div>
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>impexui - 分页组件</title>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/prettify/prettify.css">
+	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/css/kube.css">
+	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/css/main.css">
+	<style>
+		body{margin:10px;}
+	</style>
+</head>
+  
+
+
+<h1>分页组件</h1>
+<p>impexui分页组件：</p>
+<h4>样例</h4>
+<img src="../image/page.jpg"/>
+
+<h4>实例一 ： <a href="../../demo/page/impex-page-single.html" target="_blank" title="查看单分页" style="cursor:pointer;text-decoration:underline;">（单分页）</a></h4>
+
+<h4>实例二 ： <a href="../../demo/page/impex-page-much.html" target="_blank" title="查看单分页" style="cursor:pointer;text-decoration:underline;">（多分页）</a></h4>
+
+<p>创建一个组件</p>
+<pre name="code" class="prettyprint linenums">
+	<impex-table-page id="page1" ></impex-table-page>
+</pre>
+
+<h4>属性</h4>
+<x-doc-table rows="proRows"></x-doc-table>
+<h4>方法</h4>
+<P>没有方法</P>
+<h4>事件</h4>
+<x-doc-table rows="emitRows"></x-doc-table>
+<h4>广播</h4>
+<x-doc-table rows="broadcastRows"></x-doc-table>
+
+
+
+<script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="http://www.jeasyui.com/prettify/prettify.js"></script>
+<script type="text/javascript" src="http://impexjs.org/js/impex.all.js"></script>
+<script type="text/javascript" src="../main.js"></script>
+<script type="text/javascript">
+// 初始化impex
+function initImpex() {
+	page = impex.render(document.body, {
+		proRows: [
+				{name: "id", type: "String", descr: "组件id,如果一个页面多个分页组件必须添加id属性，一个页面单分页可以不加id属性", default: ""}
+			],
+		emitRows: [
+			{name: "impex.table.goto+‘.组件ID’",  
+			parameter: "target:组件数据模型,index:当前页码, pageSize:每页多少条,targetId：组件ID", 
+			descr: "分页组件切换页码、切换每页多少条数据时，会触发自定义事件；<br/>组件定义了ID属性，监听goto事件时为impex.table.goto.page1；<br/>组件没有定义ID属性，监听goto事件时为impex.table.goto"}
+		],
+		broadcastRows: [
+			{name: "impex.table.refresh", 
+			parameter: "{index: 页码,recordNum: 总数据条数,pageCount: 共几页},pageid:分页组件id", 
+			descr: "分页组件接收impex.table.refresh广播,根据参数设置分页组件的状态，当前第几页、共多少条数据、共多少页"}
+		]
+	});
+}
+
+</script>
