@@ -1,3 +1,9 @@
+var __ID = 100;
+// 获取一个唯一的标识码
+function getId() {
+	return __ID += 1;
+}
+
 /**
  * 获取impex的最顶端组件模型
  */
@@ -136,6 +142,42 @@ function getObjByPath(obj, path) {
 		if (!sobj) return null;
 	}
 	return sobj;
+}
+
+/**
+ * 在自定义组件中，根据路径获取模型
+ */
+function getModel(comModel, path) {
+	var model = null;
+	if (_.isString(path)) {
+		var p = comModel.$parent;
+		while(null != p) {
+			model = getObjByPath(p, path);
+			if (null == model) {
+				p = p.$parent;
+			}else{
+				break;
+			}
+		}
+	}
+	return model;
+}
+
+/**
+ * 根据路径查询父模型
+ */
+function getParentModel(comModel, path) {
+	if (_.isString(path)) {
+		var p = comModel.$parent;
+		while(null != p) {
+			if (null != getObjByPath(p, path)) {
+				return p;
+			}else{
+				p = p.$parent;
+			}
+		}
+	}
+	return null;
 }
 
 /**

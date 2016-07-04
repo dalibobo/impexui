@@ -337,19 +337,24 @@ impex.directive("order", {
 		var view = this.$view;
 		view.addClass("x-order");
 		var el = view.el;
-		var cns = el.children;
+		
 		var top = impex.$top();
 		if (!top[this.$value]) top[this.$value] = {key: "", dir: ""};
+		
 		var that = this;
-		for (var i = cns.length; i--;) {
-			if (cns[i].hasAttribute("order")) {
-				var order = cns[i].getAttribute("order");
-				addClass(cns[i], "sorticon");
-				addEvent(cns[i], "click", function() {
-					that.order(this);
-				});
+		setTimeout(function() {
+			var cns = el.children;
+			for (var i = cns.length; i--;) {
+				if (cns[i].hasAttribute("order")) {
+					var order = cns[i].getAttribute("order");
+					if (order == '') continue;
+					addClass(cns[i], "sorticon");
+					addEvent(cns[i], "click", function() {
+						that.order(this);
+					});
+				}
 			}
-		}
+		}, 20);		
 	},
 	order: function(dom) {
 		var order = dom.getAttribute("order");
@@ -397,3 +402,12 @@ impex.validate.directive('validate', function(com) {
 		com.setValidity(true);
 	}
 });
+
+/**
+ * 自定义checkbox选中指令
+ */
+impex.directive("checked", {
+	observe: function(rs) {
+		this.$view.el.checked = rs;
+	}
+})

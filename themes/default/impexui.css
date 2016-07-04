@@ -103,3 +103,53 @@
 	content: "";	
     background: url('images/grid_icons.png') no-repeat -16px center;
 }
+
+/**数据表格样式**/
+.impex-datagrid{width:100%;}
+.impex-datagrid .title{padding-left:24px;position:relative;border:1px solid #ccc;height:25px;line-height:25px;background-color:rgba(0, 0, 0, 0.06);}
+.impex-datagrid .title .icon{left:4px;display: inline-block;width: 16px;height: 16px;font-size: 1px;position: absolute;margin-top: -8px;top: 50%;margin-right:16px;}
+.impex-datagrid .title .text{font-size:13px;display: inline-block;font-weight:bold;line-height:25px;}
+.impex-datagrid .table{width:100%;border:1px solid #ccc;}
+.impex-datagrid .table thead tr th{background-color:#DDD;line-height:24px;height:24px;font-size:12px;text-align:left;padding-left:3px;border-right:1px dotted #FFF;}
+.impex-datagrid .table thead tr th:last-child{border-right:none;}
+.impex-datagrid .table tbody tr td{border-bottom:1px dotted #ccc;height:22px;line-height:22px;font-size:12px;padding-left:3px;border-right:1px dotted #CCC;}
+.impex-datagrid .table tbody tr:last-child td{border-bottom:none;}
+.impex-datagrid .table tbody tr td:last-child{border-right:none;}
+.impex-datagrid .toolbar{height:30px;border:1px solid #ccc;padding:3px;}
+.impex-datagrid .table .line-number{text-align:center;width:30px;max-width:80px;}
+.impex-datagrid .checkAll{}
+.impex-datagrid .checkbox{}
+/**数据表格样式结束**/
+
+/**按钮样式**/
+.impex-linkbutton{display:inline-block;position:relative;padding:3px 5px;border:1px solid transparent;border-radius:3px;}
+.impex-linkbutton:hover{background-color:#EEE;cursor:pointer;border:1px solid #CCC;}
+.impex-linkbutton .icon{left:4px;display: inline-block;width: 16px;height: 16px;font-size: 1px;vertical-align: middle;}
+.impex-linkbutton .text{display:inline-block;font-size:12px;vertical-align: middle;}
+/**按钮样式结束**/
+
+/**分页组件样式**/
+.impex-pager{padding:3px;border:1px solid #ccc;height:30px;position:relative;}
+.impex-pager div{display:inline-block;}
+.impex-pager .separator{float: left;height: 24px;border-left: 1px solid #ccc;border-right: 1px solid #fff;margin: 3px 5px;}
+.impex-pager .pageNos{float:left;height:22px;margin-top:4px;}
+.impex-pager .btn{position:relative;float:left;height:24px;width:24px;margin-top:3px;border:1px solid transparent;}
+.impex-pager .btn:hover{border:1px solid #EEE;border-radius:3px;cursor:pointer;background-color:rgb(242,242,242);}
+.impex-pager .pagination-icon{display: inline-block;width: 16px;height: 16px;line-height: 16px;margin-top: -8px;font-size: 1px;    position: absolute;left: 50%;top: 50%;margin-left: -8px;}
+.impex-pager .first-page{background: url('images/pagination_icons.png') no-repeat 0 center;}
+.impex-pager .prev-page{background: url('images/pagination_icons.png') no-repeat -16px center;}
+.impex-pager .pageNum-container{display:inline-block;float:left;font-size:12px;height:24px;margin-top:4px;}
+.impex-pager .next-page{background: url('images/pagination_icons.png') no-repeat -32px center;}
+.impex-pager .last-page{background: url('images/pagination_icons.png') no-repeat -48px center;}
+.impex-pager .refresh{background: url('images/pagination_icons.png') no-repeat -64px center;}
+.impex-pager .refresh{background: url('images/pagination_icons.png') no-repeat -64px center;}
+.impex-pager .btn-disabled{background: transparent;}
+.impex-pager .btn-disabled,.btn.btn-disabled:hover{opacity: 0.5;cursor: default;}
+.impex-pager .pagination-info{float: right;margin: 0 6px 0 0;padding: 0;height: 30px;line-height: 30px;font-size: 12px;}
+/**分页组件样式结束**/
+
+/**窗口组件样式**/
+.impex-window{position:relative;}
+.impex-window .title{height:30px;}
+.impex-window .title .icon{display: inline-block;width: 16px;height: 16px;line-height: 16px;margin-top: -8px;font-size: 1px;    position: absolute;left: 50%;top: 50%;margin-left: -8px;}
+/**窗口组件样式**/
