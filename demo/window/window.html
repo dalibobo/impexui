@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html >
+    <head>
+        <title>Impexui - grid</title>
+		<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+		<link rel="stylesheet" type="text/css" href="../../themes/default/impexui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css"/>
+		<script type="text/javascript" src="../../impex.all.js"></script>
+		<script type="text/javascript" src="../../build/impexui.all.js"></script>
+		<script type="text/javascript" src="../../src/impex.component.js"></script>
+		<script type="text/javascript" src="../../src/impex.directive.js"></script>
+		<script type="text/javascript" src="../../src/impex.util.js"></script>
+		<script type="text/javascript" src="../../src/impexui.js"></script>
+    </head>
+    <body>
+		<impex-window iconCls="icon-add" title="新增内容窗口"></impex-window>
+		
+		<script>
+			var model = {
+				
+			};
+			
+			
+			impex.component("impex-window", {
+				$template:  '<div class="impex-window {{=class}}">\
+								<div class="title">\
+									<i class="icon {{=iconcls}}"></i>\
+									<span>{{=title}}</span>\
+								</div>\
+								<div class="body">窗体内容</div>\
+							</div>'
+			});
+
+			var page = impex.render(document.body, model);
+		</script>
+    </body>
+</html>

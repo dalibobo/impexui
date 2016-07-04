@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html >
+    <head>
+        <title>Impexui - grid</title>
+		<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+		<link rel="stylesheet" type="text/css" href="../../themes/default/impexui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css"/>
+		<script type="text/javascript" src="../../impex.all.js"></script>
+		<script type="text/javascript" src="../../build/impexui.all.js"></script>
+		<script type="text/javascript" src="../../src/impex.component.js"></script>
+		<script type="text/javascript" src="../../src/impex.directive.js"></script>
+		<script type="text/javascript" src="../../src/impex.util.js"></script>
+		<script type="text/javascript" src="../../src/impexui.js"></script>
+    </head>
+    <body>
+		<h3>带分页的表格</h3>
+		<impex-datagrid id="paginationGrid" title="带分页的表格" pagination="true" pager="pagerGrid.pager" titleIconCls="icon-grid" ds="students" cols="pagerGrid.cols"></impex-datagrid>
+		<script>
+			var model = {
+				pagerGrid: {
+					cols: [
+						{code: "studentNo", width: "40", align: "center", checkbox: true},
+						{code: "studentNo", title: "学号"},
+						{code: "name", title: "姓名"},
+						{code: "sex", title: "性别"},
+						{code: "class", title: "班级"}
+					],
+					pager: {
+						pageNos: [10, 20, 30, 50, 100]
+					}
+				},
+				students: [],
+				onDisplay: function() {
+					var students = [];
+					var sex;
+					for (var i = 0; i < 150; i++) {
+						sex = (Math.random() * 10) > 5 ? "男" : "女";
+						students.push({studentNo: 40231220 + i, name: "同学" + i, sex: sex, class: "计算机科学与技术2002-6班"});
+					}
+					this.students = students;
+				}
+			};
+			
+			impex.component("impex-datagrid", {
+				$template: '<div id="{{=id}}" class="impex-datagrid {{=class}}">\
+								<table class="table" cellspacing="0" cellpadding="0" border="0">\
+									<thead class="head">\
+									<tr x-order="##orderId">\
+										<th class="line-number" x-if="_.isString(linenumber) && \'true\' == linenumber"></th>\
+										<th order="{{col.order ? col.code : \'\'}}" x-each="columns as col"  style="text-align:{{col.align}};width:{{col.width}}px;">\
+											<span x-if="!col.checkbox">{{col.title}}</span>\
+											<span x-if="col.checkbox" class="checkAll"><input :click="checkAll(this)" type="checkbox"/></span>\
+										</th>\
+									</tr>\
+									</thead>\
+									<tbody>\
+										<tr x-each="dataSource as d => limitBy:pageSize:0">\
+											<td>{{$index}}</td>\
+										</tr>\
+									</tbody>\
+								</table>\
+								<input type="button" :click="changePageSize(10)" value="10"/>\
+								<input type="button" :click="changePageSize(20)" value="20"/>\
+								<input type="button" :click="changePageSize(30)" value="30"/>\
+								<input type="button" :click="changePageSize(40)" value="40"/>\
+							</div>',
+				dataSource: [],
+				columns: [],
+				needOrder: false,
+				$checkIds: [],
+				allChecked: false,
+				pagerId: "",
+				pageSize: 10,
+				onInit: function() {
+					// 初始化数据源
+					var dataSource = getModel(this, this.ds);
+					if (null != dataSource) {
+						this.dataSource = dataSource;
+						this.watch(this.ds, function(type, newVal, oldVal, propChain) {
+							this.dataSource = newVal;
+						});
+					}
+				},
+				changePageSize: function(pageSize) {
+					this.pageSize = pageSize;
+				}
+			});
+			
+			var page = impex.render(document.body, model);
+		</script>
+    </body>
+</html>
