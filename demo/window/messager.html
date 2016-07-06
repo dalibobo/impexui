@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html >
+    <head>
+        <title>Impexui - messager</title>
+		<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+		<link rel="stylesheet" type="text/css" href="../../themes/default/impexui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css"/>
+		<script type="text/javascript" src="../../impex.all.js"></script>
+		<script type="text/javascript" src="../../build/impexui.all.js"></script>
+		<script type="text/javascript" src="../../src/impex.component.js"></script>
+		<script type="text/javascript" src="../../src/impex.directive.js"></script>
+		<script type="text/javascript" src="../../src/impex.util.js"></script>
+		<script type="text/javascript" src="../../src/impexui.js"></script>
+		<style>
+			.alertify-log-custom {
+				background: blue;
+			}
+		</style>
+    </head>
+    <body>
+		<input type="button" :click="alert()" value="Alert Dialog"/>
+		<input type="button" :click="confirm()" value="Confirm Dialog"/>
+		<input type="button" :click="success()" value="Success"/>
+		<input type="button" :click="error()" value="Error"/>
+		<input type="button" :click="log()" value="Log"/>
+		<input type="button" :click="custom()" value="Custom"/>
+		<br><br>
+		<select multiple style="width:500px;height:300px;" id="sel">
+			<option x-each="options as opt">{{opt}}</option>
+		</select>
+		<ul>
+			<li x-each="1 to 100 as k">{{k}}</li>
+		</ul>
+
+		<script>
+			function scrolSel() {
+				var sel = document.getElementById("sel");
+				sel.scrollTop = 10000;
+			}
+
+			var model = {
+				options: [],
+				alert: function() {
+					this.options.push("打开了一个Alert Dialog");
+					scrolSel();
+					Messager.alert(this, "这是一个Alert Dialog", function() {
+						this.options.push("点击了Alert Dialog对话框上的确定");
+						scrolSel();
+					});
+				},
+				confirm: function() {
+					this.options.push("打开了一个Confirm Dialog");
+					scrolSel();
+					Messager.set({buttonReverse: false});
+					Messager.confirm("这是一个Confirm Dialog", function(e) {
+						this.options.push("点击了Confirm Dialog对话框上的" + (e ? "确定" : "取消"));
+						if (e) {
+							this.options.push("打开了一个Success Log");
+							Messager.success("您点击了确定", 1000);
+						}else{
+							this.options.push("打开了一个Error Log");
+							Messager.error("您点击了取消");
+						}
+						scrolSel();
+					});
+				},
+				success: function() {
+					this.options.push("打开了一个Success Log，显示1秒");
+					Messager.success("1秒后隐藏", 1000);
+				},
+				error: function() {
+					this.options.push("打开了一个Error Log，显示2秒");
+					Messager.error("2秒后隐藏", 2000);
+				},
+				log: function() {
+					this.options.push("打开了一个Log，显示3秒");
+					Messager.log("3秒后隐藏", 3000);
+				},
+				custom: function() {
+					this.options.push("打开了一个Custom Log");
+					Messager.custom("点我才隐藏", 0);
+				}
+			};
+
+			var Messager = {
+				option: {
+					labels : {
+						ok     : "确定",
+						cancel : "取消"
+					},
+					delay : 5000,
+					buttonReverse : true,
+					buttonFocus   : "ok"
+				},
+				_init: (function() {
+					setTimeout(function() {
+						alertify.set(Messager.option);
+					}, 0);
+				})(),
+				set: function(opt) {
+					alertify.set(_.extend(this.option, opt));
+				},
+				alert: function() {
+					var args = arguments;
+					var m, me, c;
+					for (var i = args.length; i--;) {
+						if (_.isObject(args[i]) && !_.isFunction(args[i])) m = args[i];
+						if (_.isString(args[i])) me = args[i];
+						if (_.isFunction(args[i])) c = args[i];
+					}
+					alertify.alert(me || "", function() {
+						if (_.isFunction(c)) {
+							var thisObj = m || impex.$top();
+							c.apply(thisObj, arguments);
+						}
+					});
+				},
+				confirm: function() {
+					var args = arguments;
+					var m, me, c;
+					for (var i = args.length; i--;) {
+						if (_.isObject(args[i]) && !_.isFunction(args[i])) m = args[i];
+						if (_.isString(args[i])) me = args[i];
+						if (_.isFunction(args[i])) c = args[i];
+					}
+					alertify.confirm(me || "", function() {
+						if (_.isFunction(c)) {
+							var thisObj = m || impex.$top();
+							c.apply(thisObj, arguments);
+						}
+					});
+				},
+				success: function(message, delay) {
+					alertify.log(message, "success", delay);
+				},
+				error: function(message, delay) {
+					alertify.log(message, "error", delay);
+				},
+				log: function(message, delay) {
+					alertify.log(message, "", delay);
+				},
+				custom: function(message, delay) {
+					alertify.log(message, "custom", delay);
+				}
+			}
+
+			var page = impex.render(document.body, model);
+		</script>
+    </body>
+</html>

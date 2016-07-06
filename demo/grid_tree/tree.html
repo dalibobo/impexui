@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html >
     <head>
-        <title>Impexui - grid</title>
+        <title>Impexui - tree</title>
 		<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
         <meta http-equiv="content-type" content="text/html;charset=utf-8">
 		<link rel="stylesheet" type="text/css" href="../../themes/default/impexui.css"/>
@@ -12,330 +12,47 @@
 		<script type="text/javascript" src="../../src/impex.directive.js"></script>
 		<script type="text/javascript" src="../../src/impex.util.js"></script>
 		<script type="text/javascript" src="../../src/impexui.js"></script>
+		<script type="text/javascript" src="../js/jquery-1.4.4.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.ztree.all.min.js"></script>
     </head>
     <body>
-		<h3>基本表格</h3>
-		<impex-datagrid title="基本的表格" titleIconCls="icon-grid" ds="studentData" cols="baseGrid.cols"></impex-datagrid>
-		<h3>带排序的表格</h3>
-		<impex-datagrid title="带排序的表格" titleIconCls="icon-grid" ds="studentData" cols="orderGrid.cols"></impex-datagrid>
-		<h3>带工具栏的表格</h3>
-		<impex-datagrid title="带工具栏的表格" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="studentData" cols="toolbarGrid.cols"></impex-datagrid>
-		<div id="grid_toolbar" x-ignore>
-			<impex-linkbutton click="doAdd" iconcls="icon-add" text="新增"></impex-linkbutton>
-			<impex-linkbutton click="doEdit" iconcls="icon-edit" text="编辑"></impex-linkbutton>
-			<impex-linkbutton click="doDelete" iconcls="icon-remove" text="删除"></impex-linkbutton>
-		</div>
-		<h3>带复选框的表格</h3>
-		<impex-datagrid id="checkboxGrid" title="带复选框的表格" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="studentData" cols="checkboxGrid.cols"></impex-datagrid>
-		
-		<h3>带分页的表格</h3>
-		<impex-datagrid id="paginationGrid" title="带分页的表格" pagination="true" pager="pagerGrid.pager" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="students" cols="pagerGrid.cols"></impex-datagrid>
-
-		
-		<h3>带行号的表格</h3>
-		<impex-datagrid title="带行号的表格" linenumber="true" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="studentData" cols="linenumberGrid.cols"></impex-datagrid>
+		<h3>基本树</h3>
+		<div id="treeDemo" class="ztree"></div>
 
 		<script>
 			var model = {
-				studentData:[
-					{studentNo: "40231220", name: "孙膑", sex: "男", class: "计算机科学与技术2002-6班"},
-					{studentNo: "40231221", name: "胡来", sex: "男", class: "计算机科学与技术2002-6班"},
-					{studentNo: "40231222", name: "郝东芳", sex: "女", class: "计算机科学与技术2002-6班"},
-					{studentNo: "40231223", name: "王伟", sex: "男", class: "计算机科学与技术2002-6班"}
-				],
-			
-				// 学生表格数据
-				baseGrid: {
-					cols: [
-						{code: "studentNo", title: "学号"},
-						{code: "name", title: "姓名"},
-						{code: "sex", title: "性别"},
-						{code: "class", title: "班级"}
-					]
+				
+			};
+
+			var setting = {
+				check: {
+					enable: true
 				},
-				orderGrid: {
-					cols: [
-						{code: "studentNo", title: "学号", order: true},
-						{code: "name", title: "姓名"},
-						{code: "sex", title: "性别", order: true},
-						{code: "class", title: "班级"}
-					]
-				},
-				toolbarGrid: {
-					cols: [
-						{code: "studentNo", title: "学号", order: true},
-						{code: "name", title: "姓名"},
-						{code: "sex", title: "性别", order: true},
-						{code: "class", title: "班级"}
-					]
-				},
-				checkboxGrid: {
-					cols: [
-						{code: "studentNo", width: "40", align: "center", checkbox: true},
-						{code: "studentNo", title: "学号"},
-						{code: "name", title: "姓名"},
-						{code: "sex", title: "性别"},
-						{code: "class", title: "班级"}
-					]
-				},
-				pagerGrid: {
-					cols: [
-						{code: "studentNo", width: "40", align: "center", checkbox: true},
-						{code: "studentNo", title: "学号"},
-						{code: "name", title: "姓名"},
-						{code: "sex", title: "性别", order: true},
-						{code: "class", title: "班级"}
-					],
-					pager: {
-						current: 1,
-						pageNos: [10, 20, 30, 50, 100],
-						total: 143,
-						pageSize: 10
-					}
-				},
-				linenumberGrid: {
-					cols: [
-						{code: "studentNo", width: "40", align: "center", checkbox: true},
-						{code: "studentNo", title: "学号"},
-						{code: "name", title: "姓名"},
-						{code: "sex", title: "性别"},
-						{code: "class", title: "班级"}
-					],
-					pager: {
-						pageNos: [10, 20, 30, 50, 100]
-					}
-				},
-				students: [],
-				onDisplay: function() {
-					var students = [];
-					var sex;
-					for (var i = 0; i < 143; i++) {
-						sex = (Math.random() * 10) > 5 ? "男" : "女";
-						students.push({studentNo: 40231220 + i, name: "同学" + i, sex: sex, class: "计算机科学与技术2002-6班"});
-					}
-					this.students = students;
-				},
-				doAdd: function() {
-					alert("新增");
-				},
-				doEdit: function() {
-					alert("编辑");
-				},
-				doDelete: function() {
-					var checkedIds = impex.cget("checkboxGrid").getChecked();
-					if ("" === checkedIds) {
-						alert("请选择要删除的行");
-					}else{
-						alert("删除成功");
+				data: {
+					simpleData: {
+						enable: true
 					}
 				}
 			};
-			
-			
-			impex.component("impex-linkbutton", {
-				$template:  '<div class="impex-linkbutton {{=class}}" :click="clickHandler()">\
-								<div class="icon {{=iconcls}}" x-if="_.isString(iconcls)"></div>\
-								<div class="text" x-if="_.isString(text)">{{=text}}</div>\
-							</div>',
-				clickHandler: function() {
-					var model = getModel(this, this.click);
-					if (null != model) {
-						model(this);
-					}else{
-						this.emit("linkbutton.click");
-					}
-				}
-			});
-			
-			impex.component("impex-datagrid", {
-				$template: '<div id="{{=id}}" class="impex-datagrid {{=class}}">\
-								<div class="title" x-if="_.isString(title)"><i x-if="_.isString(titleiconcls)" class="icon {{=titleiconcls}}"></i> <div class="text">{{# title}}</div></div>\
-								<div class="toolbar" x-if="_.isString(toolbar)">\
-									{{# toolbarHtml}}\
-								</div>\
-								<table class="table" cellspacing="0" cellpadding="0" border="0">\
-									<thead class="head">\
-									<tr x-order="##orderId">\
-										<th class="line-number" x-if="_.isString(linenumber) && \'true\' == linenumber"></th>\
-										<th order="{{col.order ? col.code : \'\'}}" x-each="columns as col"  style="text-align:{{col.align}};width:{{col.width}}px;">\
-											<span x-if="!col.checkbox">{{col.title}}</span>\
-											<span x-if="col.checkbox" class="checkAll"><input :click="checkAll(this)" type="checkbox"/></span>\
-										</th>\
-									</tr>\
-									</thead>\
-									<tbody>\
-										<tr x-if="needOrder" x-each="dataSource as d => orderBy:##orderId[\'key\']:##orderId[\'dir\'] .limitBy:pageSize:0">\
-											<td class="line-number" x-if="_.isString(linenumber) && \'true\' == linenumber">{{$index + 1}}</td>\
-											<td x-each="columns as col" style="text-align:{{col.align}};width:{{col.width}}px;">\
-												<span x-if="!col.checkbox">{{d[col.code]}}</span>\
-												<span x-if="col.checkbox" class="checkbox"><input :click="checkItem(this)" value="{{d[col.code]}}" type="checkbox"/></span>\
-											</td>\
-										</tr>\
-										<tr x-if="!needOrder" x-each="dataSource as d => limitBy:pageSize:startSize">\
-											<td class="line-number" x-if="_.isString(linenumber) && \'true\' == linenumber">{{$index + 1}}</td>\
-											<td x-each="columns as col" style="text-align:{{col.align}};width:{{col.width}}px;">\
-												<span x-if="!col.checkbox">{{d[col.code]}}</span>\
-												<span x-if="col.checkbox" class="checkbox"><input :click="checkItem(this)" value="{{d[col.code]}}" type="checkbox"/></span>\
-											</td>\
-										</tr>\
-									</tbody>\
-								</table>\
-								<div x-if="_.isString(pagination) && \'true\' == pagination"><impex-pager id="##pagerId"></impex-pager></div>\
-							</div>',
-				dataSource: [],
-				columns: [],
-				needOrder: false,
-				$checkIds: [],
-				allChecked: false,
-				pagerId: "",
-				pageSize: 10,
-				startSize: 0,
-				onInit: function() {
-					// 初始化数据源
-					var dataSource = getModel(this, this.ds);
-					if (null != dataSource) {
-						this.dataSource = dataSource;
-					}
-					if (_.isString(this.ds)) {
-						var p = getParentModel(this, this.ds);
-						if (null != p) {
-							var that = this;
-							p.watch(this.ds, function(type, newVal, oldVal, propChain) {
-								that.dataSource = newVal;
-							});
-						}
-					}
-					
-					// 初始化表头
-					var columns = getModel(this, this.cols);
-					if (null != columns) this.columns = columns;
-					for (var i = this.columns.length;i--;) {
-						if (this.columns[i].order) {
-							this.needOrder = true;
-							break;
-						}
-					}
-					
-					// 初始化工具栏
-					if (_.isString(this.toolbar)) {
-						var barEl = document.getElementById(this.toolbar);
-						if (null != barEl) {
-							this.toolbarHtml = barEl.innerHTML;
-							barEl.style.display = "none";
-						}
-					}
-				},
-				onDisplay: function() {
-					// 初始化分页
-					if (_.isString(this.pagination) && "true" == this.pagination) {
-						var pagerConfig = getModel(this, this.pager);
-						if (null != pagerConfig) {
-							this.getPager().setConfig(pagerConfig);
-						}
-					}
 
-					// 监听分页跳转
-					this.on("pager.goto", function(pager, currentPage, pageSize) {
-						this.pageSize = pageSize;
-						this.startSize = (currentPage - 1) * this.pageSize;
-					});
-				},
-				onBeforeCompile:function(str){
-					this.pagerId = "pagerId_" + getId();
-					return str.replace(/##orderId/g, "gridOrder_" + getId())
-						      .replace(/##pagerId/g, this.pagerId);
-				},
-				checkAll: function(checkbox) {
-					var el = checkbox.$view.el;
-					var gridEl = document.getElementById(this.id);
-					var checkboxs = gridEl.querySelectorAll(".checkbox input");
-					if (el.checked) {
-						var cs = [];
-						var gridEl = document.getElementById(this.id);
-						var checkboxs = gridEl.querySelectorAll(".checkbox input");
-						for (var i = 0; i < checkboxs.length; i++) {
-							cs.push(checkboxs[i].value);
-						}
-						this.$checkIds = cs;
-					}else{
-						this.$checkIds = [];
-					}
-					
-					for (var i = checkboxs.length; i--;) {
-						checkboxs[i].checked = el.checked;
-					}
-				},
-				checkItem: function(checkbox) {
-					var el = checkbox.$view.el;
-					if (el.checked) {
-						this.$checkIds.push(el.value);
-					}else{
-						for (var i = 0; i < this.$checkIds.length; i++) {
-							if (this.$checkIds[i] == el.value) {
-								this.$checkIds.splice(i, 1);
-								break;
-							}
-						}
-					}
-					var gridEl = document.getElementById(this.id);
-					var all = gridEl.querySelectorAll(".checkAll input");
-					all[0].checked = this.$checkIds.length == this.dataSource.length;
-				},
-				getChecked: function() {
-					return this.$checkIds.join(",");
-				},
-				getPager: function() {
-					return impex.cget(this.pagerId);
-				}
-			});
-			
-			// 分页插件
-			impex.component("impex-pager", {
-				$template: 	'<div class="impex-pager {{=class}}">\
-								<select class="pageNos" :change="changePageSize(this)">\
-									<option x-each="pageNos as no" value="{{no}}">{{no}}</option>\
-								</select>\
-								<div class="separator"></div>\
-								<div class="btn {{current == 1 ? \'btn-disabled\' : \'\'}}" :click="goto(1)"><i class="pagination-icon first-page"></i></div>\
-								<div class="btn {{current == 1 ? \'btn-disabled\' : \'\'}}" :click="goto(current - 1)"><i class="pagination-icon prev-page"></i></div>\
-								<div class="separator"></div>\
-								<div class="pageNum-container">第 <input value="{{current}}" type="text" class="pageNum" size="2"/> 页 共 {{totalPage}} 页</div>\
-								<div class="separator"></div>\
-								<div class="btn {{current == totalPage ? \'btn-disabled\' : \'\'}}" :click="goto(current + 1)"><i class="pagination-icon next-page"></i></div>\
-								<div class="btn {{current == totalPage ? \'btn-disabled\' : \'\'}}" :click="goto(totalPage)"><i class="pagination-icon last-page"></i></div>\
-								<div class="separator"></div>\
-								<div class="btn" :click="refresh()"><i class="pagination-icon refresh"></i></div>\
-								<div class="pagination-info">显示 {{(current - 1) * pageSize + 1}} 到 {{(pageSize * current) > total ? total : (pageSize * current)}} 条 共 {{total}} 条</div>\
-							</div>',
-				current: 1,
-				pageSize: 10,
-				total: 0,
-				totalPage: 0,
-				pageNos: [10, 20, 30, 40, 50],
-				onInit: function() {
-					
-				},
-				setConfig: function(config) {
-					this.current = config.current || this.current;
-					this.pageSize = config.pageSize || this.pageSize;
-					this.total = config.total || this.total;
-					this.pageNos = config.pageNos || this.pageNos;
-					
-					this.totalPage = Math.ceil(this.total/this.pageSize);
-				},
-				goto: function(current) {
-					if (current == this.current || current <= 0 || current > this.totalPage) return;
-					this.current = current;
-					this.emit("pager.goto", current, this.pageSize);
-				},
-				refresh: function() {
-					this.emit("pager.goto", this.current, this.pageSize);
-				},
-				changePageSize: function(select) {
-					this.current = 1;
-					this.pageSize = select.$view.el.value;
-					this.emit("pager.goto", this.current, this.pageSize);
-				}
+			var zNodes =[
+				{ id:1, pId:0, name:"随意勾选 1", open:true},
+				{ id:11, pId:1, name:"随意勾选 1-1", open:true},
+				{ id:111, pId:11, name:"随意勾选 1-1-1"},
+				{ id:112, pId:11, name:"随意勾选 1-1-2"},
+				{ id:12, pId:1, name:"随意勾选 1-2", open:true},
+				{ id:121, pId:12, name:"随意勾选 1-2-1"},
+				{ id:122, pId:12, name:"随意勾选 1-2-2"},
+				{ id:2, pId:0, name:"随意勾选 2", checked:true, open:true},
+				{ id:21, pId:2, name:"随意勾选 2-1"},
+				{ id:22, pId:2, name:"随意勾选 2-2", open:true},
+				{ id:221, pId:22, name:"随意勾选 2-2-1", checked:true},
+				{ id:222, pId:22, name:"随意勾选 2-2-2"},
+				{ id:23, pId:2, name:"随意勾选 2-3"}
+			];
+				
+			$(document).ready(function(){
+				$.fn.zTree.init($("#treeDemo"), setting, zNodes);
 			});
 			
 			var page = impex.render(document.body, model);

@@ -145,6 +145,62 @@ function getObjByPath(obj, path) {
 }
 
 /**
+ * 遮罩层
+ */
+var MaskLayer = {
+	show: function(forId) {
+		var body = document.body;
+		
+		// 创建遮罩层
+		var createLayer = function(zIndex) {
+			var div = document.createElement("div");
+			div.className = "impex-mask-layer";
+			div.style.zIndex = zIndex;
+			if (_.isString(forId)) {
+				div.id = forId + "_layer";
+				div.setAttribute("for", forId);
+				var forEl = document.getElementById(forId);
+				if (null != forEl) forEl.style.zIndex = zIndex + 1;
+			}
+			body.appendChild(div);
+		}
+		
+		var maxZIndex = 1000;
+		var existsLayer = null;
+		var ls = body.querySelectorAll(".impex-mask-layer");
+		if (ls.length != 0) {
+			for (var i = ls.length; i--;) {
+				if (_.isString(forId) && ls[i].getAttribute("for") == forId) {
+					existsLayer = ls[i];
+					continue;
+				}
+				if (maxZIndex <= ls[i].style.zIndex) maxZIndex = parseInt(ls[i].style.zIndex) + 2;
+			}
+		}
+		if (null != existsLayer) body.removeChild(existsLayer);
+		createLayer(maxZIndex);
+		body.style.overflow = "hidden";
+	},
+	hide: function(forId) {
+		var body = document.body;
+		if (_.isString(forId)) {
+			var id = forId + "_layer";
+			document.body.removeChild(document.getElementById(id));
+			var ls = body.querySelectorAll(".impex-mask-layer");
+			if (ls.length == 0) body.style.overflow = "";
+		}else{
+			var ls = body.querySelectorAll(".impex-mask-layer");
+			for (var i = ls.length; i--;) {
+				if (!ls[i].id) {
+					body.removeChild(ls[i]);
+				}
+			}
+			body.style.overflow = "";
+		}
+	}
+}
+
+/**
  * 在自定义组件中，根据路径获取模型
  */
 function getModel(comModel, path) {

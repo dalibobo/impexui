@@ -14,22 +14,123 @@
 		<script type="text/javascript" src="../../src/impexui.js"></script>
     </head>
     <body>
-		<impex-window iconCls="icon-add" title="新增内容窗口"></impex-window>
+		<ul>
+			<li x-each="1 to 100 as k">{{k}}</li>
+		</ul>
+		<impex-window iconCls="icon-add" id="addWindow">
+			<div>
+				打开一个页面
+				<input type="button" value="open a window" :click="openWindow()"/>
+				打开一个页面打开一个页面打开一个页面打开一个页面打开一个页面打开一个页面
+				打开一个页面打开一个页面打开一个页面打开一个页面打开一个页面打开一个页面
+				打开一个页面打开一个页面打开一个页面打开一个页面打开一个页面打开一个页面
+				打开一个页面打开一个页面打开一个页面打开一个页面打开一个页面打开一个页面
+				打开一个页面打开一个页面打开一个页面打开一个页面打开一个页面打开一个页面
+				打开一个页面打开一个页面打开一个页面打开一个页面打开一个页面打开一个页面
+				打开一个页面打开一个页面打开一个页面打开一个页面打开一个页面打开一个页面
+				打开一个页面打开一个页面打开一个页面打开一个页面打开一个页面打开一个页面
+				打开一个页面打开一个页面打开一个页面打开一个页面打开一个页面打开一个页面
+			</div>
+			<footer>
+				<input type="button" :click="close()" value="close"/>
+			</footer>
+		</impex-window>
+		
+		<impex-window iconCls="icon-remove" hasHeader="false" id="detailWindow" show="false" width="200" height="100" hasFooter="false">
+			i am inner wondow!
+		</impex-window>
 		
 		<script>
 			var model = {
-				
+				openWindow: function() {
+					impex.cget("detailWindow").open();
+				}
 			};
 			
+			impex.component("impex-blank", {
+				$template: "<div {{=BINDPROPS}}>{{=CONTENT}}</div>"
+			})
 			
 			impex.component("impex-window", {
-				$template:  '<div class="impex-window {{=class}}">\
-								<div class="title">\
-									<i class="icon {{=iconcls}}"></i>\
-									<span>{{=title}}</span>\
+				$template:  '<div id="{{id}}" x-show="opened" class="impex-window {{=class}}" style="width:{{width}}px;height:{{height}}px;">\
+								<div class="title" x-show="hasHeader">\
+									<table>\
+										<tr>\
+											<td class="iocn-container"><i class="icon {{=iconcls}}"></i></td>\
+											<td><span>{{title}}</span>\</td>\
+											<td class="right"><i :click="close()" title="关闭窗口" class="close icon icon-no"></i></td>\
+										</tr>\
+									</table>\
 								</div>\
-								<div class="body">窗体内容</div>\
-							</div>'
+								<div class="body">##body</div>\
+								<div class="footer" x-show="hasFooter">##footer</div>\
+							</div>',
+				width: 400,
+				height: 300,
+				title: "窗口",
+				modal: true,
+				hasHeader: true,
+				hasFooter: true,
+				onInit: function() {
+					if (!_.isString(this.id)) {
+						this.id = "impex_window_" + getId();
+					}
+					if (_.isString(this.modal)) {
+						this.modal = ("true" == this.modal);
+					}
+				},
+				onBeforeCompile:function(str){
+					var target = this.$view.__target;
+					var footer = target.querySelector("footer");
+					var footerHtml = (null != footer) ? footer.innerHTML : "";
+					if (null != footer) {
+						target.removeChild(footer);
+					}
+					var bodyHtml = target.innerHTML;
+					return str.replace(/##footer/g, footerHtml).replace(/##body/g, bodyHtml);
+				},
+				onDisplay: function() {
+					if (_.isString(this.show)) {
+						if ("true" == this.show) this.open();
+					}else{
+						this.open();
+					}
+					if (_.isString(this.hasfooter)) {
+						this.hasFooter = ("true" == this.hasfooter);
+					}
+					if (_.isString(this.hasheader)) {
+						this.hasHeader = ("true" == this.hasheader);
+					}
+					this._setBodySize();
+					this._setPosition();
+				},
+				_setBodySize: function() {
+					var el = this.$view.el;
+					var h = el.style.height;					
+					var body = el.querySelector(".body");
+					var offset = this.hasHeader ? 30 : 0;
+					offset += this.hasFooter ? 44 : 0;
+					body.style.height = (parseFloat(h) - offset) + "px";
+				},
+				_setPosition: function() {
+					var el = this.$view.el;
+					var h = el.style.height;
+					var w = el.style.width;
+					el.style.marginLeft =  -parseFloat(w)/2 + "px";
+					el.style.marginTop =  -parseFloat(h)/2 + "px";
+				},
+				close: function() {
+					if (!this.opened) return;
+					this.opened = false;
+					this.emit("window.close");
+					if (this.modal) MaskLayer.hide(this.id);
+				},
+				open: function() {
+					if (this.modal) MaskLayer.show(this.id);
+					if (this.opened) return;
+					this.opened = true;
+					this.emit("window.opened");
+				}
 			});
 
 			var page = impex.render(document.body, model);
