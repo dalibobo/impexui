@@ -252,7 +252,7 @@ function getParentModel(comModel, path) {
 	if (_.isString(path)) {
 		var p = comModel.parent;
 		while(null != p) {
-			if (null != getObjByPath(p, path)) {
+			if (null != getObjByPath(p, path, 1)) {
 				return p;
 			}else{
 				p = p.parent;

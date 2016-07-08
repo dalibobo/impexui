@@ -7,6 +7,7 @@ module.exports = function(grunt) {
 	
 	var cfiles = {};
 	cfiles[allPath] = [
+		src + "/zepto.js",
 		src + "/impex.util.js",
 		src + "/impex.service.js",
 		src + "/impex.directive.js",
