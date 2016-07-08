@@ -304,10 +304,10 @@
 					}
 				},
 				getChecked: function() {
-					return this.$checkIds.join(",");
+					return this.data.$checkIds.join(",");
 				},
 				getPager: function() {
-					return impex.cget(this.pagerId);
+					return impex.cget(this.data.pagerId);
 				}
 			});
 			

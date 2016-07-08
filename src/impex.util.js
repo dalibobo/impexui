@@ -48,15 +48,16 @@ impex.findAll = function(name, conditions) {
 	var ks = Object.keys(this._cs);
 	for(var i=ks.length;i--;){
 		var comp = this._cs[ks[i]];
-		if(name != '*' && comp.$name != name)continue;
+		if(name != '*' && comp.name != name)continue;
 		var matchAll = true;
-		if(conditions)
+		if(conditions) {
 			for(var k in conditions){
-				if(comp[k] != conditions[k]){
+				if(comp.data[k] != conditions[k]){
 					matchAll = false;
 					break;
 				}
 			}
+		}
 		if(matchAll){
 			rs.push(comp);
 		}
