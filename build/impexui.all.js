@@ -11,7 +11,7 @@ impex.$top = function() {
 	if (!this.__topModel) {
 		var coms = impex.findAll("*");
 		for (var i = coms.length; i--;) {
-			if ("C_0" === coms[i].$__id) {
+			if ("C_0" === coms[i].__id) {
 				this.__topModel = coms[i];
 			}
 		}
@@ -45,11 +45,10 @@ impex.validate = {
 impex.findAll = function(name, conditions) {
 	name = name.toLowerCase();
 	var rs = [];
-	var ks = Object.keys(this.__components);
+	var ks = Object.keys(this._cs);
 	for(var i=ks.length;i--;){
-		var comp = this.__components[ks[i]];
+		var comp = this._cs[ks[i]];
 		if(name != '*' && comp.$name != name)continue;
-
 		var matchAll = true;
 		if(conditions)
 			for(var k in conditions){
@@ -88,12 +87,14 @@ impex.child = function(com) {
 			args.push(arguments[i]);
 		}
 	}
-	var gt = Object.prototype.toString;
+	
 	var comp;
-	if (gt.call(com) === "[object String]") {
+	if (_.isString(com)) {
 		comp = this.cget(com);
+		if (!comp) return;
+	}else{
+		comp = com;
 	}
-	if (!comp) return;
 
 	var subComs = comp.find("*");
 	if (subComs.length > 0) {
@@ -133,12 +134,17 @@ function getForElement(el) {
  * 根据路径获取对象
  * @param  {Object} obj 对象
  * @param  {String} path 查询路径
+ * @param  {Int} type 查询类型 1:对象，2：函数
  */
-function getObjByPath(obj, path) {
+function getObjByPath(obj, path, type) {
 	var ps = path.split(".");
 	var sobj = obj;
 	for (var i = 0; i < ps.length; i++) {
-		sobj = sobj[ps[i]];
+		if (i > 0) {
+			sobj = sobj[ps[i]];
+		}else{
+			sobj = type == 1 ? sobj.data[ps[i]] : sobj["$" + ps[i]];
+		}
 		if (!sobj) return null;
 	}
 	return sobj;
@@ -201,16 +207,35 @@ var MaskLayer = {
 }
 
 /**
- * 在自定义组件中，根据路径获取模型
+ * 在自定义组件中，根据路径获取data对象中的属性
  */
-function getModel(comModel, path) {
+function getData(comModel, path) {
 	var model = null;
 	if (_.isString(path)) {
-		var p = comModel.$parent;
+		var p = comModel.parent;
 		while(null != p) {
-			model = getObjByPath(p, path);
+			model = getObjByPath(p, path, 1);
 			if (null == model) {
-				p = p.$parent;
+				p = p.parent;
+			}else{
+				break;
+			}
+		}
+	}
+	return model;
+}
+
+/**
+ * 在自定义组件中，根据路径获取methods中的方法
+ */
+function getFn(comModel, path) {
+	var model = null;
+	if (_.isString(path)) {
+		var p = comModel.parent;
+		while(null != p) {
+			model = getObjByPath(p, path, 2);
+			if (null == model) {
+				p = p.parent;
 			}else{
 				break;
 			}
@@ -224,12 +249,12 @@ function getModel(comModel, path) {
  */
 function getParentModel(comModel, path) {
 	if (_.isString(path)) {
-		var p = comModel.$parent;
+		var p = comModel.parent;
 		while(null != p) {
 			if (null != getObjByPath(p, path)) {
 				return p;
 			}else{
-				p = p.$parent;
+				p = p.parent;
 			}
 		}
 	}
@@ -327,7 +352,7 @@ impex.findByName = function(name, view) {
 	var qs = top.find(name);
 	if (!view) return qs;
 	for (var i = qs.length; i--;) {
-		if (qs[i].$view === view) {
+		if (qs[i].view === view) {
 			return qs[i];
 		}
 	}
@@ -342,7 +367,7 @@ var _setupValidate = function(com) {
 	var comName = com.$name;
 	comName = comName.substring(comName.indexOf("-") + 1, comName.length);
 	com.$view.on("input", "validate()");
-	var form = getForm(com.$view.el);
+	var form = getForm(com.view.el);
 	if (null == form) {
 		setTimeout(function() {
 			_setupValidate(com);
@@ -361,7 +386,7 @@ var _setupValidate = function(com) {
 		}
 	}
 	top[formName].__coms.push(com);
-	var name = com.$view.attr("name");
+	var name = com.view.attr("name");
 	if (name.indexOf(".") != -1) {
 		var names = name.split(".");
 		var n1 = names[0], n2 = names[1];
@@ -387,9 +412,9 @@ var _setupValidate = function(com) {
 	com.setValidity = function(value) {
 		var comName = this.$name;
 		comName = comName.substring(comName.indexOf("-") + 1, comName.length);
-		var form = getForm(this.$view.el);
+		var form = getForm(this.view.el);
 		var formName = form.getAttribute("name");
-		var name = this.$view.attr("name");
+		var name = this.view.attr("name");
 		var top = impex.$top();
 		var fobj = top[formName];
 		var vobj = getObjByPath(fobj, name);
@@ -415,7 +440,7 @@ var _setupValidate = function(com) {
 		var frs = true;
 		for (var i = fobj.__coms.length; i--;) {
 			var com = fobj.__coms[i];
-			var elName = com.$view.attr("name");
+			var elName = com.view.attr("name");
 			var fel = getObjByPath(fobj, elName);
 			if (!fel.valid) {
 				frs = false;
@@ -432,7 +457,7 @@ var _setupValidate = function(com) {
  */
 
 impex.validate.directive("minlength", function(com) {
-	var view = com.$view;
+	var view = com.view;
 	var value = view.el.value;
 	if (value == "") {
 		com.setValidity(true);
@@ -447,7 +472,7 @@ impex.validate.directive("minlength", function(com) {
  * 最大长度
  */
 impex.validate.directive("maxlength", function(com) {
-	var view = com.$view;
+	var view = com.view;
 	var value = view.el.value;
 	if (value == "") {
 		com.setValidity(true);
@@ -462,7 +487,7 @@ impex.validate.directive("maxlength", function(com) {
  * 模式匹配
  */
 impex.validate.directive('pattern', function(com) {
-	var view = com.$view;
+	var view = com.view;
 	var value = view.el.value;
 	if (value == "") {
 		com.setValidity(true);
@@ -476,7 +501,7 @@ impex.validate.directive('pattern', function(com) {
  * 非空
  */
 impex.validate.directive('required', function(com) {
-	var view = com.$view;
+	var view = com.view;
 	var value = view.el.value;
 	com.setValidity(value != "");
 });
@@ -487,10 +512,10 @@ impex.validate.directive('required', function(com) {
 impex.directive('submit',{
 	form: null,
 	onCreate: function() {
-		this.$view.on("submit", "submit($event)");
+		this.view.on("submit", "submit($event)");
 	},
 	onInit: function() {
-		var fname = this.$view.attr("name");
+		var fname = this.view.attr("name");
 		var top = impex.$top();
 		if (!top[fname]) top[fname] = {};
 		var form = top[fname];
@@ -504,7 +529,7 @@ impex.directive('submit',{
 			form.clear = function() {
 				for (var i = this.__coms.length; i--;) {
 					var com = this.__coms[i];
-					var elName = com.$view.attr("name");
+					var elName = com.view.attr("name");
 					var fel = getObjByPath(this, elName);
 					fel.valid = true;
 					fel.invalid = false;
@@ -566,7 +591,7 @@ impex.directive("disabled", {
 			var o = obj;
 			for (var i = 0; i <= vs.length; i++) {
 				if (!o) {
-					that.$view.removeAttr("disabled");
+					that.view.removeAttr("disabled");
 					return;
 				}
 				if (vs[i]) {
@@ -574,9 +599,9 @@ impex.directive("disabled", {
 				}
 			}
 			if (o) {
-				that.$view.attr("disabled", true);
+				that.view.attr("disabled", true);
 			}else{
-				that.$view.removeAttr("disabled");
+				that.view.removeAttr("disabled");
 			}
 		}, 10);
 	}
@@ -588,9 +613,9 @@ impex.directive("disabled", {
 impex.directive("messages", {
 	observe: function(rs) {
 		if (rs) {
-			this.$view.show();
+			this.view.show();
 		}else{
-			this.$view.hide();
+			this.view.hide();
 		}
 	}
 });
@@ -603,8 +628,8 @@ impex.directive("message", {
 		this.create();
 	},
 	create: function() {
-		this.$view.hide();
-		var el = this.$view.el;
+		this.view.hide();
+		var el = this.view.el;
 		var form = getForm(el);
 		if (null == form) {
 			var that = this;
@@ -643,13 +668,13 @@ impex.directive("message", {
 		}
 		if (!form[vp]) form[vp] = [];
 		var fvp = form[vp];
-		fvp.push({view: this.$view, result: true, path: path});
+		fvp.push({view: this.view, result: true, path: path});
 		this.watch(path, function(type, newValue) {
 			if (multiple) {	// 如果是多条显示
 				if (newValue) {
-					this.$view.hide();
+					this.view.hide();
 				}else{
-					this.$view.show();
+					this.view.show();
 				}
 				return;
 			}
@@ -670,13 +695,13 @@ impex.directive("message", {
  */
 impex.directive("order", {
 	onCreate: function() {
-		var view = this.$view;
+		var view = this.view;
 		view.addClass("x-order");
 		var el = view.el;
-		
+
 		var top = impex.$top();
-		if (!top[this.$value]) top[this.$value] = {key: "", dir: ""};
-		
+		if (!top.data) top.data = {};
+		if (!top.data[this.value]) top.data[this.value] = {key: "", dir: ""};
 		var that = this;
 		setTimeout(function() {
 			var cns = el.children;
@@ -695,13 +720,13 @@ impex.directive("order", {
 	order: function(dom) {
 		var order = dom.getAttribute("order");
 		var top = impex.$top();
-		var orderObj = top[this.$value];
+		var orderObj = top.data[this.value];
 		if (orderObj.key != order) {
 			orderObj.dir = "asc";
 		}else{
 			orderObj.dir = orderObj.dir == "asc" ? "desc" : "asc";
 		}
-		var el = this.$view.el;
+		var el = this.view.el;
 		orderObj.key = order;
 		var desc_els = el.querySelectorAll(".sorticon-desc");
 		var asc_els = el.querySelectorAll(".sorticon-asc");
@@ -719,7 +744,7 @@ impex.directive("order", {
  * 自定义验证函数
  */
 impex.validate.directive('validate', function(com) {
-	var view = com.$view;
+	var view = com.view;
 	var value = view.el.value;
 	
 	var el = view.el;
@@ -744,7 +769,7 @@ impex.validate.directive('validate', function(com) {
  */
 impex.directive("checked", {
 	observe: function(rs) {
-		this.$view.el.checked = rs;
+		this.view.el.checked = rs;
 	}
 })
 /**
@@ -752,11 +777,11 @@ impex.directive("checked", {
  */
 impex.filter('number', {
 	to:function(place) {
-		if (null === this.$value || "" === this.$value || undefined === this.$value) {
+		if (null === this.value || "" === this.value || undefined === this.value) {
 			return "";
 		}
 		place = place || null;
-		var m = formatMoney(this.$value, place, "");
+		var m = formatMoney(this.value, place, "");
 		if (m.indexOf(".") != -1) {
 			if (parseInt(m.split(".")[1]) === 0) {
 				return m.split(".")[0];
@@ -780,13 +805,13 @@ impex.filter('toFixed', {
 
 impex.filter('orderBy',{
     to:function(key,dir){
-        if(!key && !dir)return this.$value;
-        if(!(this.$value instanceof Array)){
+        if(!key && !dir)return this.value;
+        if(!(this.value instanceof Array)){
             LOGGER.warn('can only filter array');
-            return this.$value;
+            return this.value;
         }
 		
-		var vls = this.$value;
+		var vls = this.value;
 		var vs = [], vs1 = [];
 		for (var i = vls.length;i--;) {
 			if (vls[i][key] != null && vls[i][key] != undefined) {

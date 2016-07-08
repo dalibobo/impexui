@@ -11,7 +11,7 @@ impex.$top = function() {
 	if (!this.__topModel) {
 		var coms = impex.findAll("*");
 		for (var i = coms.length; i--;) {
-			if ("C_0" === coms[i].$__id) {
+			if ("C_0" === coms[i].__id) {
 				this.__topModel = coms[i];
 			}
 		}
@@ -45,11 +45,10 @@ impex.validate = {
 impex.findAll = function(name, conditions) {
 	name = name.toLowerCase();
 	var rs = [];
-	var ks = Object.keys(this.__components);
+	var ks = Object.keys(this._cs);
 	for(var i=ks.length;i--;){
-		var comp = this.__components[ks[i]];
+		var comp = this._cs[ks[i]];
 		if(name != '*' && comp.$name != name)continue;
-
 		var matchAll = true;
 		if(conditions)
 			for(var k in conditions){
@@ -88,12 +87,14 @@ impex.child = function(com) {
 			args.push(arguments[i]);
 		}
 	}
-	var gt = Object.prototype.toString;
+	
 	var comp;
-	if (gt.call(com) === "[object String]") {
+	if (_.isString(com)) {
 		comp = this.cget(com);
+		if (!comp) return;
+	}else{
+		comp = com;
 	}
-	if (!comp) return;
 
 	var subComs = comp.find("*");
 	if (subComs.length > 0) {
@@ -133,12 +134,17 @@ function getForElement(el) {
  * 根据路径获取对象
  * @param  {Object} obj 对象
  * @param  {String} path 查询路径
+ * @param  {Int} type 查询类型 1:对象，2：函数
  */
-function getObjByPath(obj, path) {
+function getObjByPath(obj, path, type) {
 	var ps = path.split(".");
 	var sobj = obj;
 	for (var i = 0; i < ps.length; i++) {
-		sobj = sobj[ps[i]];
+		if (i > 0) {
+			sobj = sobj[ps[i]];
+		}else{
+			sobj = type == 1 ? sobj.data[ps[i]] : sobj["$" + ps[i]];
+		}
 		if (!sobj) return null;
 	}
 	return sobj;
@@ -201,16 +207,35 @@ var MaskLayer = {
 }
 
 /**
- * 在自定义组件中，根据路径获取模型
+ * 在自定义组件中，根据路径获取data对象中的属性
  */
-function getModel(comModel, path) {
+function getData(comModel, path) {
 	var model = null;
 	if (_.isString(path)) {
-		var p = comModel.$parent;
+		var p = comModel.parent;
 		while(null != p) {
-			model = getObjByPath(p, path);
+			model = getObjByPath(p, path, 1);
 			if (null == model) {
-				p = p.$parent;
+				p = p.parent;
+			}else{
+				break;
+			}
+		}
+	}
+	return model;
+}
+
+/**
+ * 在自定义组件中，根据路径获取methods中的方法
+ */
+function getFn(comModel, path) {
+	var model = null;
+	if (_.isString(path)) {
+		var p = comModel.parent;
+		while(null != p) {
+			model = getObjByPath(p, path, 2);
+			if (null == model) {
+				p = p.parent;
 			}else{
 				break;
 			}
@@ -224,12 +249,12 @@ function getModel(comModel, path) {
  */
 function getParentModel(comModel, path) {
 	if (_.isString(path)) {
-		var p = comModel.$parent;
+		var p = comModel.parent;
 		while(null != p) {
 			if (null != getObjByPath(p, path)) {
 				return p;
 			}else{
-				p = p.$parent;
+				p = p.parent;
 			}
 		}
 	}
@@ -327,7 +352,7 @@ impex.findByName = function(name, view) {
 	var qs = top.find(name);
 	if (!view) return qs;
 	for (var i = qs.length; i--;) {
-		if (qs[i].$view === view) {
+		if (qs[i].view === view) {
 			return qs[i];
 		}
 	}

@@ -6,7 +6,7 @@ var _setupValidate = function(com) {
 	var comName = com.$name;
 	comName = comName.substring(comName.indexOf("-") + 1, comName.length);
 	com.$view.on("input", "validate()");
-	var form = getForm(com.$view.el);
+	var form = getForm(com.view.el);
 	if (null == form) {
 		setTimeout(function() {
 			_setupValidate(com);
@@ -25,7 +25,7 @@ var _setupValidate = function(com) {
 		}
 	}
 	top[formName].__coms.push(com);
-	var name = com.$view.attr("name");
+	var name = com.view.attr("name");
 	if (name.indexOf(".") != -1) {
 		var names = name.split(".");
 		var n1 = names[0], n2 = names[1];
@@ -51,9 +51,9 @@ var _setupValidate = function(com) {
 	com.setValidity = function(value) {
 		var comName = this.$name;
 		comName = comName.substring(comName.indexOf("-") + 1, comName.length);
-		var form = getForm(this.$view.el);
+		var form = getForm(this.view.el);
 		var formName = form.getAttribute("name");
-		var name = this.$view.attr("name");
+		var name = this.view.attr("name");
 		var top = impex.$top();
 		var fobj = top[formName];
 		var vobj = getObjByPath(fobj, name);
@@ -79,7 +79,7 @@ var _setupValidate = function(com) {
 		var frs = true;
 		for (var i = fobj.__coms.length; i--;) {
 			var com = fobj.__coms[i];
-			var elName = com.$view.attr("name");
+			var elName = com.view.attr("name");
 			var fel = getObjByPath(fobj, elName);
 			if (!fel.valid) {
 				frs = false;
@@ -96,7 +96,7 @@ var _setupValidate = function(com) {
  */
 
 impex.validate.directive("minlength", function(com) {
-	var view = com.$view;
+	var view = com.view;
 	var value = view.el.value;
 	if (value == "") {
 		com.setValidity(true);
@@ -111,7 +111,7 @@ impex.validate.directive("minlength", function(com) {
  * 最大长度
  */
 impex.validate.directive("maxlength", function(com) {
-	var view = com.$view;
+	var view = com.view;
 	var value = view.el.value;
 	if (value == "") {
 		com.setValidity(true);
@@ -126,7 +126,7 @@ impex.validate.directive("maxlength", function(com) {
  * 模式匹配
  */
 impex.validate.directive('pattern', function(com) {
-	var view = com.$view;
+	var view = com.view;
 	var value = view.el.value;
 	if (value == "") {
 		com.setValidity(true);
@@ -140,7 +140,7 @@ impex.validate.directive('pattern', function(com) {
  * 非空
  */
 impex.validate.directive('required', function(com) {
-	var view = com.$view;
+	var view = com.view;
 	var value = view.el.value;
 	com.setValidity(value != "");
 });
@@ -151,10 +151,10 @@ impex.validate.directive('required', function(com) {
 impex.directive('submit',{
 	form: null,
 	onCreate: function() {
-		this.$view.on("submit", "submit($event)");
+		this.view.on("submit", "submit($event)");
 	},
 	onInit: function() {
-		var fname = this.$view.attr("name");
+		var fname = this.view.attr("name");
 		var top = impex.$top();
 		if (!top[fname]) top[fname] = {};
 		var form = top[fname];
@@ -168,7 +168,7 @@ impex.directive('submit',{
 			form.clear = function() {
 				for (var i = this.__coms.length; i--;) {
 					var com = this.__coms[i];
-					var elName = com.$view.attr("name");
+					var elName = com.view.attr("name");
 					var fel = getObjByPath(this, elName);
 					fel.valid = true;
 					fel.invalid = false;
@@ -230,7 +230,7 @@ impex.directive("disabled", {
 			var o = obj;
 			for (var i = 0; i <= vs.length; i++) {
 				if (!o) {
-					that.$view.removeAttr("disabled");
+					that.view.removeAttr("disabled");
 					return;
 				}
 				if (vs[i]) {
@@ -238,9 +238,9 @@ impex.directive("disabled", {
 				}
 			}
 			if (o) {
-				that.$view.attr("disabled", true);
+				that.view.attr("disabled", true);
 			}else{
-				that.$view.removeAttr("disabled");
+				that.view.removeAttr("disabled");
 			}
 		}, 10);
 	}
@@ -252,9 +252,9 @@ impex.directive("disabled", {
 impex.directive("messages", {
 	observe: function(rs) {
 		if (rs) {
-			this.$view.show();
+			this.view.show();
 		}else{
-			this.$view.hide();
+			this.view.hide();
 		}
 	}
 });
@@ -267,8 +267,8 @@ impex.directive("message", {
 		this.create();
 	},
 	create: function() {
-		this.$view.hide();
-		var el = this.$view.el;
+		this.view.hide();
+		var el = this.view.el;
 		var form = getForm(el);
 		if (null == form) {
 			var that = this;
@@ -307,13 +307,13 @@ impex.directive("message", {
 		}
 		if (!form[vp]) form[vp] = [];
 		var fvp = form[vp];
-		fvp.push({view: this.$view, result: true, path: path});
+		fvp.push({view: this.view, result: true, path: path});
 		this.watch(path, function(type, newValue) {
 			if (multiple) {	// 如果是多条显示
 				if (newValue) {
-					this.$view.hide();
+					this.view.hide();
 				}else{
-					this.$view.show();
+					this.view.show();
 				}
 				return;
 			}
@@ -334,13 +334,13 @@ impex.directive("message", {
  */
 impex.directive("order", {
 	onCreate: function() {
-		var view = this.$view;
+		var view = this.view;
 		view.addClass("x-order");
 		var el = view.el;
-		
+
 		var top = impex.$top();
-		if (!top[this.$value]) top[this.$value] = {key: "", dir: ""};
-		
+		if (!top.data) top.data = {};
+		if (!top.data[this.value]) top.data[this.value] = {key: "", dir: ""};
 		var that = this;
 		setTimeout(function() {
 			var cns = el.children;
@@ -359,13 +359,13 @@ impex.directive("order", {
 	order: function(dom) {
 		var order = dom.getAttribute("order");
 		var top = impex.$top();
-		var orderObj = top[this.$value];
+		var orderObj = top.data[this.value];
 		if (orderObj.key != order) {
 			orderObj.dir = "asc";
 		}else{
 			orderObj.dir = orderObj.dir == "asc" ? "desc" : "asc";
 		}
-		var el = this.$view.el;
+		var el = this.view.el;
 		orderObj.key = order;
 		var desc_els = el.querySelectorAll(".sorticon-desc");
 		var asc_els = el.querySelectorAll(".sorticon-asc");
@@ -383,7 +383,7 @@ impex.directive("order", {
  * 自定义验证函数
  */
 impex.validate.directive('validate', function(com) {
-	var view = com.$view;
+	var view = com.view;
 	var value = view.el.value;
 	
 	var el = view.el;
@@ -408,6 +408,6 @@ impex.validate.directive('validate', function(com) {
  */
 impex.directive("checked", {
 	observe: function(rs) {
-		this.$view.el.checked = rs;
+		this.view.el.checked = rs;
 	}
 })

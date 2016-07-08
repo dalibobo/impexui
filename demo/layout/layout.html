@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html >
+    <head>
+        <title>Impexui - layout</title>
+		<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+		<link rel="stylesheet" type="text/css" href="../../themes/default/impexui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css"/>
+		<script type="text/javascript" src="../../impex.all.js"></script>
+		<script type="text/javascript" src="../../build/impexui.all.js"></script>
+		<script type="text/javascript" src="../../src/impex.component.js"></script>
+		<script type="text/javascript" src="../../src/impex.directive.js"></script>
+		<script type="text/javascript" src="../../src/impex.util.js"></script>
+		<script type="text/javascript" src="../../src/impexui.js"></script>
+		<script type="text/javascript" src="../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.mousewheel.js"></script>
+		<script type="text/javascript" src="../js/perfect-scrollbar.js"></script>
+		<style>
+			html{height:100%;}
+			body{height:100%;margin:0px;overflow:hidden;font-family: 'Microsoft Yahei', verdana;color:rgb(34,34,34);}
+			ul, ol {list-style: none;padding: 0px;}
+		</style>
+    </head>
+    <body>
+		<div class="impex-layout">
+			<header>
+				<nav id="dvMultiTabWrapper" class="tV0" role="navigation"> 
+					<div class="wo0" id="dvMultiTab">
+						<ul>
+							<li :click="tabChange(fun.code)" class="tab-bg {{fun.code == currentPanel ? 'tab-bg-select' : ''}} {{($index == 9 || ($index + 1) == functions.length) ? 'tr5' : ''}}" x-each="functions as fun => limitBy:10" style="width: 86px;">
+								<span class="label">{{fun.name}}</span>
+								<a :click="tabClose($index)" x-if="fun.canClose" class="close"><i class="icon"></i></a>
+							</li>
+							<li class="tab-bg op"><i class="icon"></i></li>
+						</ul>
+					</div>
+				</nav>
+				<div class="hb"></div>
+			</header>
+			<div class="center">
+				<nav id="leftNav" x-if="currentMenus && currentMenus.length > 0">
+					<ul class="menu">
+						<li x-each="currentMenus as menu">
+							<div class="label">
+								<i class="icon icon-app"></i>
+								<span>{{# menu.name}}</span>
+							</div>
+						</li>
+					</ul>
+				</nav>
+				<div class="container">
+					<div x-each="1 to 10 as k">我是内容{{$index}}</div>
+				</div>
+			</div>
+			<footer class="skin">
+				<div class="skin-item skin-top">
+					<div class="skin-top-inner"></div>
+					<div class="skin-top-inner2"></div>
+				</div>
+			</footer>
+		</div>
+		<script>
+			var model = {
+				lastPanel: "daily",
+				currentPanel: "daily",
+				currentMenus: [],
+				functions: [
+					{name: "首页", code: "home"},
+					{name: "日常办公", code: "daily"},
+					{name: "故障缺陷管理", code: "bug"},
+					{name: "交接班管理", code: "exchange_class", canClose: true},
+					{name: "两票管理", code: "tiket", canClose: true},
+					{name: "运行记录", code: "run", canClose: true},
+					{name: "安全管理", code: "safe", canClose: true},
+					{name: "检修管理", code: "repair", canClose: true},
+					{name: "设备管理", code: "eq", canClose: true},
+					{name: "物资管理", code: "device", canClose: true},
+					{name: "生产日报报表", code: "report", canClose: true},
+					{name: "文档管理", code: "doc", canClose: true},
+					{name: "基础信息", code: "base", canClose: true}
+				],
+				menus: {
+					"home": [
+						{name: "通知公告"},
+						{name: "电站上网电量结算单"},
+						{name: "电站下网电量结算单"},
+						{name: "电站生产日报填报"},
+						{name: "电站生产日报审核"}
+					],
+					"daily": [
+						{name: "待办事项"},
+						{name: "已办事项"},
+						{name: "通知公告"},
+						{name: "电站上网电量结算单"},
+						{name: "电站下网电量结算单"},
+						{name: "电站生产日报填报"},
+						{name: "电站生产日报审核"},
+						{name: "电站生产日报邮件"},
+						{name: "计划电量管理"},
+						{name: "收发文管理"},
+						{name: "外来人员登记"},
+						{name: "电站人员取证"},
+						{name: "车辆保养维修"},
+						{name: "钥匙借用登记"}
+					]
+				},
+				tabChange: function(code) {
+					if (this.closing) {
+						
+						this.currentPanel = this.lastPanel;
+					}else{
+						this.lastPanel = this.currentPanel;
+						this.currentPanel = code;
+					}
+					this.setCurrentLeftMenu();
+				},
+				setCurrentLeftMenu: function() {
+					this.currentMenus = this.menus[this.currentPanel];
+				},
+				onDisplay: function() {
+					this.setCurrentLeftMenu();
+				},
+				tabClose: function(index) {
+					this.closing = true;
+					this.closeIndex = index;
+				}
+			}
+			
+			$(document).ready(function() {
+				$('#leftNav').perfectScrollbar();
+			});
+
+			impex.component("impex-layout", {
+				$template:  '<div id="{{id}}" class="impex-layout {{=class}}">\
+								<header>这里是头部</header>\
+								<div class="center">\
+									<nav>这里是导航栏</nav>\
+									<div class="container">这里是页面主内容区域</div>\
+								</div>\
+								<footer class="skin"></footer>\
+							</div>'
+			});
+
+			var page = impex.render(document.body, model);
+		</script>
+    </body>
+</html>

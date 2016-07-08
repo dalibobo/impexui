@@ -6,18 +6,21 @@
         <meta http-equiv="content-type" content="text/html;charset=utf-8">
 		<link rel="stylesheet" type="text/css" href="../../themes/default/impexui.css"/>
 		<link rel="stylesheet" type="text/css" href="../../themes/icon.css"/>
-		<script type="text/javascript" src="../../impex.all.js"></script>
+		<script type="text/javascript" src="F:/git/impex/build//impex.all.js"></script>
 		<script type="text/javascript" src="../../build/impexui.all.js"></script>
 		<script type="text/javascript" src="../../src/impex.component.js"></script>
+		<script type="text/javascript" src="../../src/impex.filter.js"></script>
 		<script type="text/javascript" src="../../src/impex.directive.js"></script>
 		<script type="text/javascript" src="../../src/impex.util.js"></script>
 		<script type="text/javascript" src="../../src/impexui.js"></script>
     </head>
     <body>
 		<h3>基本表格</h3>
-		<impex-datagrid title="基本的表格" titleIconCls="icon-grid" ds="studentData" cols="baseGrid.cols"></impex-datagrid>
+		<impex-datagrid id="baseGrid" title="基本的表格" titleIconCls="icon-grid" ds="studentData" cols="baseGrid.cols"></impex-datagrid>
+		
 		<h3>带排序的表格</h3>
 		<impex-datagrid title="带排序的表格" titleIconCls="icon-grid" ds="studentData" cols="orderGrid.cols"></impex-datagrid>
+
 		<h3>带工具栏的表格</h3>
 		<impex-datagrid title="带工具栏的表格" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="studentData" cols="toolbarGrid.cols"></impex-datagrid>
 		<div id="grid_toolbar" x-ignore>
@@ -25,59 +28,64 @@
 			<impex-linkbutton click="doEdit" iconcls="icon-edit" text="编辑"></impex-linkbutton>
 			<impex-linkbutton click="doDelete" iconcls="icon-remove" text="删除"></impex-linkbutton>
 		</div>
+		
 		<h3>带复选框的表格</h3>
 		<impex-datagrid id="checkboxGrid" title="带复选框的表格" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="studentData" cols="checkboxGrid.cols"></impex-datagrid>
 		
+		<!--
 		<h3>带分页的表格</h3>
 		<impex-datagrid id="paginationGrid" title="带分页的表格" pagination="true" pager="pagerGrid.pager" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="students" cols="pagerGrid.cols"></impex-datagrid>
 
 		
 		<h3>带行号的表格</h3>
 		<impex-datagrid title="带行号的表格" linenumber="true" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="studentData" cols="linenumberGrid.cols"></impex-datagrid>
-
+		-->
 		<script>
 			var model = {
-				studentData:[
-					{studentNo: "40231220", name: "孙膑", sex: "男", class: "计算机科学与技术2002-6班"},
-					{studentNo: "40231221", name: "胡来", sex: "男", class: "计算机科学与技术2002-6班"},
-					{studentNo: "40231222", name: "郝东芳", sex: "女", class: "计算机科学与技术2002-6班"},
-					{studentNo: "40231223", name: "王伟", sex: "男", class: "计算机科学与技术2002-6班"}
-				],
-			
-				// 学生表格数据
-				baseGrid: {
-					cols: [
-						{code: "studentNo", title: "学号"},
-						{code: "name", title: "姓名"},
-						{code: "sex", title: "性别"},
-						{code: "class", title: "班级"}
-					]
+				data: {
+					// 学生数据
+					studentData:[
+						{studentNo: "40231220", name: "孙膑", sex: "男", class: "计算机科学与技术2002-6班"},
+						{studentNo: "40231221", name: "胡来", sex: "男", class: "计算机科学与技术2002-6班"},
+						{studentNo: "40231222", name: "郝东芳", sex: "女", class: "计算机科学与技术2002-6班"},
+						{studentNo: "40231223", name: "王伟", sex: "男", class: "计算机科学与技术2002-6班"}
+					],
+					baseGrid: {
+						cols: [
+							{code: "studentNo", title: "学号"},
+							{code: "name", title: "姓名"},
+							{code: "sex", title: "性别"},
+							{code: "class", title: "班级"}
+						]
+					},
+					orderGrid: {
+						cols: [
+							{code: "studentNo", title: "学号", order: true},
+							{code: "name", title: "姓名"},
+							{code: "sex", title: "性别", order: true},
+							{code: "class", title: "班级"}
+						]
+					},
+					toolbarGrid: {
+						cols: [
+							{code: "studentNo", title: "学号", order: true},
+							{code: "name", title: "姓名"},
+							{code: "sex", title: "性别", order: true},
+							{code: "class", title: "班级"}
+						]
+					},
+					checkboxGrid: {
+						cols: [
+							{code: "studentNo", width: "40", align: "center", checkbox: true},
+							{code: "studentNo", title: "学号"},
+							{code: "name", title: "姓名"},
+							{code: "sex", title: "性别"},
+							{code: "class", title: "班级"}
+						]
+					}
 				},
-				orderGrid: {
-					cols: [
-						{code: "studentNo", title: "学号", order: true},
-						{code: "name", title: "姓名"},
-						{code: "sex", title: "性别", order: true},
-						{code: "class", title: "班级"}
-					]
-				},
-				toolbarGrid: {
-					cols: [
-						{code: "studentNo", title: "学号", order: true},
-						{code: "name", title: "姓名"},
-						{code: "sex", title: "性别", order: true},
-						{code: "class", title: "班级"}
-					]
-				},
-				checkboxGrid: {
-					cols: [
-						{code: "studentNo", width: "40", align: "center", checkbox: true},
-						{code: "studentNo", title: "学号"},
-						{code: "name", title: "姓名"},
-						{code: "sex", title: "性别"},
-						{code: "class", title: "班级"}
-					]
-				},
+
+				
 				pagerGrid: {
 					cols: [
 						{code: "studentNo", width: "40", align: "center", checkbox: true},
@@ -115,40 +123,49 @@
 					}
 					this.students = students;
 				},
-				doAdd: function() {
-					alert("新增");
-				},
-				doEdit: function() {
-					alert("编辑");
-				},
-				doDelete: function() {
-					var checkedIds = impex.cget("checkboxGrid").getChecked();
-					if ("" === checkedIds) {
-						alert("请选择要删除的行");
-					}else{
-						alert("删除成功");
+				methods: {
+					doAdd: function() {
+						alert("新增");
+					},
+					doEdit: function() {
+						alert("编辑");
+					},
+					doDelete: function() {
+						var ckg = impex.cget("checkboxGrid");
+						if (null == ckg) {
+							alert("没有需要删除的项目");
+							return;
+						}
+						var checkedIds = impex.cget("checkboxGrid").getChecked();
+						if ("" === checkedIds) {
+							alert("请选择要删除的行");
+						}else{
+							alert("删除成功");
+						}
 					}
 				}
 			};
 			
 			
 			impex.component("impex-linkbutton", {
-				$template:  '<div class="impex-linkbutton {{=class}}" :click="clickHandler()">\
+				template:  '<div class="impex-linkbutton {{=class}}" :click="clickHandler()">\
 								<div class="icon {{=iconcls}}" x-if="_.isString(iconcls)"></div>\
 								<div class="text" x-if="_.isString(text)">{{=text}}</div>\
 							</div>',
-				clickHandler: function() {
-					var model = getModel(this, this.click);
-					if (null != model) {
-						model(this);
-					}else{
-						this.emit("linkbutton.click");
+				methods: {
+					clickHandler: function() {
+						var fn = getFn(this, this.data.click);
+						if (null != fn) {
+							fn(this);
+						}else{
+							this.emit("linkbutton.click");
+						}
 					}
 				}
 			});
 			
 			impex.component("impex-datagrid", {
-				$template: '<div id="{{=id}}" class="impex-datagrid {{=class}}">\
+				template: '<div id="{{=id}}" title="{{=title}}" class="impex-datagrid {{=class}}">\
 								<div class="title" x-if="_.isString(title)"><i x-if="_.isString(titleiconcls)" class="icon {{=titleiconcls}}"></i> <div class="text">{{# title}}</div></div>\
 								<div class="toolbar" x-if="_.isString(toolbar)">\
 									{{# toolbarHtml}}\
@@ -182,53 +199,56 @@
 								</table>\
 								<div x-if="_.isString(pagination) && \'true\' == pagination"><impex-pager id="##pagerId"></impex-pager></div>\
 							</div>',
-				dataSource: [],
-				columns: [],
-				needOrder: false,
-				$checkIds: [],
-				allChecked: false,
-				pagerId: "",
-				pageSize: 10,
-				startSize: 0,
+				data: {
+					dataSource: [],
+					columns: [],
+					needOrder: false,
+					$checkIds: [],
+					allChecked: false,
+					pagerId: "",
+					pageSize: 10,
+					startSize: 0
+				},
 				onInit: function() {
 					// 初始化数据源
-					var dataSource = getModel(this, this.ds);
+					var dataSource = getData(this, this.data.ds);
 					if (null != dataSource) {
-						this.dataSource = dataSource;
+						this.data.dataSource = dataSource;
 					}
-					if (_.isString(this.ds)) {
-						var p = getParentModel(this, this.ds);
+
+					if (_.isString(this.data.ds)) {
+						var p = getParentModel(this, this.data.ds);
 						if (null != p) {
 							var that = this;
-							p.watch(this.ds, function(type, newVal, oldVal, propChain) {
-								that.dataSource = newVal;
+							p.watch(this.data.ds, function(type, newVal, oldVal, propChain) {
+								that.data.dataSource = newVal;
 							});
 						}
 					}
-					
+
 					// 初始化表头
-					var columns = getModel(this, this.cols);
-					if (null != columns) this.columns = columns;
-					for (var i = this.columns.length;i--;) {
-						if (this.columns[i].order) {
-							this.needOrder = true;
+					var columns = getData(this, this.data.cols);
+					if (null != columns) this.data.columns = columns;
+					for (var i = this.data.columns.length;i--;) {
+						if (this.data.columns[i].order) {
+							this.data.needOrder = true;
 							break;
 						}
 					}
 					
 					// 初始化工具栏
-					if (_.isString(this.toolbar)) {
-						var barEl = document.getElementById(this.toolbar);
+					if (_.isString(this.data.toolbar)) {
+						var barEl = document.getElementById(this.data.toolbar);
 						if (null != barEl) {
-							this.toolbarHtml = barEl.innerHTML;
+							this.data.toolbarHtml = barEl.innerHTML;
 							barEl.style.display = "none";
 						}
-					}
+					}					
 				},
 				onDisplay: function() {
 					// 初始化分页
-					if (_.isString(this.pagination) && "true" == this.pagination) {
-						var pagerConfig = getModel(this, this.pager);
+					if (_.isString(this.data.pagination) && "true" == this.data.pagination) {
+						var pagerConfig = getData(this, this.data.pager);
 						if (null != pagerConfig) {
 							this.getPager().setConfig(pagerConfig);
 						}
@@ -241,45 +261,47 @@
 					});
 				},
 				onBeforeCompile:function(str){
-					this.pagerId = "pagerId_" + getId();
+					this.data.pagerId = "pagerId_" + getId();
 					return str.replace(/##orderId/g, "gridOrder_" + getId())
-						      .replace(/##pagerId/g, this.pagerId);
+						      .replace(/##pagerId/g, this.data.pagerId);
 				},
-				checkAll: function(checkbox) {
-					var el = checkbox.$view.el;
-					var gridEl = document.getElementById(this.id);
-					var checkboxs = gridEl.querySelectorAll(".checkbox input");
-					if (el.checked) {
-						var cs = [];
-						var gridEl = document.getElementById(this.id);
+				methods:　{
+					checkAll: function(checkbox) {
+						var el = checkbox.view.el;
+						var gridEl = document.getElementById(this.data.id);
 						var checkboxs = gridEl.querySelectorAll(".checkbox input");
-						for (var i = 0; i < checkboxs.length; i++) {
-							cs.push(checkboxs[i].value);
+						if (el.checked) {
+							var cs = [];
+							var gridEl = document.getElementById(this.data.id);
+							var checkboxs = gridEl.querySelectorAll(".checkbox input");
+							for (var i = 0; i < checkboxs.length; i++) {
+								cs.push(checkboxs[i].value);
+							}
+							this.data.$checkIds = cs;
+						}else{
+							this.data.$checkIds = [];
 						}
-						this.$checkIds = cs;
-					}else{
-						this.$checkIds = [];
-					}
-					
-					for (var i = checkboxs.length; i--;) {
-						checkboxs[i].checked = el.checked;
-					}
-				},
-				checkItem: function(checkbox) {
-					var el = checkbox.$view.el;
-					if (el.checked) {
-						this.$checkIds.push(el.value);
-					}else{
-						for (var i = 0; i < this.$checkIds.length; i++) {
-							if (this.$checkIds[i] == el.value) {
-								this.$checkIds.splice(i, 1);
-								break;
+						
+						for (var i = checkboxs.length; i--;) {
+							checkboxs[i].checked = el.checked;
+						}
+					},
+					checkItem: function(checkbox) {
+						var el = checkbox.view.el;
+						if (el.checked) {
+							this.data.$checkIds.push(el.value);
+						}else{
+							for (var i = 0; i < this.data.$checkIds.length; i++) {
+								if (this.data.$checkIds[i] == el.value) {
+									this.data.$checkIds.splice(i, 1);
+									break;
+								}
 							}
 						}
+						var gridEl = document.getElementById(this.data.id);
+						var all = gridEl.querySelectorAll(".checkAll input");
+						all[0].checked = this.data.$checkIds.length == this.data.dataSource.length;
 					}
-					var gridEl = document.getElementById(this.id);
-					var all = gridEl.querySelectorAll(".checkAll input");
-					all[0].checked = this.$checkIds.length == this.dataSource.length;
 				},
 				getChecked: function() {
 					return this.$checkIds.join(",");

@@ -122,7 +122,7 @@
 /**数据表格样式结束**/
 
 /**按钮样式**/
-.impex-linkbutton{display:inline-block;position:relative;padding:3px 5px;border:1px solid transparent;border-radius:3px;}
+.impex-linkbutton{display: inline-block;position: relative;padding: 1px 5px 4px 5px;border: 1px solid transparent;border-radius: 3px;margin-top: 1px;}
 .impex-linkbutton:hover{background-color:#EEE;cursor:pointer;border:1px solid #CCC;}
 .impex-linkbutton .icon{left:4px;display: inline-block;width: 16px;height: 16px;font-size: 1px;vertical-align: middle;}
 .impex-linkbutton .text{display:inline-block;font-size:12px;vertical-align: middle;}
@@ -482,3 +482,168 @@ ul.ztree.zTreeDragUL {margin:0; padding:0; position:absolute; width:auto; height
 	background:none;
 }*/
 /**ztree样式结束**/
+
+/**impex-layout组件样式**/
+.impex-layout{height:100%;width:100%;display:flex;flex-direction:column;overflow:hidden;}
+.impex-layout header{height:86px;box-shadow: 0 1px 2px 0 RGBA(0,0,0,.3);z-index:25;position:relative;}
+.impex-layout header .hb{position:absolute;bottom:0px;width:100%;font-size:0px;height:2px;background-color:rgb(16,97,154);}
+.impex-layout header .tV0{height: 34px;position: absolute;bottom: 0;width: 100%;left: 0;z-index: 5;}
+.impex-layout header .wo0{line-height: 0;font-size: 0;height: 34px;overflow: hidden;position: relative;margin-right: 36px;z-index: 2;}
+.impex-layout header ul{padding:0px;position: absolute;height:33px;width: 100%;left: 12px;top: 0px;margin-bottom:2px;list-style:none;}
+.impex-layout header ul li{position:relative;font-size:14px;float:left;height:22px;padding: 7px 20px 2px 8px;text-align:center;border-top:1px solid rgb(248, 250, 252);border-right:1px solid #c3ced5;cursor:pointer;}
+.impex-layout header ul li:first-child{border-top-left-radius: 5px;border-left:0px solid #F0F0F0;}
+.impex-layout header ul li:last-child{border-top-right-radius: 5px;border-right:0px solid #F0F0F0;}
+.impex-layout header ul li.op{margin-top:4px;height:18px;}
+.impex-layout header ul li.op .icon{display:inline-block;width:8px;height:8px;background-image:url(images/tool.png);background-repeat:no-repeat;background-position:0 -256px;position:absolute;left:10px;top:10px;}
+.impex-layout header ul li.tr5{border-top-right-radius:5px;}
+.impex-layout header ul li.tab-bg{background-color:rgb(226, 237, 246);}
+.impex-layout header ul li.tab-bg:hover{background-color:rgba(226, 237, 246, 0.5);border-top:1px solid transparent;}
+.impex-layout header ul li.tab-bg-select{background-color:rgb(16,97,154);border-top:1px solid transparent;}
+.impex-layout header ul li.tab-bg-select:hover{background-color:rgb(16,97,154);border-top:1px solid transparent;}
+.impex-layout header ul li .label{margin-left:6px;display: block;width: 100%;white-space: nowrap;position: relative;overflow: hidden;line-height: 16px;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;-khtml-user-select: none;user-select: none;}
+.impex-layout header ul li.tab-bg-select .label{color:#FFF;font-weight:bold;text-overflow: ellipsis;-o-text-overflow: ellipsis;}
+.impex-layout header ul li .close{outline:0;position:absolute;display:inline-block;height:15px;width:15px;right:3px;top:8px;border:1px solid transparent;}
+.impex-layout header ul li .close .icon{width:14px;height:14px;background-position:0 -288px;position:absolute;left:4px;top:3px;background-image:url(images/tool.png);display:block;}
+.impex-layout header ul li .close:hover{border:1px solid rgba(16,97,154,0.2);border-radius:10px;}
+.impex-layout .center{z-index:25;flex:1;display:flex;flex-direction:row;}
+.impex-layout .center nav{width:201px;overflow:hidden;position:relative;border-right:1px solid #c3ced5;}
+.impex-layout .center nav .menu{}
+.impex-layout .center nav .menu li{height:28px;font-size:12px;line-height:28px;cursor:pointer;}
+.impex-layout .center nav .menu li:hover{background-color:rgb(220, 230, 241);}
+.impex-layout .center nav .menu li .label{padding-left:26px;height:100%;}
+.impex-layout .center nav .menu li .label .icon{width:14px;height:14px;display:inline-block;margin-right:5px;}
+.impex-layout .center nav .menu li .label .icon-app{float:left;background:url(images/app.png) no-repeat;background-size:14px 14px;margin-top:7px;}
+.impex-layout .center .container{flex:1;overflow:auto;margin-top:2px;}
+.impex-layout footer.skin{z-index:-1;width:100%;height:100%;position:absolute;top:0;left:0;background-repeat:repeat-x;background-image:url(images/skin.png);background-position:0 86px;}
+.impex-layout footer .skin-top{position:absolute;width:100%;top: 0;left: 0;z-index: 8;height: 86px;background-repeat: repeat-x;overflow: hidden;background-repeat: repeat-x;background: -webkit-linear-gradient(top,#196eac 0,#7fb4d9 100%);}
+.impex-layout footer .skin-top .skin-top-inner{display: block;background: -webkit-linear-gradient(left,RGBA(255,255,255,0) 0,#CAE0F1 50%,RGBA(255,255,255,0) 100%);background: -moz-linear-gradient(left,RGBA(255,255,255,0) 0,#CAE0F1 50%,RGBA(255,255,255,0) 100%);background: -ms-linear-gradient(left,RGBA(255,255,255,0) 0,#CAE0F1 50%,RGBA(255,255,255,0) 100%);background: -o-linear-gradient(left,RGBA(255,255,255,0) 0,#CAE0F1 50%,RGBA(255,255,255,0) 100%);background: linear-gradient(left,RGBA(255,255,255,0) 0,#CAE0F1 50%,RGBA(255,255,255,0) 100%);position: absolute;width: 100%;height: 100%;}
+.impex-layout footer .skin-top .skin-top-inner2{display: block;background: -webkit-linear-gradient(top,#0060B6 0,RGBA(255,255,255,0) 100%);background: -moz-linear-gradient(top,#0060B6 0,RGBA(255,255,255,0) 100%);background: -ms-linear-gradient(top,#0060B6 0,RGBA(255,255,255,0) 100%);background: -o-linear-gradient(top,#0060B6 0,RGBA(255,255,255,0) 100%);background: linear-gradient(top,#0060B6 0,RGBA(255,255,255,0) 100%);opacity: .4;z-index: 2;position: absolute;width: 100%;height: 100%;}
+/**impex-layout组件样式结束**/
+
+/**perfect-scrollbar样式**/
+.ps-container .ps-scrollbar-x-rail {
+    position: absolute; /* please don't change 'position' */
+    bottom: 3px; /* there must be 'bottom' for ps-scrollbar-x-rail */
+    height: 8px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    opacity: 0;
+    filter: alpha(opacity = 0);
+    -o-transition: background-color .2s linear, opacity .2s linear;
+    -webkit-transition: background-color .2s linear, opacity .2s linear;
+    -moz-transition: background-color .2s linear, opacity .2s linear;
+    transition: background-color .2s linear, opacity .2s linear;
+}
+
+.ps-container:hover .ps-scrollbar-x-rail,
+.ps-container.hover .ps-scrollbar-x-rail {
+    opacity: 0.6;
+    filter: alpha(opacity = 60);
+}
+
+.ps-container .ps-scrollbar-x-rail:hover,
+.ps-container .ps-scrollbar-x-rail.hover {
+    background-color: #eee;
+    opacity: 0.9;
+    filter: alpha(opacity = 90);
+}
+
+.ps-container .ps-scrollbar-x-rail.in-scrolling {
+    background-color: #eee;
+    opacity: 0.9;
+    filter: alpha(opacity = 90);
+}
+
+.ps-container .ps-scrollbar-y-rail {
+    position: absolute; /* please don't change 'position' */
+    right: 3px; /* there must be 'right' for ps-scrollbar-y-rail */
+    width: 8px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    opacity: 0;
+    filter: alpha(opacity = 0);
+    -o-transition: background-color .2s linear, opacity .2s linear;
+    -webkit-transition: background-color .2s linear, opacity .2s linear;
+    -moz-transition: background-color .2s linear, opacity .2s linear;
+    transition: background-color .2s linear, opacity .2s linear;
+}
+
+.ps-container:hover .ps-scrollbar-y-rail,
+.ps-container.hover .ps-scrollbar-y-rail {
+    opacity: 0.6;
+    filter: alpha(opacity = 60);
+}
+
+.ps-container .ps-scrollbar-y-rail:hover,
+.ps-container .ps-scrollbar-y-rail.hover {
+    background-color: #eee;
+    opacity: 0.9;
+    filter: alpha(opacity = 90);
+}
+
+.ps-container .ps-scrollbar-y-rail.in-scrolling {
+    background-color: #eee;
+    opacity: 0.9;
+    filter: alpha(opacity = 90);
+}
+
+.ps-container .ps-scrollbar-x {
+    position: absolute; /* please don't change 'position' */
+    bottom: 0; /* there must be 'bottom' for ps-scrollbar-x */
+    height: 8px;
+    background-color: #aaa;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -o-transition: background-color .2s linear;
+    -webkit-transition: background-color.2s linear;
+    -moz-transition: background-color .2s linear;
+    transition: background-color .2s linear;
+}
+
+.ps-container.ie6 .ps-scrollbar-x {
+    font-size: 0; /* fixed scrollbar height in xp sp3 ie6 */
+}
+
+.ps-container .ps-scrollbar-x-rail:hover .ps-scrollbar-x,
+.ps-container .ps-scrollbar-x-rail.hover .ps-scrollbar-x {
+    background-color: #999;
+}
+
+.ps-container .ps-scrollbar-y {
+    position: absolute; /* please don't change 'position' */
+    right: 0; /* there must be 'right' for ps-scrollbar-y */
+    width: 8px;
+    background-color: #aaa;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -o-transition: background-color .2s linear;
+    -webkit-transition: background-color.2s linear;
+    -moz-transition: background-color .2s linear;
+    transition: background-color .2s linear;
+}
+
+.ps-container.ie6 .ps-scrollbar-y {
+    font-size: 0; /* fixed scrollbar height in xp sp3 ie6 */
+}
+
+.ps-container .ps-scrollbar-y-rail:hover .ps-scrollbar-y,
+.ps-container .ps-scrollbar-y-rail.hover .ps-scrollbar-y {
+    background-color: #999;
+}
+
+.ps-container.ie .ps-scrollbar-x,
+.ps-container.ie .ps-scrollbar-y {
+    visibility: hidden;
+}
+
+.ps-container.ie:hover .ps-scrollbar-x,
+.ps-container.ie:hover .ps-scrollbar-y,
+.ps-container.ie.hover .ps-scrollbar-x,
+.ps-container.ie.hover .ps-scrollbar-y {
+    visibility: visible;
+}
+/**perfect-scrollbar样式结束**/

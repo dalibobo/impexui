@@ -3,11 +3,11 @@
  */
 impex.filter('number', {
 	to:function(place) {
-		if (null === this.$value || "" === this.$value || undefined === this.$value) {
+		if (null === this.value || "" === this.value || undefined === this.value) {
 			return "";
 		}
 		place = place || null;
-		var m = formatMoney(this.$value, place, "");
+		var m = formatMoney(this.value, place, "");
 		if (m.indexOf(".") != -1) {
 			if (parseInt(m.split(".")[1]) === 0) {
 				return m.split(".")[0];
@@ -31,13 +31,13 @@ impex.filter('toFixed', {
 
 impex.filter('orderBy',{
     to:function(key,dir){
-        if(!key && !dir)return this.$value;
-        if(!(this.$value instanceof Array)){
+        if(!key && !dir)return this.value;
+        if(!(this.value instanceof Array)){
             LOGGER.warn('can only filter array');
-            return this.$value;
+            return this.value;
         }
 		
-		var vls = this.$value;
+		var vls = this.value;
 		var vs = [], vs1 = [];
 		for (var i = vls.length;i--;) {
 			if (vls[i][key] != null && vls[i][key] != undefined) {
