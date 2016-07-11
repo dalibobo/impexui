@@ -7,6 +7,7 @@
 		<link rel="stylesheet" type="text/css" href="../../themes/default/impexui.css"/>
 		<link rel="stylesheet" type="text/css" href="../../themes/icon.css"/>
 		<script type="text/javascript" src="../../impex.all.js"></script>
+		<script type="text/javascript" src="../../impex.ext.console.js"></script>
 		<script type="text/javascript" src="../../build/impexui.all.js"></script>
 		<script type="text/javascript" src="../../src/impex.component.js"></script>
 		<script type="text/javascript" src="../../src/impex.filter.js"></script>
@@ -34,20 +35,36 @@
 		
 		
 		<h3>带分页的表格</h3>
-		<impex-datagrid id="paginationGrid" title="带分页的表格" pagination="true" pager="pagerGrid.pager" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="students" cols="pagerGrid.cols"></impex-datagrid>
+		<impex-datagrid id="paginationGrid" title="带分页的表格" pagination="true" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="students" cols="pagerGrid.cols"></impex-datagrid>
 
+		<h3>异步数据无分页的表格</h3>
+		<impex-datagrid url="http://localhost/mt/test_listAll.do" id="agrid" title="异步数据无分页的表格" toolbar="atool" titleIconCls="icon-grid" cols="pagerGrid.cols"></impex-datagrid>
+		<div id="atool" x-ignore>
+			<impex-linkbutton click="doQuery" iconcls="icon-add" text="查询"></impex-linkbutton>
+		</div>
+		
+		<h3>异步数据带分页的表格</h3>
+		<impex-datagrid url="http://localhost/mt/test_list.do" id="pgrid" title="异步数据带分页的表格" pagination="true" toolbar="ptool" titleIconCls="icon-grid" cols="pagerGrid.cols"></impex-datagrid>
+		<div id="ptool" x-ignore>
+			<impex-linkbutton click="doQuery" iconcls="icon-add" text="查询"></impex-linkbutton>
+		</div>
+		
 		<h3>带行号的表格</h3>
-		<impex-datagrid title="带行号的表格" pagination="true" pager="linenumberGrid.pager" linenumber="true" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="students" cols="linenumberGrid.cols"></impex-datagrid>
-		<script>
+		<impex-datagrid title="带行号的表格" pagination="true" linenumber="true" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="students" cols="linenumberGrid.cols"></impex-datagrid>
+		<script>			
+			imLog.level = 0;
+            impex.config({
+                logger:imLog
+            });
 			var model = {
 				data: {
 					students: [],
 					// 学生数据
 					studentData:[
-						{studentNo: "40231220", name: "孙膑", sex: "男", class: "计算机科学与技术2002-6班"},
-						{studentNo: "40231221", name: "胡来", sex: "男", class: "计算机科学与技术2002-6班"},
-						{studentNo: "40231222", name: "郝东芳", sex: "女", class: "计算机科学与技术2002-6班"},
-						{studentNo: "40231223", name: "王伟", sex: "男", class: "计算机科学与技术2002-6班"}
+						{studentNo: "40231220", name: "孙膑", sex: "1", class: "计算机科学与技术2002-6班"},
+						{studentNo: "40231221", name: "胡来", sex: "1", class: "计算机科学与技术2002-6班"},
+						{studentNo: "40231222", name: "郝东芳", sex: "0", class: "计算机科学与技术2002-6班"},
+						{studentNo: "40231223", name: "王伟", sex: "1", class: "计算机科学与技术2002-6班"}
 					],
 					baseGrid: {
 						cols: [
@@ -87,7 +104,7 @@
 							{code: "studentNo", width: "40", align: "center", checkbox: true},
 							{code: "studentNo", title: "学号"},
 							{code: "name", title: "姓名"},
-							{code: "sex", title: "性别", order: true, formatter: "formatter.sex"},
+							{code: "sex", title: "性别", order: true, formatter: "formatterSex"},
 							{code: "class", title: "班级"}
 						],
 						pager: {
@@ -95,6 +112,11 @@
 							pageNos: [10, 20, 30, 50, 100],
 							total: 143,
 							pageSize: 10
+						}
+					},
+					pGrid: {
+						pager: {
+							
 						}
 					},
 					linenumberGrid: {
@@ -108,17 +130,20 @@
 						pager: {
 							pageNos: [10, 20, 30, 50, 100]
 						}
+					},
+					queryParams: {
+						name: ""
 					}
 				},
 				onDisplay: function() {
 					var students = [];
 					var sex;
 					for (var i = 0; i < 143; i++) {
-						sex = (Math.random() * 10) > 5 ? "男" : "女";
+						sex = (Math.random() * 10) > 5 ? "1" : "0";
 						students.push({studentNo: 40231220 + i, name: "同学" + i, sex: sex, class: "计算机科学与技术2002-6班"});
 					}
 					this.data.students = students;
-					
+					return;
 					var that = this;
 					setTimeout(function() {
 						that.data.students = students.splice(0, 50);
@@ -144,14 +169,15 @@
 							alert("删除成功");
 						}
 					},
-					formatter: {
-						sex: function(v, r) {
-							if (v == "男") {
-								return "<span style='color:red;'>男</span>";
-							}else{
-								return "<span style='color:green;'>女</span>";
-							}
+					formatterSex: function(v, r) {
+						if (v == 1) {
+							return "<span style='color:red;'>男</span>";
+						}else{
+							return "<span style='color:green;'>女</span>";
 						}
+					},
+					doQuery: function() {
+						impex.cget("agrid").reload({name: "学生15号"});
 					}
 				}
 			};
@@ -195,7 +221,7 @@
 											<td class="line-number" x-if="_.isString(linenumber) && \'true\' == linenumber">{{$index + 1 + startSize}}</td>\
 											<td x-each="columns as col" style="text-align:{{col.align}};width:{{col.width}}px;">\
 												<span x-if="!col.checkbox">\
-													<span x-if="_.isString(col.formatter)">{{# closest(col.formatter)["$" + col.formatter](d[col.code], d)}}</span>\
+													<span x-if="_.isString(col.formatter)">{{# this.m(col.formatter)(d[col.code], d)}}</span>\
 													<span x-if="!col.formatter">{{d[col.code]}}</span>\
 												</span>\
 												<span x-if="col.checkbox" class="checkbox"><input :click="checkItem(this)" value="{{d[col.code]}}" type="checkbox"/></span>\
@@ -212,39 +238,50 @@
 					allChecked: false,
 					pagerId: "",
 					pageSize: 0,
-					startSize: 0
+					startSize: 0,
+					queryParams: {}
 				},
 				onInit: function() {
-					// 初始化数据源
-					var dataSource = getData(this, this.data.ds);
-					if (null != dataSource) {
-						this.data.dataSource = dataSource;
-					}
+					if (_.isString(this.data.url)) {	// 远程数据源
+						if (!this.hasPager()) {	// 远程不带分页
+							this.loadUrl();
+						}else{
+							this.data.queryParams.rows = 10;
+							this.data.queryParams.page = 1;
+							this.loadUrl();
+						}
+					}else{
+						// 初始化数据源
+						var dataSource = getData(this, this.data.ds);
+						if (null != dataSource) {
+							this.data.dataSource = dataSource;
+						}
 
-					if (_.isString(this.data.ds)) {
-						var p = getParentModel(this, this.data.ds);						
-						if (null != p) {
-							var that = this;
-							p.watch(this.data.ds, function(type, newVal, oldVal, propChain) {
-								if ("update" != type) return;
-								that.data.dataSource = newVal;
-								
-								if (_.isString(that.data.pagination) && "true" == that.data.pagination) {
-									var pagerConfig = getData(that, that.data.pager);
-									var pager = that.getPager();
-									that.data.startSize = 0;
-									if (0 == that.data.pageSize) {
-										that.data.pageSize = (null == pagerConfig) ? 10 : (pagerConfig.pageSize || 10);
-									}									
-									pager.setConfig({
-										current: 1,
-										pageNos: (null == pagerConfig) ? false : (pagerConfig.pageNos || false),
-										total: that.data.dataSource.length,
-										pageSize: that.data.pageSize
-									});
-								}
-								that.clearCheckbox();
-							});
+						if (_.isString(this.data.ds)) {
+							var p = getParentModel(this, this.data.ds);						
+							if (null != p) {
+								var that = this;
+								p.watch(this.data.ds, function(type, newVal, oldVal, propChain) {
+									if ("update" != type) return;
+									that.data.dataSource = newVal;
+									
+									if (that.hasPager()) {
+										var pagerConfig = getData(that, that.data.pager);
+										var pager = that.getPager();
+										that.data.startSize = 0;
+										if (0 == that.data.pageSize) {
+											that.data.pageSize = (null == pagerConfig) ? 10 : (pagerConfig.pageSize || 10);
+										}									
+										pager.setConfig({
+											current: 1,
+											pageNos: (null == pagerConfig) ? false : (pagerConfig.pageNos || false),
+											total: that.data.dataSource.length,
+											pageSize: that.data.pageSize
+										});
+									}
+									that.clearCheckbox();
+								});
+							}
 						}
 					}
 
@@ -265,21 +302,37 @@
 				},
 				onDisplay: function() {
 					// 初始化分页
-					if (_.isString(this.data.pagination) && "true" == this.data.pagination) {
-						var p = this.data.pager;
-						var pagerConfig = getData(this, this.data.pager);
-						this.data.pageSize = p.pageSize || 0;
-						this.data.startSize = (p.current - 1) * this.data.pageSize || 0;
-						if (null != pagerConfig) {
-							this.getPager().setConfig(pagerConfig);
+					if (this.hasPager()) {
+						if (_.isString(this.data.pager)) {
+							var p = this.data.pager;
+							var pagerConfig = getData(this, this.data.pager);
+							
+							this.data.pageSize = p.pageSize || 0;
+							this.data.startSize = (p.current - 1) * this.data.pageSize || 0;
+							if (null != pagerConfig) {
+								this.getPager().setConfig(pagerConfig);
+							}
+						}else{
+							this.data.pageSize = 0;
+							this.data.startSize = 0;
+							this.getPager().setConfig({});
 						}
 					}
 
 					// 监听分页跳转
 					this.on("pager.goto", function(pager, currentPage, pageSize) {
-						this.data.pageSize = pageSize;
-						this.data.startSize = (currentPage - 1) * this.data.pageSize;
-						this.clearCheckbox();
+						if (_.isString(this.data.url) && this.hasPager()) { // 远程带分页
+							this.data.queryParams.page = currentPage;
+							this.data.queryParams.rows = pageSize;
+							var that = this;
+							this.loadUrl(function() {
+								that.clearCheckbox();
+							});
+						}else{
+							this.data.pageSize = pageSize;
+							this.data.startSize = (currentPage - 1) * this.data.pageSize;
+							this.clearCheckbox();
+						}
 					});
 				},
 				clearCheckbox: function() {	// 清除checkbox选中状态
@@ -342,6 +395,52 @@
 				},
 				getPager: function() {
 					return impex.cget(this.data.pagerId);
+				},
+				hasPager: function() {	// 是否含有分页
+					return _.isString(this.data.pagination) && "true" == this.data.pagination;
+				},
+				reload: function(reloadParams) {
+					var params = this.data.queryParams;
+					if ($.isPlainObject(reloadParams)) {
+						params = _.extend(params, reloadParams);
+					}
+					this.loadUrl();
+				},
+				loadUrl: function(cbk) {
+					var url = this.data.url;
+					var params = this.data.queryParams;
+					var that= this;
+					$.ajax({
+						url: url,
+						data: params,
+						dataType: "json",
+						success: function(rs) {
+							cbk && cbk();
+							that.data.dataSource = rs.rows || "";
+							if (rs.total && that.hasPager()) {
+								var pager = that.getPager();
+								var pagerConfig = getData(that, that.data.pager);
+								if (null == pagerConfig) {
+									pager.setConfig({
+										current: params.page,
+										pageSize: params.rows,
+										total: rs.total
+									});
+								}else{
+									pager.setConfig({
+										current: pagerConfig.page || params.page,
+										pageSize: pagerConfig.rows || params.rows,
+										total: pagerConfig.total || rs.total,
+										pageNos: pagerConfig.pageNos || false
+									});
+								}
+							}
+						},
+						error: function(rs) {
+							console.log("请求出错，错误对象如下：");
+							console.log(rs);
+						}
+					});
 				}
 			});
 			

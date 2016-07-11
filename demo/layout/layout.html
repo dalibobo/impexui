@@ -24,8 +24,8 @@
     <body>
 		<div class="impex-layout">
 			<header>
-				<nav id="dvMultiTabWrapper" class="tV0" role="navigation"> 
-					<div class="wo0" id="dvMultiTab">
+				<nav class="tV0"> 
+					<div class="wo0">
 						<ul>
 							<li :click="tabChange(fun.code)" class="tab-bg {{fun.code == currentPanel ? 'tab-bg-select' : ''}} {{($index == 9 || ($index + 1) == functions.length) ? 'tr5' : ''}}" x-each="functions as fun => limitBy:10" style="width: 86px;">
 								<span class="label">{{fun.name}}</span>
@@ -61,68 +61,71 @@
 		</div>
 		<script>
 			var model = {
-				lastPanel: "daily",
-				currentPanel: "daily",
-				currentMenus: [],
-				functions: [
-					{name: "首页", code: "home"},
-					{name: "日常办公", code: "daily"},
-					{name: "故障缺陷管理", code: "bug"},
-					{name: "交接班管理", code: "exchange_class", canClose: true},
-					{name: "两票管理", code: "tiket", canClose: true},
-					{name: "运行记录", code: "run", canClose: true},
-					{name: "安全管理", code: "safe", canClose: true},
-					{name: "检修管理", code: "repair", canClose: true},
-					{name: "设备管理", code: "eq", canClose: true},
-					{name: "物资管理", code: "device", canClose: true},
-					{name: "生产日报报表", code: "report", canClose: true},
-					{name: "文档管理", code: "doc", canClose: true},
-					{name: "基础信息", code: "base", canClose: true}
-				],
-				menus: {
-					"home": [
-						{name: "通知公告"},
-						{name: "电站上网电量结算单"},
-						{name: "电站下网电量结算单"},
-						{name: "电站生产日报填报"},
-						{name: "电站生产日报审核"}
+				data: {
+					lastPanel: "daily",
+					currentPanel: "daily",
+					currentMenus: [],
+					functions: [
+						{name: "首页", code: "home"},
+						{name: "日常办公", code: "daily"},
+						{name: "故障缺陷管理", code: "bug"},
+						{name: "交接班管理", code: "exchange_class", canClose: true},
+						{name: "两票管理", code: "tiket", canClose: true},
+						{name: "运行记录", code: "run", canClose: true},
+						{name: "安全管理", code: "safe", canClose: true},
+						{name: "检修管理", code: "repair", canClose: true},
+						{name: "设备管理", code: "eq", canClose: true},
+						{name: "物资管理", code: "device", canClose: true},
+						{name: "生产日报报表", code: "report", canClose: true},
+						{name: "文档管理", code: "doc", canClose: true},
+						{name: "基础信息", code: "base", canClose: true}
 					],
-					"daily": [
-						{name: "待办事项"},
-						{name: "已办事项"},
-						{name: "通知公告"},
-						{name: "电站上网电量结算单"},
-						{name: "电站下网电量结算单"},
-						{name: "电站生产日报填报"},
-						{name: "电站生产日报审核"},
-						{name: "电站生产日报邮件"},
-						{name: "计划电量管理"},
-						{name: "收发文管理"},
-						{name: "外来人员登记"},
-						{name: "电站人员取证"},
-						{name: "车辆保养维修"},
-						{name: "钥匙借用登记"}
-					]
-				},
-				tabChange: function(code) {
-					if (this.closing) {
-						
-						this.currentPanel = this.lastPanel;
-					}else{
-						this.lastPanel = this.currentPanel;
-						this.currentPanel = code;
+					menus: {
+						"home": [
+							{name: "通知公告"},
+							{name: "电站上网电量结算单"},
+							{name: "电站下网电量结算单"},
+							{name: "电站生产日报填报"},
+							{name: "电站生产日报审核"}
+						],
+						"daily": [
+							{name: "待办事项"},
+							{name: "已办事项"},
+							{name: "通知公告"},
+							{name: "电站上网电量结算单"},
+							{name: "电站下网电量结算单"},
+							{name: "电站生产日报填报"},
+							{name: "电站生产日报审核"},
+							{name: "电站生产日报邮件"},
+							{name: "计划电量管理"},
+							{name: "收发文管理"},
+							{name: "外来人员登记"},
+							{name: "电站人员取证"},
+							{name: "车辆保养维修"},
+							{name: "钥匙借用登记"}
+						]
 					}
-					this.setCurrentLeftMenu();
 				},
-				setCurrentLeftMenu: function() {
-					this.currentMenus = this.menus[this.currentPanel];
-				},
-				onDisplay: function() {
-					this.setCurrentLeftMenu();
-				},
-				tabClose: function(index) {
-					this.closing = true;
-					this.closeIndex = index;
+				methods: {
+					tabChange: function(code) {
+						if (this.data.closing) {
+							this.data.currentPanel = this.data.lastPanel;
+						}else{
+							this.data.lastPanel = this.data.currentPanel;
+							this.data.currentPanel = code;
+						}
+						this.$setCurrentLeftMenu();
+					},
+					setCurrentLeftMenu: function() {
+						this.data.currentMenus = this.data.menus[this.data.currentPanel];
+					},
+					onDisplay: function() {
+						this.$setCurrentLeftMenu();
+					},
+					tabClose: function(index) {
+						this.data.closing = true;
+						this.data.closeIndex = index;
+					}
 				}
 			}
 			
