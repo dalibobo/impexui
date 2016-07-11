@@ -40,46 +40,48 @@
 			}
 
 			var model = {
-				options: [],
-				alert: function() {
-					this.options.push("打开了一个Alert Dialog");
-					scrolSel();
-					Messager.alert(this, "这是一个Alert Dialog", function() {
-						this.options.push("点击了Alert Dialog对话框上的确定");
+				data: {options: []},
+				methods: {
+					alert: function() {
+						this.data.options.push("打开了一个Alert Dialog");
 						scrolSel();
-					});
-				},
-				confirm: function() {
-					this.options.push("打开了一个Confirm Dialog");
-					scrolSel();
-					Messager.set({buttonReverse: false});
-					Messager.confirm("这是一个Confirm Dialog", function(e) {
-						this.options.push("点击了Confirm Dialog对话框上的" + (e ? "确定" : "取消"));
-						if (e) {
-							this.options.push("打开了一个Success Log");
-							Messager.success("您点击了确定", 1000);
-						}else{
-							this.options.push("打开了一个Error Log");
-							Messager.error("您点击了取消");
-						}
+						Messager.alert(this, "这是一个Alert Dialog", function() {
+							this.data.options.push("点击了Alert Dialog对话框上的确定");
+							scrolSel();
+						});
+					},
+					confirm: function() {
+						this.data.options.push("打开了一个Confirm Dialog");
 						scrolSel();
-					});
-				},
-				success: function() {
-					this.options.push("打开了一个Success Log，显示1秒");
-					Messager.success("1秒后隐藏", 1000);
-				},
-				error: function() {
-					this.options.push("打开了一个Error Log，显示2秒");
-					Messager.error("2秒后隐藏", 2000);
-				},
-				log: function() {
-					this.options.push("打开了一个Log，显示3秒");
-					Messager.log("3秒后隐藏", 3000);
-				},
-				custom: function() {
-					this.options.push("打开了一个Custom Log");
-					Messager.custom("点我才隐藏", 0);
+						Messager.set({buttonReverse: false});
+						Messager.confirm("这是一个Confirm Dialog", function(e) {
+							this.data.options.push("点击了Confirm Dialog对话框上的" + (e ? "确定" : "取消"));
+							if (e) {
+								this.data.options.push("打开了一个Success Log");
+								Messager.success("您点击了确定", 1000);
+							}else{
+								this.data.options.push("打开了一个Error Log");
+								Messager.error("您点击了取消");
+							}
+							scrolSel();
+						});
+					},
+					success: function() {
+						this.data.options.push("打开了一个Success Log，显示1秒");
+						Messager.success("1秒后隐藏", 1000);
+					},
+					error: function() {
+						this.data.options.push("打开了一个Error Log，显示2秒");
+						Messager.error("2秒后隐藏", 2000);
+					},
+					log: function() {
+						this.data.options.push("打开了一个Log，显示3秒");
+						Messager.log("3秒后隐藏", 3000);
+					},
+					custom: function() {
+						this.data.options.push("打开了一个Custom Log");
+						Messager.custom("点我才隐藏", 0);
+					}
 				}
 			};
 
