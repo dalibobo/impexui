@@ -654,3 +654,50 @@ ul.ztree.zTreeDragUL {margin:0; padding:0; position:absolute; width:auto; height
     visibility: visible;
 }
 /**perfect-scrollbar样式结束**/
+
+
+/***************搜索框*******************/
+.impex-searchBox{
+	width:auto;
+	height:20px;
+	display: inline-block;
+	border:1px solid #95B8E7;
+}
+
+.impex-searchBox .searchBox_select{
+	height:16px;
+	border:0px;
+	vertical-align:middle;
+	outline:medium;
+	position:relative;
+	top:-2px;
+}
+
+.impex-searchBox .searchBox_input_icon{
+	height:20px;
+	display: inline-block;	
+}
+.impex-searchBox .span_left_border{
+	border-left:#95B8E7 solid 1px;
+}
+
+.impex-searchBox .searchBox_input{
+ 	height:18px;
+ 	border:0px;
+ 	padding:0px 5px;
+ 	outline:medium;
+ 	vertical-align:middle;
+ 	position:relative;
+	top:-2px;
+}
+
+.impex-searchBox .searchBox_icon{
+	display: inline-block;
+	vertical-align:middle;
+	width:18px;
+	height:16px;
+	background:url('images/searchbox_button.png') no-repeat;
+	position:relative;
+	top:-2px;
+}
+/***************搜索框结束*******************/
