@@ -586,8 +586,8 @@ impex.component("impex-pager", {
 					<div class="separator"></div>\
 					<div class="btn {{current == totalPage ? \'btn-disabled\' : \'\'}}" :click="goto(current + 1)"><i class="pagination-icon next-page"></i></div>\
 					<div class="btn {{current == totalPage ? \'btn-disabled\' : \'\'}}" :click="goto(totalPage)"><i class="pagination-icon last-page"></i></div>\
-					<div class="separator"></div>\
-					<div class="btn" :click="refresh()"><i class="pagination-icon refresh"></i></div>\
+					<div class="separator" x-show="false"></div>\
+					<div class="btn" x-show="false" :click="refresh()"><i class="pagination-icon refresh"></i></div>\
 					<div class="pagination-info">显示 {{(current - 1) * pageSize + 1}} 到 {{(pageSize * current) > total ? total : (pageSize * current)}} 条 共 {{total}} 条</div>\
 				</div>',
 	data: {
