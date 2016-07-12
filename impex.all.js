@@ -7,7 +7,7 @@
  * Released under the MIT license
  *
  * website: http://impexjs.org
- * last build: 2016-07-11
+ * last build: 2016-07-12
  */
 !function (global) {
 	'use strict';
@@ -1149,8 +1149,8 @@ var Builder = new function() {
                     __propStr = null;
                     __lastMatch = undefined;
                     recurRender(component,pc,change.type,newObj,oldVal,0,component);
-                    if(component.$__watcher instanceof Function){
-                    	component.$__watcher(change.type,newObj,oldVal,pc);
+                    if(component.__watcher instanceof Function){
+                    	component.__watcher(change.type,newObj,oldVal,pc);
                     }
                     //reobserve
                     observerProp(newObj,pc,component);
@@ -1286,7 +1286,7 @@ var Builder = new function() {
 			}
 			var prop = undefined;
             try{
-                prop = eval('impex._cs["'+component.$__id+'"]'+__propStr);
+                prop = eval('impex._cs["'+component.__id+'"]'+__propStr);
             }catch(e){}
             if(!Util.isUndefined(prop)){
             	__lastMatch = component;
@@ -3936,8 +3936,9 @@ impex.service('Transitions',new function(){
                 if(ki)subComp.data[ki] = isIntK?k>>0:k;
 
                 subComp.init();
+                var isSuspend = subComp.__state === "suspend"?true:false;
                 subComp.display();
-                Builder.build(subComp);
+                // isSuspend && Builder.build(subComp);
                 onDisplay(subComp);
             }
         }

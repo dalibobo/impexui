@@ -116,7 +116,7 @@
 .impex-datagrid .table tbody tr:last-child td{border-bottom:none;}
 .impex-datagrid .table tbody tr td:last-child{border-right:none;}
 .impex-datagrid .toolbar{height:30px;border:1px solid #ccc;padding:3px;}
-.impex-datagrid .table .line-number{text-align:center;width:30px;max-width:80px;}
+.impex-datagrid .table .line-number{text-align:center;width:30px;max-width:80px;padding-right: 5px;}
 .impex-datagrid .checkAll{}
 .impex-datagrid .checkbox{}
 /**数据表格样式结束**/
@@ -513,7 +513,14 @@ ul.ztree.zTreeDragUL {margin:0; padding:0; position:absolute; width:auto; height
 .impex-layout .center nav .menu li .label{padding-left:26px;height:100%;}
 .impex-layout .center nav .menu li .label .icon{width:14px;height:14px;display:inline-block;margin-right:5px;}
 .impex-layout .center nav .menu li .label .icon-app{float:left;background:url(images/app.png) no-repeat;background-size:14px 14px;margin-top:7px;}
-.impex-layout .center .container{flex:1;overflow:auto;margin-top:2px;}
+.impex-layout .center nav .menu li a{text-decoration:none;color:rgb(34,34,34);}
+.impex-layout .center nav .menu li a:active{color:rgb(34,34,34);}
+.impex-layout .center .container{flex:1;overflow:auto;margin-top:2px;display:flex;flex-direction:column;}
+.impex-layout .center .container .panel{width:100%;height:100%;display:none;flex:1;position: relative;}
+.impex-layout .center .container .panel.active{display:block;}
+.impex-layout .center .container .panel .panel-loading{position:absolute;background:url(images/loading.gif) no-repeat;background-size:32px;padding-left:40px;left:50%;top:50%;margin-left:-66px;margin-top:-16px;height:32px;line-height:32px;}
+.impex-layout .center .container .panel .panel-error{position:absolute;background:url(images/pageError.png) no-repeat;background-size:32px;padding-left:40px;left:50%;top:50%;margin-left:-82px;margin-top:-16px;height:32px;line-height:32px;}
+.impex-layout .center .container .panel .panel-blank{position:absolute;background:url(images/blank.png) no-repeat;background-size:32px;padding-left:40px;left:50%;top:50%;margin-left:-82px;margin-top:-16px;height:32px;line-height:32px;}
 .impex-layout footer.skin{z-index:-1;width:100%;height:100%;position:absolute;top:0;left:0;background-repeat:repeat-x;background-image:url(images/skin.png);background-position:0 86px;}
 .impex-layout footer .skin-top{position:absolute;width:100%;top: 0;left: 0;z-index: 8;height: 86px;background-repeat: repeat-x;overflow: hidden;background-repeat: repeat-x;background: -webkit-linear-gradient(top,#196eac 0,#7fb4d9 100%);}
 .impex-layout footer .skin-top .skin-top-inner{display: block;background: -webkit-linear-gradient(left,RGBA(255,255,255,0) 0,#CAE0F1 50%,RGBA(255,255,255,0) 100%);background: -moz-linear-gradient(left,RGBA(255,255,255,0) 0,#CAE0F1 50%,RGBA(255,255,255,0) 100%);background: -ms-linear-gradient(left,RGBA(255,255,255,0) 0,#CAE0F1 50%,RGBA(255,255,255,0) 100%);background: -o-linear-gradient(left,RGBA(255,255,255,0) 0,#CAE0F1 50%,RGBA(255,255,255,0) 100%);background: linear-gradient(left,RGBA(255,255,255,0) 0,#CAE0F1 50%,RGBA(255,255,255,0) 100%);position: absolute;width: 100%;height: 100%;}
