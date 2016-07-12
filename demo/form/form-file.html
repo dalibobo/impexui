@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html >
+    <head>
+        <title>Impexui</title>
+		<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+		<link rel="stylesheet" type="text/css" href="../../themes/default/impexui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css"/>
+		<script type="text/javascript" src="../../impex.all.js"></script>
+		<script type="text/javascript" src="../../build/impexui.all.js"></script>
+		<script type="text/javascript" src="../../src/impex.component.js"></script>
+		<script type="text/javascript" src="../../src/impex.directive.js"></script>
+		<script type="text/javascript" src="../../src/impex.util.js"></script>
+		<script type="text/javascript" src="../../src/impexui.js"></script>
+<style>
+
+.impex-file{
+	width:200px;
+	height:24px;
+}
+.textbox {
+    position: relative;
+    border: 1px solid #95B8E7;
+    background-color: #fff;
+    vertical-align: middle;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0;
+    padding: 0;
+    -moz-border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
+}
+.textbox .textbox-button, .textbox .textbox-button:hover {
+    position: absolute;
+    top: 0;
+    padding: 0;
+    vertical-align: top;
+    -moz-border-radius: 0 0 0 0;
+    -webkit-border-radius: 0 0 0 0;
+    border-radius: 0 0 0 0;
+}
+.textbox-button-right, .textbox-button-right:hover {
+    border-width: 0 0 0 1px;
+}
+.l-btn-left {
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    vertical-align: top;
+}
+.l-btn-text {
+    display: inline-block;
+    vertical-align: top;
+    width: auto;
+    line-height: 24px;
+    font-size: 12px;
+    padding: 0;
+    margin: 0 4px;
+}
+.textbox .textbox-text {
+    font-size: 12px;
+    border: 0;
+    margin: 0;
+    padding: 4px;
+    white-space: normal;
+    vertical-align: top;
+    outline-style: none;
+    resize: none;
+    -moz-border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
+}
+.filebox .textbox-value {
+    vertical-align: top;
+    position: absolute;
+    top: 0;
+    left: -5000px;
+}
+.filebox-label {
+    display: inline-block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    left: 0;
+    top: 0;
+    z-index: 10;
+  
+}
+.l-btn {
+    color: #444;
+    background: #fafafa;
+    background-repeat: repeat-x;
+    border: 1px solid #bbb;
+    background: -webkit-linear-gradient(top,#ffffff 0,#eeeeee 100%);
+    background: -moz-linear-gradient(top,#ffffff 0,#eeeeee 100%);
+    background: -o-linear-gradient(top,#ffffff 0,#eeeeee 100%);
+    background: linear-gradient(to bottom,#ffffff 0,#eeeeee 100%);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff,endColorstr=#eeeeee,GradientType=0);
+    -moz-border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
+}
+.l-btn {
+    text-decoration: none;
+    display: inline-block;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+    outline: none;
+    text-align: center;
+    vertical-align: middle;
+    line-height: normal;
+}
+</style>
+
+    <body>
+		<h3>Form表单</h3>
+		<p>带校验的form表单操作。新增、重置和修改。</p>
+		<fieldset>
+			<legend>新增学生</legend>
+			<br>
+			<form name="studentForm" x-submit="submitForm">
+				
+				<impex-input-file name="fileName">123</impex-input-file>
+				<impex-date></impex-date>
+				
+				<br><br>
+				<input type="submit" value="提交"/>
+				<input type="button" value="重置表单" :click="reset()"/>
+				<input type="button" value="编辑" :click="edit()"/>
+			</form>
+		</fieldset>
+		<script src="DatePicker/WdatePicker.js"></script>
+
+		<script>
+			var model = {
+				student: {},
+				
+				onDisplay: function() {
+				
+				},
+				submitForm: function() {
+					alert("提交" + (this.studentForm.invalid ? "失败" : "成功"));
+				},
+				onInit: function() {
+					this;
+					
+				},
+				
+				reset: function() {
+					this.student = {};
+					this.studentForm.clear();
+				},
+				submitEditForm: function() {
+					
+				},
+				
+			};
+
+			var page = impex.render(document.body, model);
+
+		</script>
+    </body>
+</html>
