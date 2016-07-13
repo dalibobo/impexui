@@ -509,7 +509,7 @@ ul.ztree.zTreeDragUL {margin:0; padding:0; position:absolute; width:auto; height
 .impex-layout .center nav{width:201px;overflow:hidden;position:relative;border-right:1px solid #c3ced5;}
 .impex-layout .center nav .menu{}
 .impex-layout .center nav .menu li{height:28px;font-size:12px;line-height:28px;cursor:pointer;}
-.impex-layout .center nav .menu li:hover{background-color:rgb(220, 230, 241);}
+.impex-layout .center nav .menu li:hover, li.active{background-color:rgb(220, 230, 241);}
 .impex-layout .center nav .menu li .label{padding-left:26px;height:100%;}
 .impex-layout .center nav .menu li .label .icon{width:14px;height:14px;display:inline-block;margin-right:5px;}
 .impex-layout .center nav .menu li .label .icon-app{float:left;background:url(images/app.png) no-repeat;background-size:14px 14px;margin-top:7px;}

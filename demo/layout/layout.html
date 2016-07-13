@@ -16,7 +16,6 @@
 		<script type="text/javascript" src="../js/jquery.min.js"></script>
 		<script type="text/javascript" src="../js/jquery.mousewheel.js"></script>
 		<script type="text/javascript" src="../js/perfect-scrollbar.js"></script>
-
 		<style>
 			html{height:100%;}
 			body{height:100%;margin:0px;overflow:hidden;font-family: 'Microsoft Yahei', verdana;color:rgb(34,34,34);}
@@ -29,11 +28,11 @@
 				<nav class="tV0"> 
 					<div class="wo0">
 						<ul>
-							<li :click="tabChange(fun.code)" class="tab-bg {{fun.code == currentPanel ? 'tab-bg-select' : ''}} {{($index == 9 || ($index + 1) == functions.length) ? 'tr5' : ''}}" x-each="functions as fun => limitBy:10" style="width: 86px;">
+							<li :click="tabChange(fun.code, fun)" class="tab-bg {{fun.code == currentPanel ? 'tab-bg-select' : ''}} {{($index == 9 || ($index + 1) == functions.length) ? 'tr5' : ''}}" x-each="functions as fun => limitBy:10" style="width: 86px;">
 								<span class="label">{{fun.name}}</span>
-								<a :click="tabClose($index)" x-if="fun.canClose" class="close"><i class="icon"></i></a>
+								<a :click="tabClose($index)" x-if="false" class="close"><i class="icon"></i></a>
 							</li>
-							<li class="tab-bg op"><i class="icon"></i></li>
+							<li class="tab-bg op" x-if="false"><i class="icon"></i></li>
 						</ul>
 					</div>
 				</nav>
@@ -42,13 +41,13 @@
 			<div class="center">
 				<nav id="leftNav" x-if="currentMenus && currentMenus.length > 0">
 					<ul class="menu">
-						<li x-each="currentMenus as menu">
-							<a href="#!{{menu.link}}">
+						<li x-each="currentMenus as menu" class="{{currentLink == menu.link ? 'active' : ''}}">
+							<a href="#!{{menu.link ? menu.link : ''}}">
 								<div class="label">
 									<i class="icon icon-app"></i>
 									<span>{{# menu.name}}</span>
 								</div>
-							</a>							
+							</a>		
 						</li>
 					</ul>
 				</nav>
@@ -63,191 +62,7 @@
 				</div>
 			</footer>
 		</div>
-		<script>
-			var FUNCTIONS = [
-				{name: "首页", code: "home"},
-				{name: "日常办公", code: "daily"},
-				{name: "故障缺陷管理", code: "bug"},
-				{name: "交接班管理", code: "exchange_class", canClose: true},
-				{name: "两票管理", code: "tiket", canClose: true},
-				{name: "运行记录", code: "run", canClose: true},
-				{name: "安全管理", code: "safe", canClose: true},
-				{name: "检修管理", code: "repair", canClose: true},
-				{name: "设备管理", code: "eq", canClose: true},
-				{name: "物资管理", code: "device", canClose: true},
-				{name: "生产日报报表", code: "report", canClose: true},
-				{name: "文档管理", code: "doc", canClose: true},
-				{name: "基础信息", code: "base", canClose: true}
-			];
-			
-			var MENUS = {
-				"home": [
-					{name: "主页", link: "/home", component: "impex-com-wait"}
-				],
-				"daily": [
-					{name: "待办事项", link: "/wait", component: "impex-com-wait"},
-					{name: "已办事项", link: "/finish", component: "impex-com-finish"}
-				]
-			};
-			
-			impex.component("impex-com-wait", {
-				templateURL: "wait.html",
-				data: {
-					cols: [
-						{code: "eventNo", title: "事件编号", align: "center", width: 40, checkbox: true},
-						{code: "eventName", title: "事件名称"},
-						{code: "flowName", title: "流程名称"},
-						{code: "flowNode", title: "流程当前节点"},
-						{code: "creator", title: "创建人"},
-						{code: "createTime", title: "创建时间"}
-					]
-				}
-			});
-			
-			impex.component("impex-com-finish", {
-				templateURL: "finish.html"
-			});
-		
-			var PANELS = [];
-			var PANEL_HTML = "";
-			var RS = {};
-			for (var k in MENUS) {
-				var items = MENUS[k];
-				if (_.isArray(items) && items.length > 0) {
-					var rs = {};
-					for (var i = items.length; i--;) {
-						var menu = items[i];
-						if (menu.link && menu.component) {
-							rs[menu.link] = menu.component;
-						}
-					}
-
-					if (!_.isEmpty(rs)) {
-						RS[k] = rs;
-						var params = {
-							code: k,
-							template: '<div class="panel active" {{=BINDPROPS}}><x-router-view></x-router-view></div>',
-							onCreate:function(router){
-								router.when(RS[this.code]).onRoute(this.cbk);
-								PANELS.push(this);						
-							},
-							cbk:function(path){
-								this.host.emit("panel.route", path);
-							}
-						};
-						var n = "impex-"+ k +"-panel";
-						PANEL_HTML += "<" + n + "></" + n + ">";
-						impex.component(n, params, ['XRouter']);
-					}
-				}
-			}
-
-			var model = {
-				data: {
-					lastPanel: "daily",
-					currentPanel: "daily",
-					currentMenus: [],
-					functions: FUNCTIONS,
-					menus: MENUS,
-					panelHtml: ""
-				},
-				onDisplay: function() {
-					this.$setCurrentLeftMenu();
-				},
-				events: {
-					"panel.route": function(panel, path) {
-						this.data.currentPanel = panel.code;
-						this.$setCurrentLeftMenu();
-						for (var i = PANELS.length; i--;) {
-							PANELS[i].view.hide();
-							if (PANELS[i] === panel) {
-								PANELS[i].view.show();
-							}
-						}
-					}
-				},
-				onBeforeCompile:function(str){
-					return str.replace(/##PANEL_HTML/g, PANEL_HTML);
-				},
-				methods: {
-					tabChange: function(code) {
-						if (this.data.closing) {
-							this.data.currentPanel = this.data.lastPanel;
-						}else{
-							this.data.lastPanel = this.data.currentPanel;
-							this.data.currentPanel = code;
-						}
-						this.$setCurrentLeftMenu();
-					},
-					setCurrentLeftMenu: function() {
-						this.data.currentMenus = this.data.menus[this.data.currentPanel];
-					},
-					tabClose: function(index) {
-						this.data.closing = true;
-						this.data.closeIndex = index;
-					},
-					clickLeftMenu: function(menu) {
-						var fn = this.getFn(this.data.currentPanel);
-						fn.html = '<div class="panel-loading">页面加载中...</div>';
-						if (_.isString(menu.html)) {
-							fn.html = menu.html;
-						}else{
-							if (_.isString(menu.link)) {
-								this.loadUrl(menu.link, {
-									success: function(html) {
-										fn.html = html;
-									},
-									error: function(html) {
-										fn.html = '<div class="panel-error">页面加载出错了...</div>';
-									}
-								});
-							}else{
-								fn.html = '<div class="panel-blank">没有可显示内容...</div>';
-							}
-						}
-					}
-				},
-				loadUrl: function(url, params) {
-					var that = this;
-					$.ajax({
-						url: url + "?t=" + Date.now(),
-						method: "get",
-						timeout: 20,
-						success: function(rs) {
-							params.success && params.success(rs);
-						},
-						error: function(rs) {
-							params.error && params.error(rs);
-						}
-					});
-				},
-				getFn: function(code) {
-					var fns = this.data.functions;
-					for (var i = fns.length; i--;) {
-						if (fns[i].code == code) {
-							return fns[i];
-						}
-					}
-					return null;
-				}
-			}
-
-			$(document).ready(function() {
-				$('#leftNav').perfectScrollbar();
-			});
-
-			impex.component("impex-layout", {
-				$template:  '<div id="{{id}}" class="impex-layout {{=class}}">\
-								<header>这里是头部</header>\
-								<div class="center">\
-									<nav>这里是导航栏</nav>\
-									<div class="container">这里是页面主内容区域</div>\
-								</div>\
-								<footer class="skin"></footer>\
-							</div>'
-			});
-
-			var page = impex.render(document.body, model);
-		</script>
+		<script type="text/javascript" src="config.js"></script>
+		<script type="text/javascript" src="layout.js"></script>
     </body>
 </html>
