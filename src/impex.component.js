@@ -308,7 +308,7 @@ impex.component("impex-linkbutton", {
 				</div>',
 	methods: {
 		clickHandler: function() {
-			var fn = getFn(this, this.data.click);
+			var fn = this.m(this.data.click);
 			if (null != fn) {
 				fn(this);
 			}else{
@@ -338,7 +338,7 @@ impex.component("impex-datagrid", {
 						</tr>\
 						</thead>\
 						<tbody>\
-							<tr x-each="dataSource as d => orderBy:##orderId[\'key\']:##orderId[\'dir\'] .limitBy:pageSize:startSize">\
+							<tr x-each="dataSource as d => limitBy:pageSize:startSize .orderBy:##orderId[\'key\']:##orderId[\'dir\']">\
 								<td class="line-number" x-if="_.isString(linenumber) && \'true\' == linenumber">{{$index + 1 + start}}</td>\
 								<td x-each="columns as col" style="text-align:{{col.align}};width:{{col.width}}px;">\
 									<span x-if="!col.checkbox">\
@@ -384,7 +384,7 @@ impex.component("impex-datagrid", {
 				var p = getParentModel(this, this.data.ds);						
 				if (null != p) {
 					var that = this;
-					p.watch(this.data.ds, function(type, newVal, oldVal, propChain) {
+					p.watch(this.data.ds, function(target, name, type, newVal, oldVal) {
 						if ("update" != type) return;
 						that.data.dataSource = newVal;
 						

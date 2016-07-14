@@ -4,72 +4,164 @@
         <title>Impexui</title>
 		<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
         <meta http-equiv="content-type" content="text/html;charset=utf-8">
-		<script type="text/javascript" src="../../impex.min.js"></script>
+		<script type="text/javascript" src="../../impex.all.js"></script>
 		<script type="text/javascript" src="../../build/impexui.all.js"></script>
+		<script type="text/javascript" src="../../src/impex.util.js"></script>
+		<script type="text/javascript" src="../../src/impex.directive.js"></script>
+		<script type="text/javascript" src="../../src/components/impex.form.js"></script>
+		<style>
+			.invalid{
+				background-color:#ddd;
+			}
+		</style>
     </head>
     <body>
 		<h3>Form表单</h3>
 		<p>带校验的form表单操作。新增、重置和修改。</p>
 		<fieldset>
-			<legend>新增学生</legend>
+			<legend>学生信息表单</legend>
 			<br>
-			<form name="studentForm" x-submit="submitForm">
-				学生姓名：<input type="text" autocomplete="false" value="{{student.name}}"  name="student.name" x-required x-maxlength="8" x-minlength="2"/>
-				<div for="student.name" x-messages="studentForm.student.name.invalid" multiple>
-					<small x-message="required">学生姓名不能为空</small>
-					<small x-message="maxlength">学生姓名太长了，最多8个字</small>
-					<small x-message="minlength">学生姓名最少2个字</small>
-				</div>
+			<impex-form novalidate=true>
+				学生姓名：<input type="text" autocomplete="false" value="{{student.name}}" x-validate="required,email,length[5, 20],cdate['s1','s2']" name="student.name"/>
 				<br><br>
-				学生年龄：<input type="text" value="{{student.age}}" name="student.age" x-required x-pattern="(?:[1][0-9]|20)"/>
-				<div for="student.age" x-messages="studentForm.student.age.invalid" multiple>
-					<small x-message="pattern">年龄必须在10到20之间</small>
-					<small x-message="required">学生年龄不能为空</small>
-				</div>
+				学生年龄：<input type="text" value="{{student.age}}" name="student.age"/>
 				<br><br>
-				入学日期：<input type="text" value="{{student.sdate}}" name="student.sdate" x-validate="checkDate"/>
-				<div for="student.sdate" x-messages="studentForm.student.sdate.invalid" multiple>
-					<small x-message="validate">入学日期必须小于离校日期</small>
-				</div>
+				入学日期：<input type="text" value="{{student.sdate}}" name="student.sdate"/>
 				<br><br>
-				离校日期：<input type="text" value="{{student.edate}}" name="student.edate" x-validate="checkDate"/>
-				<div for="student.edate" x-messages="studentForm.student.edate.invalid" multiple>
-					<small x-message="pattern">入学日期必须小于离校日期</small>
-				</div>
+				离校日期：<input type="text" value="{{student.edate}}" name="student.edate"/>
 				<br><br>
-				<input type="submit" value="提交"/>
+				<input type="submit" value="提交" x-disabled="invalid"/>
 				<input type="button" value="重置表单" :click="reset()"/>
 				<input type="button" value="编辑" :click="edit()"/>
-			</form>
+			</impex-form>
 		</fieldset>
 
 		<script>
-			var model = {
-				student: {},
-				onDisplay: function() {
+			// 自定义验证标签
+			impex.directive("validate", {
+				onCreate: function() {
+					var reg = /()/;
+					console.log(this.value);
+				},
+				
+				onInit: function() {
+					var that = this;
+					$(this.view.el).on("input", function() {
+						that.emit("validate.fire", that.do());
+					});
+				},
+				
+				do: function() {
+					return this.view.el.value != "";
+				}
+			});
+			
+			/**
+			 * impex-form组件
+			 */
+			impex.component('impex-form', {
+				template: '<form :submit="onSubmit()" class="impex-form {{=class}}" style="{{=style}}">{{=CONTENT}}</form>',   
 
-				},
-				submitForm: function() {
-					alert("提交" + (this.studentForm.invalid ? "失败" : "成功"));
-				},
-				reset: function() {
-					this.student = {};
-					this.studentForm.clear();
-				},
-				submitEditForm: function() {
-					
-				},
-				edit: function() {
-					this.student = {
-						name: "张三",
-						age: 18
+				// 组件初始化	
+				onInit: function() {
+					this.findValidateCom();
+					if (_.isString(this.data.novalidate)) {
+						this.data.novalidate = (this.data.novalidate == "true");
 					}
-					this.studentForm.validate();
 				},
-				checkDate: function(view, formData) {
-					console.log(view);
-					console.log(formData);
-					return true;
+
+				// 组件显示
+				onDisplay: function() {
+					this.validate();
+				},
+				
+				// form内部所有的validate组件
+				validates: [],
+				// 查找form组件内部的validate组件
+				findValidateCom: function() {	
+					var cs = this.children;
+					for (var i = 0; i < cs.length; i++) {
+						if (cs[i].name && cs[i].name == "x-validate") {
+							this.validates.push({
+								com: cs[i],
+								invalid: false
+							});
+						}
+					}
+				},
+				
+				// 阻止浏览器默认提交行为
+				preventSubmit: function(event) {
+					if (is.ie()) {
+						window.event.returnValue = false;
+					}else{
+						event.preventDefault();
+					}
+				},
+				
+				data: {
+					novalidate: false,
+					invalid: false
+				},
+
+				validate: function() {	// 验证表单
+					var formValidate = true;
+					// 验证
+					if (!this.data.novalidate && this.validates.length > 0) {
+						for (var i = this.validates.length; i--;) {
+							var v = this.validates[i];
+							v.invalid = !v.com.do();
+							if (v.invalid && formValidate) formValidate = false;
+						}
+					}					
+					this.data.invalid = !formValidate;
+					return formValidate;
+				},
+				
+				reset: function() {	// 重置表单
+					this.broadcast("form.clear");
+				},
+				
+				submit: function() {	// 提交表单
+					$(this.view.el).submit();
+				},
+				
+				methods: {
+					onSubmit: function() {
+						if (!this.validate()) this.preventSubmit(event);
+					},
+					submit: function() {	// 提交表单
+						this.submit();
+					},
+					reset: function() {	// 重置表单
+						this.reset();
+					}
+				},
+
+				events: {
+					"validate.fire": function(com, rs) {
+						if (this.data.novalidate) return;
+						var formValidate = true;
+						for (var i = this.validates.length; i--;) {
+							var v = this.validates[i];
+							if (v.com === com) {
+								v.invalid = !rs;
+								if (v.invalid) {
+									formValidate = false;
+									break;
+								}
+							}
+							if (v.invalid && formValidate) formValidate = false;
+						}
+
+						this.data.invalid = !formValidate;
+					}
+				}
+			});
+
+			var model = {
+				onDisplay: function() {
+					
 				}
 			};
 			var page = impex.render(document.body, model);
