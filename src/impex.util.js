@@ -20,23 +20,6 @@ impex.$top = function() {
 }
 
 /**
- * 验证
- */
-impex.validate = {
-	// 自定义验证
-	directive: function(name, validateFn) {
-		impex.directive(name, {
-			onCreate: function() {
-				_setupValidate(this);
-			},
-			validate: function() {
-				validateFn(this);
-			}
-		});
-	}
-}
-
-/**
  * 查找组件实例，并返回符合条件的所有实例
  * @param  {string} name       组件名，可以使用通配符*
  * @param  {Object} conditions 查询条件，JSON对象

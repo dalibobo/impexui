@@ -22,23 +22,6 @@ impex.$top = function() {
 }
 
 /**
- * 验证
- */
-impex.validate = {
-	// 自定义验证
-	directive: function(name, validateFn) {
-		impex.directive(name, {
-			onCreate: function() {
-				_setupValidate(this);
-			},
-			validate: function() {
-				validateFn(this);
-			}
-		});
-	}
-}
-
-/**
  * 查找组件实例，并返回符合条件的所有实例
  * @param  {string} name       组件名，可以使用通配符*
  * @param  {Object} conditions 查询条件，JSON对象
@@ -439,27 +422,11 @@ impex.directive('submit',{
  */
 impex.directive("disabled", {
 	observe: function(rs) {
-		var that = this;
-		setTimeout(function() {
-			var obj = that.closest(that.$value);
-			var v = that.$value;
-			var vs = v.split(".");
-			var o = obj;
-			for (var i = 0; i <= vs.length; i++) {
-				if (!o) {
-					that.view.removeAttr("disabled");
-					return;
-				}
-				if (vs[i]) {
-					o = o[vs[i]];
-				}
-			}
-			if (o) {
-				that.view.attr("disabled", true);
-			}else{
-				that.view.removeAttr("disabled");
-			}
-		}, 10);
+		if (!rs) {
+			this.view.removeAttr("disabled");
+		}else{
+			this.view.attr("disabled", true);
+		}
 	}
 });
 
@@ -714,6 +681,31 @@ impex.component('impex-table-page',{
 });
 
 /**
+ * oms-form组件
+ */
+impex.component('impex-form', {
+	$template: '<form {{=BINDPROPS}} x-submit="onsubmitt">{{=CONTENT}}\
+				<div id="modalFooter" class="modal-footer" style="text-align:center;">\
+						<button id="submitbtn" class="btn btn-primary" type="submit" x-disabled="studentForm.invalid" >&nbsp;&nbsp;保 存&nbsp;&nbsp;</button>\
+						<button id="cancelbtn" class="btn btn-primary" :click="cancel();">&nbsp;&nbsp;关 闭&nbsp;&nbsp;</button> \
+				</div>\
+				</form>',   
+	onInit: function() {
+		
+	},	
+	onsubmitt: function() {
+		console.log("1");
+		try{
+			if(this.onsubmit!=undefined){
+				this.$parent.closest(this.onsubmit)[this.onsubmit](this.$view.el);
+			}
+		}catch(e){
+			console.log("调用onsubmit函数出错");
+		}
+	}
+});
+
+/**
  * impex-area组件
  */
 impex.component('impex-area', {
@@ -870,6 +862,26 @@ impex.component("impex-linkbutton", {
 });
 
 /**
+ * impex-linkbutton组件
+ */
+impex.component("impex-linkbutton", {
+	template:  '<div class="impex-linkbutton {{=class}}" :click="clickHandler()">\
+					<div class="icon {{=iconcls}}" x-if="_.isString(iconcls)"></div>\
+					<div class="text" x-if="_.isString(text)">{{=text}}</div>\
+				</div>',
+	methods: {
+		clickHandler: function() {
+			var fn = this.m(this.data.click);
+			if (null != fn) {
+				fn(this);
+			}else{
+				this.emit("linkbutton.click");
+			}
+		}
+	}
+});
+
+/**
  * impex-datagrid组件
  */
 impex.component("impex-datagrid", {
@@ -880,7 +892,7 @@ impex.component("impex-datagrid", {
 					</div>\
 					<table class="table" cellspacing="0" cellpadding="0" border="0">\
 						<thead class="head">\
-						<tr>\
+						<tr x-order="##orderId">\
 							<th class="line-number" x-if="_.isString(linenumber) && \'true\' == linenumber"></th>\
 							<th order="{{col.order ? col.code : \'\'}}" x-each="columns as col"  style="text-align:{{col.align}};width:{{col.width}}px;">\
 								<span x-if="!col.checkbox">{{col.title}}</span>\
@@ -889,10 +901,11 @@ impex.component("impex-datagrid", {
 						</tr>\
 						</thead>\
 						<tbody>\
-							<tr x-each="dataSource as d => limitBy:pageSize:startSize">\
+							<tr x-each="dataSource as d => limitBy:pageSize:startSize .orderBy:##orderId[\'key\']:##orderId[\'dir\']">\
 								<td class="line-number" x-if="_.isString(linenumber) && \'true\' == linenumber">{{$index + 1 + start}}</td>\
 								<td x-each="columns as col" style="text-align:{{col.align}};width:{{col.width}}px;">\
 									<span x-if="!col.checkbox">\
+										<span x-if="_.isString(col.formatter)">{{# this.m(col.formatter)(d[col.code], d)}}</span>\
 										<span x-if="!col.formatter">{{d[col.code]}}</span>\
 									</span>\
 									<span x-if="col.checkbox" class="checkbox"><input :click="checkItem(this)" value="{{d[col.code]}}" type="checkbox"/></span>\
@@ -934,7 +947,7 @@ impex.component("impex-datagrid", {
 				var p = getParentModel(this, this.data.ds);						
 				if (null != p) {
 					var that = this;
-					p.watch(this.data.ds, function(todos,name,type,newVal) {
+					p.watch(this.data.ds, function(target, name, type, newVal, oldVal) {
 						if ("update" != type) return;
 						that.data.dataSource = newVal;
 						
@@ -995,10 +1008,20 @@ impex.component("impex-datagrid", {
 
 		// 监听分页跳转
 		this.on("pager.goto", function(pager, currentPage, pageSize) {
-			this.data.pageSize = pageSize;
-			this.data.startSize = (currentPage - 1) * this.data.pageSize;
-			this.data.start = this.data.startSize;
-			console.log(this.data);
+			if (_.isString(this.data.url) && this.hasPager()) { // 远程带分页
+				this.data.queryParams.page = currentPage;
+				this.data.queryParams.rows = pageSize;
+				this.data.start = pageSize * (currentPage - 1);
+				var that = this;
+				this.loadUrl(function() {
+					that.clearCheckbox();
+				});
+			}else{
+				this.data.pageSize = pageSize;
+				this.data.startSize = (currentPage - 1) * this.data.pageSize;
+				this.data.start = this.data.startSize;
+				this.clearCheckbox();
+			}
 		});
 	},
 	clearCheckbox: function() {	// 清除checkbox选中状态
