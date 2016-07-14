@@ -21,10 +21,12 @@
 		<fieldset>
 			<legend>学生信息表单</legend>
 			<br>
-			<impex-form novalidate=true>
-				学生姓名：<input type="text" autocomplete="false" value="{{student.name}}" x-validate="required,email,length[5, 20],cdate['s1','s2']" name="student.name"/>
+			<impex-form onSuccess="onSuccess" url="http://localhost/mt/test_add.do">
+				学生姓名：<input id="sname" type="text" x-disabled="true" autocomplete="false" value="{{student.name}}" x-validate="required" name="student.name"/>
 				<br><br>
-				学生年龄：<input type="text" value="{{student.age}}" name="student.age"/>
+				学生年龄：<input style="display:none;" type="text" value="{{student.age}}" name="student.age" x-validate="required"/>
+				<br><br>
+				学生照片：<impex-file name="photo" style="display:inline-block;"></impex-file>
 				<br><br>
 				入学日期：<input type="text" value="{{student.sdate}}" name="student.sdate"/>
 				<br><br>
@@ -40,8 +42,6 @@
 			// 自定义验证标签
 			impex.directive("validate", {
 				onCreate: function() {
-					var reg = /()/;
-					console.log(this.value);
 				},
 				
 				onInit: function() {
@@ -56,29 +56,50 @@
 				}
 			});
 			
+			impex.component("impex-file", {
+				template:	'<div id={{id}} class="impex-file {{=class}}" style="{{=style}}">\
+								<span class="file-text"></span>\
+								{{# fileInputHtml}}\
+							</div>',
+				onInit: function() {
+					this.data.fileInputHtml = '<input x-disabled="{{xDisabled}}" type="file" reset-id="'+ getId() +'" name="'+ this.data.name +'" :change="onChange(this)"/>';
+				},
+				events: {
+					"form.reset": function() {
+						this.data.fileInputHtml = '<input type="file" reset-id="'+ getId() +'" name="'+ this.data.name +'" :change="onChange(this)"/>';
+					}
+				},
+				methods: {
+					onChange: function() {
+						console.log("file change");
+					}
+				}
+			});
+			
 			/**
 			 * impex-form组件
 			 */
 			impex.component('impex-form', {
-				template: '<form :submit="onSubmit()" class="impex-form {{=class}}" style="{{=style}}">{{=CONTENT}}</form>',   
+				template: '<form id={{id}} :submit="onSubmit()" class="impex-form {{=class}}" style="{{=style}}">{{=CONTENT}}</form>',   
 
 				// 组件初始化	
 				onInit: function() {
-					this.findValidateCom();
-					if (_.isString(this.data.novalidate)) {
-						this.data.novalidate = (this.data.novalidate == "true");
-					}
+					this._findValidateCom();
+					this.data.novalidate = _.isString(this.data.novalidate);
+
+					if (!_.isString(this.data.id)) this.data.id = "impex_form_" + getId();
 				},
 
 				// 组件显示
 				onDisplay: function() {
+					console.log(this.validates);
 					this.validate();
 				},
 				
 				// form内部所有的validate组件
 				validates: [],
 				// 查找form组件内部的validate组件
-				findValidateCom: function() {	
+				_findValidateCom: function() {	
 					var cs = this.children;
 					for (var i = 0; i < cs.length; i++) {
 						if (cs[i].name && cs[i].name == "x-validate") {
@@ -91,7 +112,7 @@
 				},
 				
 				// 阻止浏览器默认提交行为
-				preventSubmit: function(event) {
+				_preventSubmit: function(event) {
 					if (is.ie()) {
 						window.event.returnValue = false;
 					}else{
@@ -101,7 +122,8 @@
 				
 				data: {
 					novalidate: false,
-					invalid: false
+					invalid: false,
+					url: ""
 				},
 
 				validate: function() {	// 验证表单
@@ -110,7 +132,10 @@
 					if (!this.data.novalidate && this.validates.length > 0) {
 						for (var i = this.validates.length; i--;) {
 							var v = this.validates[i];
-							v.invalid = !v.com.do();
+							var vc = v.com;
+							var el = $(vc.view.el);
+							if (el.attr("disabled") || el.css("display") == "none") break;
+							v.invalid = !vc.do();
 							if (v.invalid && formValidate) formValidate = false;
 						}
 					}					
@@ -119,16 +144,75 @@
 				},
 				
 				reset: function() {	// 重置表单
-					this.broadcast("form.clear");
+					console.log(this.broadcast);
+					this.broadcast("form.reset");
 				},
 				
 				submit: function() {	// 提交表单
 					$(this.view.el).submit();
 				},
+
+				_sendAjax: function(data, hasFile) {	// 发送ajax请求
+					var hasFile = hasFile || false;
+					var that = this;
+					var setting = {
+						url: this.data.url,
+						data: data,
+						type: "post",
+						success: function(rs) {
+							if (_.isString(that.data.onsuccess)) {
+								var success = that.m(that.data.onsuccess);
+								success.apply(that, arguments);
+							}
+							that.emit("form.success", rs);
+						},
+						error: function(rs) {
+							if (_.isString(that.data.onerror)) {
+								var error = that.m(that.data.onerror);
+								error.apply(that, arguments);
+							}
+							that.emit("form.error", rs);
+						}
+					};
+					if (hasFile) {
+						setting.processData = false;
+						setting.contentType = false;
+					}
+					$.ajax(setting);
+				},
 				
 				methods: {
 					onSubmit: function() {
-						if (!this.validate()) this.preventSubmit(event);
+						if (this.validate()) {
+							if (_.isString(this.data.url)) {	// 设置了url地址
+								var that = this;
+								var files = $(this.view.el).find("input[type='file']");
+								if (files.length > 0) {
+									var formData = new FormData();
+									var formobj =  this.view.el.children;
+									for (var k = 0; k < formobj.length; k++) {
+										if(formobj[k].type != "file" && formobj[k].name != ""){
+											formData.append(formobj[k].name, formobj[k].value);
+										}
+									}
+									
+									for (var i = 0; i < files.length; i++) {
+										var input = files.get(i);
+										var flist = input.files;
+										if (input.name) {
+											for (var j = 0; j < flist.length; j++) {
+												formData.append(input.name, flist[j]);
+											}
+										}										
+									}
+									this._sendAjax(formData, true);
+								}else{
+									this._sendAjax($(this.view.el).serialize());
+								}
+							}
+						}
+						// 阻止浏览器默认提交行为
+						this._preventSubmit(event);
 					},
 					submit: function() {	// 提交表单
 						this.submit();
@@ -162,6 +246,16 @@
 			var model = {
 				onDisplay: function() {
 					
+				},
+				events: {
+					"form.success": function(com, rs) {
+						console.log("form.success => " + rs);
+					}
+				},
+				methods: {
+					"onSuccess": function(rs) {
+						console.log("onSuccess = >" + rs);
+					}
 				}
 			};
 			var page = impex.render(document.body, model);
