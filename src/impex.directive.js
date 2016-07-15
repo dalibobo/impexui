@@ -87,11 +87,10 @@ impex.directive("disabled", {
  * 排序
  */
 impex.directive("order", {
-	onCreate: function() {
+	onDisplay: function() {
 		var view = this.view;
 		view.addClass("x-order");
 		var el = view.el;
-
 		var top = impex.$top();
 		if (!top.data) top.data = {};
 		if (!top.data[this.value]) top.data[this.value] = {key: "", dir: ""};
@@ -108,9 +107,11 @@ impex.directive("order", {
 					});
 				}
 			}
-		}, 20);		
+		}, 20);
 	},
 	order: function(dom) {
+		var t1 = Date.now();
+		console.log(t1)
 		var order = dom.getAttribute("order");
 		var top = impex.$top();
 		var orderObj = top.data[this.value];

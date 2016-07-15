@@ -16,12 +16,48 @@
 		<script type="text/javascript" src="../../src/impexui.js"></script>
     </head>
     <body>
+		<!--
+		<h3>基本表格</h3>
+		<impex-datagrid id="baseGrid" title="基本的表格" titleIconCls="icon-grid" ds="studentData" cols="baseGrid.cols"></impex-datagrid>
+		-->
+		
+		<h3>带排序的表格</h3>
+		<impex-datagrid title="带排序的表格" titleIconCls="icon-grid" ds="studentData" cols="orderGrid.cols"></impex-datagrid>
+
+		<!--
+		<h3>带工具栏的表格</h3>
+		<impex-datagrid title="带工具栏的表格" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="studentData" cols="toolbarGrid.cols"></impex-datagrid>
+		<div id="grid_toolbar" x-ignore>
+			<impex-linkbutton click="doAdd" iconcls="icon-add" text="新增"></impex-linkbutton>
+			<impex-linkbutton click="doEdit" iconcls="icon-edit" text="编辑"></impex-linkbutton>
+			<impex-linkbutton click="doDelete" iconcls="icon-remove" text="删除"></impex-linkbutton>
+		</div>
+		
+		<h3>带复选框的表格</h3>
+		<impex-datagrid id="checkboxGrid" title="带复选框的表格" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="studentData" cols="checkboxGrid.cols"></impex-datagrid>
+		
+		
 		<h3>带分页的表格</h3>
-		<impex-datagrid id="paginationGrid" title="带分页的表格" pagination="true"  ds="students" cols="pagerGrid.cols"></impex-datagrid>
+		<impex-datagrid id="paginationGrid" title="带分页的表格" pagination="true" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="students" cols="pagerGrid.cols"></impex-datagrid>
 
-
+		<h3>异步数据无分页的表格</h3>
+		<impex-datagrid url="http://localhost/mt/test_listAll.do" id="agrid" title="异步数据无分页的表格" toolbar="atool" titleIconCls="icon-grid" cols="pagerGrid.cols"></impex-datagrid>
+		<div id="atool" x-ignore>
+			<impex-linkbutton click="doQuery" iconcls="icon-add" text="查询"></impex-linkbutton>
+		</div>
+		
+		<h3>异步数据带分页的表格</h3>
+		<impex-datagrid url="http://localhost/mt/test_list.do" linenumber="true" id="pgrid" title="异步数据带分页的表格" pagination="true" toolbar="ptool" titleIconCls="icon-grid" cols="pagerGrid.cols"></impex-datagrid>
+		<div id="ptool" x-ignore>
+			<impex-linkbutton click="doQuery" iconcls="icon-add" text="查询"></impex-linkbutton>
+		</div>
+		
+		<h3>带行号的表格</h3>
+		<impex-datagrid title="带行号的表格" pagination="true" linenumber="true" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="students" cols="linenumberGrid.cols"></impex-datagrid>
+		-->
+		
 		<script>			
-			imLog.level = 3;
+			imLog.level = 0;
             impex.config({
                 logger:imLog
             });
@@ -107,7 +143,7 @@
 				onDisplay: function() {
 					var students = [];
 					var sex;
-					for (var i = 0; i < 5; i++) {
+					for (var i = 0; i < 143; i++) {
 						sex = (Math.random() * 10) > 5 ? "1" : "0";
 						students.push({studentNo: 40231220 + i, name: "同学" + i, sex: sex, class: "计算机科学与技术2002-6班"});
 					}
@@ -150,170 +186,59 @@
 					}
 				}
 			};
-
 			
 			/**
-			 * impex-datagrid组件
+			 * 排序
 			 */
-			impex.component("impex-datagrid", {
-				template: '<div id="{{id}}" class="impex-datagrid {{=class}}">\
-								<table class="table" cellspacing="0" cellpadding="0" border="0">\
-									<thead class="head">\
-									<tr x-order="##orderId">\
-										<th order="{{col.order ? col.code : \'\'}}" x-each="columns as col"  style="text-align:{{col.align}};width:{{col.width}}px;">\
-											<span x-if="col.checkbox" class="checkAll"><input :click="checkAll(this)" type="checkbox"/></span>\
-										</th>\
-									</tr>\
-									</thead>\
-									<tbody>\
-										<tr x-each="dataSource as d => limitBy:pageSize:startSize">\
-											<td x-each="columns as col" style="text-align:{{col.align}};width:{{col.width}}px;">\
-												<span x-if="col.checkbox" class="checkbox"><input :click="checkItem(this)" value="{{d[col.code]}}" type="checkbox"/></span>\
-											</td>\
-										</tr>\
-									</tbody>\
-								</table>\
-							</div>',
-				data: {
-					dataSource: [],
-					columns: [],
-					$checkIds: [],
-					allChecked: false,
-					pagerId: "",
-					pageSize: 0,
-					startSize: 0,
-					start: 0,
-					queryParams: {}
-				},
-				onInit: function() {
-					if (_.isString(this.data.url)) {	// 远程数据源
-						if (!this.hasPager()) {	// 远程不带分页
-							this.loadUrl();
-						}else{
-							this.data.queryParams.rows = 10;
-							this.data.queryParams.page = 1;
-							this.data.start = 0;
-							this.loadUrl();
-						}
-					}else{
-						// 初始化数据源
-						var dataSource = getData(this, this.data.ds);
-						if (null != dataSource) {
-							this.data.dataSource = dataSource;
-						}
-
-						if (_.isString(this.data.ds)) {
-							var p = getParentModel(this, this.data.ds);						
-							if (null != p) {
-								var that = this;
-								this.parent.watch(this.data.ds, function(target, name, type, newVal, oldVal) {
-									if ("update" != type) return;
-									that.data.dataSource = newVal;
-									
-									if (that.hasPager()) {
-										var pagerConfig = getData(that, that.data.pager);
-										var pager = that.getPager();
-										that.data.startSize = 0;
-										if (0 == that.data.pageSize) {
-											that.data.pageSize = 2;
-										}
-									}
+			impex.directive("order", {
+				onDisplay: function() {
+					var view = this.view;
+					view.addClass("x-order");
+					var el = view.el;
+					var top = impex.$top();
+					if (!top.data) top.data = {};
+					if (!top.data[this.value]) top.data[this.value] = {key: "", dir: ""};
+					var that = this;
+					setTimeout(function() {
+						var cns = el.children;
+						for (var i = cns.length; i--;) {
+							if (cns[i].hasAttribute("order")) {
+								var order = cns[i].getAttribute("order");
+								if (order == '') continue;
+								addClass(cns[i], "sorticon");
+								addEvent(cns[i], "click", function() {
+									that.order(this);
 								});
 							}
 						}
-					}
-
-					// 初始化表头
-					var columns = getData(this, this.data.cols);
-					if (null != columns) this.data.columns = columns;
-					
-					// 初始化工具栏
-					if (_.isString(this.data.toolbar)) {
-						var barEl = document.getElementById(this.data.toolbar);
-						if (null != barEl) {
-							this.data.toolbarHtml = barEl.innerHTML;
-							barEl.style.display = "none";
-						}
-					}
-
-					if (!this.data.id) this.data.id = "impex_grid_" + getId();
-				},
-				onDisplay: function() {
-					// 初始化分页
-					if (this.hasPager()) {
-						this.data.pageSize = 0;
-						this.data.startSize = 0;
-					}
-				},
-				clearCheckbox: function() {	// 清除checkbox选中状态
+					}, 20);
 					
 				},
-				onBeforeCompile:function(str){
-					this.data.pagerId = "pagerId_" + getId();
-					return str.replace(/##orderId/g, "gridOrder_" + getId())
-							  .replace(/##pagerId/g, this.data.pagerId);
-				},
-				methods:　{
-					checkAll: function(checkbox) {
-						var el = checkbox.view.el;
-						var gridEl = document.getElementById(this.data.id);
-						var checkboxs = gridEl.querySelectorAll(".checkbox input");
-						if (el.checked) {
-							var cs = [];
-							var gridEl = document.getElementById(this.data.id);
-							var checkboxs = gridEl.querySelectorAll(".checkbox input");
-							for (var i = 0; i < checkboxs.length; i++) {
-								cs.push(checkboxs[i].value);
-							}
-							this.data.$checkIds = cs;
-						}else{
-							this.data.$checkIds = [];
-						}
-						
-						for (var i = checkboxs.length; i--;) {
-							checkboxs[i].checked = el.checked;
-						}
-					},
-					checkItem: function(checkbox) {
-						console.log("次数");
-						var l1 = Date.now();
-						var l2 = 0;
-						console.log(l1);
-						var el = checkbox.view.el;
-						if (el.checked) {
-							l2 = Date.now();
-							console.log(l2 - l1);
-							this.data.$checkIds.push(el.value);
-						}else{
-							var ss = this.data.$checkIds;
-							for (var i = 0; i < this.data.$checkIds.length; i++) {
-								if (ss[i] == el.value) {
-									ss.splice(i, 1);
-									break;
-								}
-							}
-							this.data.$checkIds = ss;
-							l2 = Date.now();
-							console.log(l2 - l1);
-						}
-						var gridEl = document.getElementById(this.data.id);
-						var all = gridEl.querySelectorAll(".checkAll input");
-						var itemChecks = gridEl.querySelectorAll(".checkbox input");
-						all[0].checked = this.data.$checkIds.length == itemChecks.length;
+				order: function(dom) {
+					var t1 = Date.now();
+					console.log(t1)
+					var order = dom.getAttribute("order");
+					var top = impex.$top();
+					var orderObj = top.data[this.value];
+					if (orderObj.key != order) {
+						orderObj.dir = "asc";
+					}else{
+						orderObj.dir = orderObj.dir == "asc" ? "desc" : "asc";
 					}
-				},
-				getChecked: function() {
-					return this.data.$checkIds.join(",");
-				},
-				getPager: function() {
-					return impex.cget(this.data.pagerId);
-				},
-				hasPager: function() {	// 是否含有分页
-					return _.isString(this.data.pagination) && "true" == this.data.pagination;
+					var el = this.view.el;
+					orderObj.key = order;
+					var desc_els = el.querySelectorAll(".sorticon-desc");
+					var asc_els = el.querySelectorAll(".sorticon-asc");
+					for (var i = desc_els.length; i--;) {
+						removeClass(desc_els[i], "sorticon-desc");
+					}
+					for (var i = asc_els.length; i--;) {
+						removeClass(asc_els[i], "sorticon-asc");
+					}
+					addClass(dom, "sorticon-" + orderObj.dir);
 				}
 			});
-			
-			
+
 			var page = impex.render(document.body, model);
 		</script>
     </body>

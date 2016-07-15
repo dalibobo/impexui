@@ -15,7 +15,7 @@
 		<style>
 			.alertify-log-custom {
 				background: blue;
-			}
+			}			
 		</style>
     </head>
     <body>
@@ -29,10 +29,14 @@
 		<select multiple style="width:500px;height:300px;" id="sel">
 			<option x-each="options as opt">{{opt}}</option>
 		</select>
+		
 		<ul>
 			<li x-each="1 to 100 as k">{{k}}</li>
 		</ul>
 
+		
+		
+		
 		<script>
 			function scrolSel() {
 				var sel = document.getElementById("sel");
@@ -146,7 +150,16 @@
 					alertify.log(message, "custom", delay);
 				}
 			}
-
+			
+			$(document).ready(function() {
+				Tip.show("myTip", {
+					top: 50,
+					left: 50,
+					message: "这是一个提示",
+					dir: "left"
+				});
+			});
+			
 			var page = impex.render(document.body, model);
 		</script>
     </body>

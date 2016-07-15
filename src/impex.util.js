@@ -342,3 +342,28 @@ impex.findByName = function(name, view) {
 	}
 	return null;
 }
+
+/**
+ *	tip提示框
+ *  @param	id	{String}	提示框的id
+ *  @param	opt	{{Object}}	参数。{left:0px,top:0px,right:0px;bottom:0px,dir:'down'|'top'|'left'|'right',message:"提示框"}
+ */
+var Tip = {
+	show: function(id, opt) {
+		var html = '<div id="'+ id +'" class="impex-tip impex-tip-'+ opt.dir +'" style="left:'+ opt.left +'px;top:'+ opt.top +'px;">\
+						<span><em></em></span><div class="text">'+ opt.message +'</div>\
+					</div>';
+		var tip = $("#" + id);
+		if (!tip.attr("id")) {
+			$(document.body).append(html);
+		}else{
+			tip.find(".text").html(opt.message);
+			tip.css({
+				left: (opt.left || 0) + "px",
+				top: (opt.top || 0) + "px",
+				right: (opt.right || 0) + "px",
+				bottom: (opt.bottom || 0) + "px"
+			});
+		}
+	}
+}

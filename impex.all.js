@@ -7,7 +7,7 @@
  * Released under the MIT license
  *
  * website: http://impexjs.org
- * last build: 2016-07-14
+ * last build: 2016-07-15
  */
 !function (global) {
 	'use strict';
@@ -758,6 +758,7 @@ var Scanner = new function() {
 	    		var startTag = null,
 	    			nodes = [];
 				for(var i=0,l=node.childNodes.length;i<l;i++){
+					// if(i > node.childNodes.length-1)return;
 					if(startTag){
 						nodes.push(node.childNodes[i]);
 						var endTag = DirectiveFactory.hasEndTag(startTag[0]);
@@ -913,23 +914,23 @@ var Builder = new function() {
 			}
 		}
 
-		//build components
-		for(var i=comp.children.length;i--;){
-			var subComp = comp.children[i];
-			if(subComp instanceof Directive)continue;
+		// //build components
+		// for(var i=comp.children.length;i--;){
+		// 	var subComp = comp.children[i];
+		// 	if(subComp instanceof Directive)continue;
 
-			//激活组件
-			subComp.init();
-			subComp.display();
-		}
+		// 	//激活组件
+		// 	subComp.init();
+		// 	// subComp.display();
+		// }
 
-		//build directives
-		for(var i=comp.children.length;i--;){
-			var subComp = comp.children[i];
-			if(!(subComp instanceof Directive))continue;
+		// //build directives
+		// for(var i=comp.children.length;i--;){
+		// 	var subComp = comp.children[i];
+		// 	if(!(subComp instanceof Directive))continue;
 
-			subComp.init();
-		}
+		// 	subComp.init();
+		// }
 	}
 
  	function buildExpModel(ctrlScope,varObj,expNode){
@@ -943,7 +944,6 @@ var Builder = new function() {
  		for(var i=1;i<varObj.segments.length;i++){
  			prop = walkPropTree(prop.subProps,varObj.segments[i],expNode);
  		}
- 		
  	}
 
  	this.buildExpModel = buildExpModel;
@@ -1186,10 +1186,11 @@ var Renderer = new function() {
 	 */
 	this.render = function(component){
 		
+		var children = component.children;
  		renderExpNode(component.__expNodes);
 
- 		for(var j=component.children.length;j--;){
- 			Renderer.render(component.children[j]);
+ 		for(var j=children.length;j--;){
+ 			Renderer.render(children[j]);
  		}
 	}
 
@@ -1579,6 +1580,8 @@ function Component (view) {
 	 * @type {Object}
 	 */
 	this.events = {};
+
+	impex._cs[this.__id] = this;
 };
 Component.state = {
 	created : 'created',
@@ -1650,10 +1653,39 @@ Util.ext(Component.prototype,{
 	m:function(k){
 		var comp = this;
 		while(comp){
-			if(comp['$'+k] instanceof Function)return comp['$'+k];
+			if(comp['$'+k] instanceof Function){
+				if(!comp.hasOwnProperty('$'+k)){
+					comp['$'+k] = comp['$'+k].bind(comp);
+				}
+				return comp['$'+k];
+			}
 			comp = comp.parent;
 		}
 		return null;
+	},
+	/**
+	 * 查找拥有指定属性的最近的上级组件
+	 * @param  {String} type 查找类型 d / m
+	 * @param  {String} path 表达式路径
+	 * @return {Component}
+	 */
+	closest:function(type,path){
+		if(type === 'd'){
+			var expObj = lexer(path);
+			var evalStr = Renderer.getExpEvalStr(this,expObj);
+			evalStr.replace(/^impex\._cs\["(C_[0-9]+)"\]/,'');
+			return impex._cs[RegExp.$1];
+
+		}else if(type === 'm'){
+			var comp = this;
+			while(comp){
+				if(comp['$'+path] instanceof Function){
+					return comp;
+				}
+				comp = comp.parent;
+			}
+			return null;
+		}
 	},
 	/**
 	 * 绑定自定义事件到组件
@@ -1807,7 +1839,7 @@ Util.ext(Component.prototype,{
 	 */
 	init:function(){
 		if(this.__state !== Component.state.created)return;
-		impex._cs[this.__id] = this;
+		// impex._cs[this.__id] = this;
 
 		if(this.templateURL){
 			var that = this;
@@ -1843,28 +1875,45 @@ Util.ext(Component.prototype,{
 		//observe data
 		this.data = Observer.observe(this.data,this);
 
+		Builder.build(this);
+
 		this.__state = Component.state.inited;
+
+		//init children
+		for(var i = this.children.length;i--;){
+			this.children[i].init();
+		}
+
+		
 	},
 	/**
 	 * 显示组件到视图上
 	 */
 	display:function(){
-		// if(
-		// 	this.__state !== Component.state.inited && 
-		// 	this.__state !== Component.state.suspend
-		// )return;
+		if(
+			this.__state === Component.state.displayed
+		)return;
 
 		this.view.__display(this);
 		
-		if(this.__state !== Component.state.suspend){
+		// if(this.__state !== Component.state.suspend){
 			Renderer.render(this);
-			Builder.build(this);
-		}
+		// }
 
 		this.__state = Component.state.displayed;
 		LOGGER.log(this,'displayed');
 
+		
+
+		//display children
+		for(var i = 0;i<this.children.length;i++){
+			this.children[i].display();
+		}
+
 		this.onDisplay && this.onDisplay();
+		// this.children && this.children.forEach(function(child){
+		// 	child.display();
+		// });
 	},
 	/**
 	 * 销毁组件，会销毁组件模型，以及对应视图，以及子组件的模型和视图
@@ -1909,8 +1958,6 @@ Util.ext(Component.prototype,{
 			impex._cs[this.__id] = null;
 			delete impex._cs[this.__id];
 
-			this.__impex__observer = 
-			this.__impex__propChains = 
 			this.__state = 
 			this.__id = 
 			this.templateURL = 
@@ -2525,7 +2572,7 @@ function Directive (name,value) {
 Util.inherits(Directive,Component);
 Util.ext(Directive.prototype,{
 	init:function(){
-		impex._cs[this.__id] = this;
+
 		//预处理自定义标签中的表达式
 		var exps = {};
 		var that = this;
@@ -2549,14 +2596,16 @@ Util.ext(Directive.prototype,{
 		LOGGER.log(this,'inited');
 
 		if(this.onInit){
-			rs = this.onInit();
+			this.onInit();
 		}
 
 		this.__state = Component.state.inited;
-
+	},
+	//component invoke only
+	display:function(){
 		//do observe
 		if(this.observe){
-			var expObj = lexer(attrVal);
+			var expObj = lexer(this.value);
 			for(var varStr in expObj.varTree){
 				var varObj = expObj.varTree[varStr];
 
@@ -2570,6 +2619,13 @@ Util.ext(Directive.prototype,{
 			var rs = Renderer.evalExp(this.parent,expObj);
 			this.observe(rs);
 		}
+
+		this.onDisplay && this.onDisplay();
+
+		//display children
+		this.children && this.children.forEach(function(child){
+			child.display();
+		});
 	}
 });
 /**
@@ -2855,7 +2911,8 @@ Util.ext(_ComponentFactory.prototype,{
 
 		if(rs.methods){
 			for(var k in rs.methods){
-				rs[METHOD_PREFIX + k] = rs.methods[k];
+				if(rs.methods[k] instanceof Function)
+					rs[METHOD_PREFIX + k] = rs.methods[k].bind(rs);
 			}
 		}
 
@@ -3493,10 +3550,9 @@ impex.service('Transitions',new function(){
         onCreate:function(viewManager){
             this.viewManager = viewManager;
             this.placeholder = viewManager.createPlaceholder('-- directive [if] placeholder --');
-
-            //更新视图
-            this.__init();
-            this.display();
+        },
+        onInit:function(){
+            Scanner.scan(this.view,this);
         },
         observe : function(rs){
             if(this.parent.__state === Component.state.suspend)return;
@@ -3523,12 +3579,12 @@ impex.service('Transitions',new function(){
             }
             className = className.replace('x-cloak','');
             
-            var that = this;
-            setTimeout(function(){
-                updateCloakAttr(that.parent,that.view.el,className);
-                var curr = that.view.attr('class').replace('x-cloak','');
-                that.view.attr('class',curr);
-            },0);
+            this.__cn = className;
+        },
+        onDisplay:function(){
+            updateCloakAttr(this.parent,this.view.el,this.__cn);
+            var curr = this.view.attr('class').replace('x-cloak','');
+            this.view.attr('class',curr);
         }
     })
 
@@ -3669,7 +3725,7 @@ impex.service('Transitions',new function(){
             }
         }
         this.onInit = function(){
-            if(this.__state === Component.state.inited)return;
+            // if(this.__state === Component.state.inited)return;
             var that = this;
             //获取数据源
             if(this.forExp.test(this.expInfo.ds)){
@@ -3779,7 +3835,6 @@ impex.service('Transitions',new function(){
             for(var k in ds){
                 if(!ds.hasOwnProperty(k))continue;
                 if(isIntK && isNaN(k))continue;
-                if(k.indexOf('$__')===0)continue;
 
                 var subComp = this.subComponents[index];
 
@@ -3809,10 +3864,14 @@ impex.service('Transitions',new function(){
                 data['$index'] = index++;
                 if(ki)data[ki] = isIntK?k>>0:k;
 
-                subComp.init();
-                var isSuspend = subComp.__state === "suspend"?true:false;
+                // var isSuspend = subComp.__state === "suspend"?true:false;
+                if(subComp.__state === Component.state.created){
+                    subComp.init();
+                }
                 subComp.display();
-                isSuspend &&　Builder.build(subComp);
+                Renderer.render(subComp);
+                
+                // isSuspend &&　Builder.build(subComp);
                 onDisplay(subComp);
             }
         }
@@ -3944,7 +4003,7 @@ impex.service('Transitions',new function(){
             //初始化组件
             for(var i=this.subComponents.length;i--;){
                 this.subComponents[i].init();
-                this.subComponents[i].display();
+                // this.subComponents[i].display();
             }
         }
         this.parseExp = function(exp){

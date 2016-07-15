@@ -346,6 +346,31 @@ impex.findByName = function(name, view) {
 }
 
 /**
+ *	tip提示框
+ *  @param	id	{String}	提示框的id
+ *  @param	opt	{{Object}}	参数。{left:0px,top:0px,right:0px;bottom:0px,dir:'down'|'top'|'left'|'right',message:"提示框"}
+ */
+var Tip = {
+	show: function(id, opt) {
+		var html = '<div id="'+ id +'" class="impex-tip impex-tip-'+ opt.dir +'" style="left:'+ opt.left +'px;top:'+ opt.top +'px;">\
+						<span><em></em></span><div class="text">'+ opt.message +'</div>\
+					</div>';
+		var tip = $("#" + id);
+		if (!tip.attr("id")) {
+			$(document.body).append(html);
+		}else{
+			tip.find(".text").html(opt.message);
+			tip.css({
+				left: (opt.left || 0) + "px",
+				top: (opt.top || 0) + "px",
+				right: (opt.right || 0) + "px",
+				bottom: (opt.bottom || 0) + "px"
+			});
+		}
+	}
+}
+
+/**
  * 表单提交
  */
 impex.directive('submit',{
@@ -434,11 +459,10 @@ impex.directive("disabled", {
  * 排序
  */
 impex.directive("order", {
-	onCreate: function() {
+	onDisplay: function() {
 		var view = this.view;
 		view.addClass("x-order");
 		var el = view.el;
-
 		var top = impex.$top();
 		if (!top.data) top.data = {};
 		if (!top.data[this.value]) top.data[this.value] = {key: "", dir: ""};
@@ -455,9 +479,11 @@ impex.directive("order", {
 					});
 				}
 			}
-		}, 20);		
+		}, 20);
 	},
 	order: function(dom) {
+		var t1 = Date.now();
+		console.log(t1)
 		var order = dom.getAttribute("order");
 		var top = impex.$top();
 		var orderObj = top.data[this.value];
