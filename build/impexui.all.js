@@ -362,9 +362,7 @@ var Tip = {
 			tip.find(".text").html(opt.message);
 			tip.css({
 				left: (opt.left || 0) + "px",
-				top: (opt.top || 0) + "px",
-				right: (opt.right || 0) + "px",
-				bottom: (opt.bottom || 0) + "px"
+				top: (opt.top || 0) + "px"
 			});
 		}
 	}

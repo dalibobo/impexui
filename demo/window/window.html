@@ -135,6 +135,29 @@
 				}		
 			});
 
+			impexui.component = function(name, param, service) {
+				
+				for (var k in param) {
+					
+				}
+				
+				var def = {
+					onInit: function() {},
+					onDisplay: function() {},
+					onBeforeCompile: function() {},
+					data: {},
+					methods: {},
+					events: {}
+				}
+				
+				
+
+				var m = _.extend(param, def);
+				
+				impex.component(name, params, service);
+			}
+			
+			
 			var page = impex.render(document.body, model);
 		</script>
     </body>
