@@ -654,7 +654,7 @@ impex.component('impex-combo', {
 						<div class="textbox-addon" style="right: 0px;">\
 							<a href="javascript:void(0)" class="textbox-icon combo-arrow" icon-index="0" tabindex="-1" style="width: 18px; height: {{height}};"></a>\
 						</div>\
-						<input id="{{id}}" type="text" class="textbox-text validatebox-text validatebox-readonly" x-disabled="{{xDisabled}}" x-validate="{{xValidate}}" autocomplete="off" tabindex="" placeholder="" style="margin-left: 0px; margin-right: 18px; padding-top: 0px; padding-bottom: 0px;" value="{{selectData.text}}">\
+						<input id="{{id}}" type="text" class="textbox-text validatebox-text validatebox-readonly" readonly="readonly" x-disabled="{{xDisabled}}" x-validate="{{xValidate}}" autocomplete="off" tabindex="" placeholder="" style="margin-left: 0px; margin-right: 18px; padding-top: 0px; padding-bottom: 0px;" value="{{selectData.text}}">\
 						<input type="hidden" class="textbox-value"  name="{{=name}}" value="{{selectData.value}}">\
 					</div>\
 					<div x-show="showType" class="combo-panel panel-body panel-body-noheader" :click="_clickOpt()" style="max-height: 150px;" title="">\
@@ -766,12 +766,14 @@ impex.component('impex-combo', {
 		//选择选项
 		_selectOptions:function(data){
 			var that = this;
+			that.data.selectData.value = "";
+			that.data.selectData.text = "";
 			for (j=0;j<this.data.listData.length ;j++ ){	
 				that.data.listData[j].onSelect = false;
 			}
 			data.onSelect = true;
-			that.data.selectData.value = (data.value);
-			that.data.selectData.text = (data.text);
+			that.data.selectData.value = data.value;
+			that.data.selectData.text = data.text;
 			$("#"+this.data.id).trigger("input");
 			this.data.showType = false;
 			
@@ -862,7 +864,7 @@ impex.component('impex-combobox', {
 			}
 		}
 		
-		
+		console.log(this.find("x-validate"));
 		//监控下拉数据变化
 		this.watch(this.data.datalist, function(todos,name,type,newVal) {
 				this.data.listData = newVal;
@@ -986,6 +988,8 @@ impex.component('impex-combobox', {
 		//选择选项
 		_selectOptions:function(data){
 			var that = this;
+			that.data.selectData.value = "";
+			that.data.selectData.text = "";
 			that.data.showType = false;
 			for (j=0;j<this.data.listData.length ;j++ ){	
 				that.data.listData[j].onSelect = false;
@@ -993,7 +997,9 @@ impex.component('impex-combobox', {
 			data.onSelect = true;
 			that.data.selectData.value = data.value;
 			that.data.selectData.text = data.text;
-
+			if(this.find("x-validate")){
+				this.find("x-validate")[0].do();
+			}
 		},
 		unbindWheel : function(comp){
 			comp.view.off(this.data.type,null);
