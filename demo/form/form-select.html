@@ -8,14 +8,19 @@
 		<link rel="stylesheet" type="text/css" href="../../themes/icon.css"/>
 		<script type="text/javascript" src="../../impex.all.js"></script>
 		<script type="text/javascript" src="../../build/impexui.all.js"></script>
+
 		<script type="text/javascript" src="../../src/impex.component.js"></script>
-		<script type="text/javascript" src="../../src/impex.directive.js"></script>
 		<script type="text/javascript" src="../../src/impex.util.js"></script>
 		<script type="text/javascript" src="../../src/impexui.js"></script>
+		<script type="text/javascript" src="../../src/impex.directive.js"></script>
+		<script type="text/javascript" src="../../src/impex.validate.js"></script>
     </head>
 <style>
+.impex-combo{
+	position:relative;
+}
 
-.impex-select .combo-arrow {
+.impex-combo .combo-arrow {
     width: 18px;
     height: 20px;
     overflow: hidden;
@@ -27,15 +32,15 @@
 	background: url('./combo_arrow.png') no-repeat center center;
 	 background-color: #E0ECFF;
 }
-.impex-select .combo-arrow:hover {
+.impex-combo .combo-arrow:hover {
     background-color: #eaf2ff;
 }
 
-.impex-select .textbox-addon {
+.impex-combo .textbox-addon {
     position: absolute;
     top: 0;
 }
-.impex-select .textbox {
+.impex-combo .textbox {
     position: relative;
     border: 1px solid #95B8E7;
     background-color: #fff;
@@ -50,7 +55,7 @@
     border-radius: 5px 5px 5px 5px;
 }
 
-.impex-select .textbox .textbox-text {
+.impex-combo .textbox .textbox-text {
     font-size: 12px;
     border: 0;
     margin: 0;
@@ -65,10 +70,10 @@
 }
 
 
-.impex-select .panel-body-noheader {
+.impex-combo .panel-body-noheader {
     border-top-width: 1px;
 }
-.impex-select .panel-body {
+.impex-combo .panel-body {
 	position: absolute;
     background-color: #fff;
     text-align: left;
@@ -80,24 +85,24 @@
 	padding: 0;
 }
 
-.impex-select .combobox-item {
+.impex-combo .combobox-item {
     font-size: 12px;
     padding: 3px;
 	display: list-item;
     text-align: -webkit-match-parent;
 }
-.impex-select .combobox-item-selected {
+.impex-combo .combobox-item-selected {
     background-color: #ffe48d;
     color: #000000;
 }
 
-.impex-select{
+.impex-combo{
 	width:200px;
 	height:24px;
 }
 
 
-.impex-select ul{
+.impex-combo ul{
 	margin: 0;
 	padding: 0;
 	overflow: auto;
@@ -105,9 +110,118 @@
 	width: 100%;
 }
 
-.impex-select ul li {
+.impex-combo ul li {
 	display: list-item;
     text-align: -webkit-match-parent;
+}
+</style>
+
+
+<style>
+
+.impex-file{
+	width:200px;
+	height:24px;
+}
+.textbox {
+    position: relative;
+    border: 1px solid #95B8E7;
+    background-color: #fff;
+    vertical-align: middle;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0;
+    padding: 0;
+    -moz-border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
+}
+.textbox .textbox-button, .textbox .textbox-button:hover {
+    position: absolute;
+    top: 0;
+    padding: 0;
+    vertical-align: top;
+    -moz-border-radius: 0 0 0 0;
+    -webkit-border-radius: 0 0 0 0;
+    border-radius: 0 0 0 0;
+}
+.textbox-button-right, .textbox-button-right:hover {
+    border-width: 0 0 0 1px;
+}
+.l-btn-left {
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    vertical-align: top;
+}
+.l-btn-text {
+    display: inline-block;
+    vertical-align: top;
+    width: auto;
+    line-height: 24px;
+    font-size: 12px;
+    padding: 0;
+    margin: 0 4px;
+}
+.textbox .textbox-text {
+    font-size: 12px;
+    border: 0;
+    margin: 0;
+    padding: 4px;
+    white-space: normal;
+    vertical-align: top;
+    outline-style: none;
+    resize: none;
+    -moz-border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
+}
+.filebox .textbox-value {
+    vertical-align: top;
+    position: absolute;
+    top: 0;
+    left: -5000px;
+}
+.filebox-label {
+    display: inline-block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    left: 0;
+    top: 0;
+    z-index: 10;
+    background: url('images/blank.gif') no-repeat;
+}
+.l-btn {
+    color: #444;
+    background: #fafafa;
+    background-repeat: repeat-x;
+    border: 1px solid #bbb;
+    background: -webkit-linear-gradient(top,#ffffff 0,#eeeeee 100%);
+    background: -moz-linear-gradient(top,#ffffff 0,#eeeeee 100%);
+    background: -o-linear-gradient(top,#ffffff 0,#eeeeee 100%);
+    background: linear-gradient(to bottom,#ffffff 0,#eeeeee 100%);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff,endColorstr=#eeeeee,GradientType=0);
+    -moz-border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
+}
+.l-btn {
+    text-decoration: none;
+    display: inline-block;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+    outline: none;
+    text-align: center;
+    vertical-align: middle;
+    line-height: normal;
 }
 </style>
 
@@ -119,22 +233,21 @@
 			<br>
 			<form name="studentForm" x-submit="submitForm">
 				单选：
-				<impex-select name="aihaoaa" datalist="student.love1" value="student.loved1" class="impex-multipart-select" cbk="cbkfun"></impex-select>
+				<impex-combo name="aihaoaa" datalist="student.love1" value="student.loved1" class="impex-multipart-select" cbk="cbkfun" x-validate="required" x-disabled="false" ></impex-combo>
 				<br>
 				多选：
-				<impex-multipart-select name="aihao" datalist="student.love" value="student.loved" class="impex-multipart-select"></impex-multipart-select>
+				<impex-combobox-multipart name="aihao" datalist="student.love" value="student.loved" x-validate="required" ></impex-combobox-multipart>
 				<br>
 				下拉表格
-				<impex-select-grid ds="dataModel.students" cols="dataModel.cols" tableWidth="900px" textField="name" value="gridValue" idField ="studentNo"></impex-select-grid>
+				<impex-combogrid ds="dataModel.students" cols="dataModel.cols" tableWidth="900px" textField="name" value="gridValue" idField ="studentNo"  x-validate="required" ></impex-combogrid>
 				<br>
 				支持手输过滤机鼠标滚轮滚动选择
-				<impex-select-aa name="aihaoaa" datalist="student.love1" value="student.loved1" cbk="cbkfun"></impex-select-aa>
+				<impex-combobox name="aihaoaa" datalist="student.love1" value="student.loved1" cbk="cbkfun"  x-validate="required"  ></impex-combobox>
 				<br>
 				日期
-				<impex-date dateFmt="yyyy-MM-dd" value="2016-05-01"></impex-date>
+				<impex-date dateFmt="yyyy-MM-dd" value="2016-05-01"  x-validate="required" ></impex-date>
 				<br>
 				<br>
-				
 			</form>
 		</fieldset>
 		<script src="DatePicker/WdatePicker.js"></script>
@@ -280,17 +393,37 @@ impex.component('impex-date', {
  * impex-input-text组件
  */
 impex.component('impex-input-text', {
-	template: "<input {{=BINDPROPS}} type='text'>",   
+	template: '<input x-model="comValue" value="" {{=BINDPROPS}} :blur="valueChange()" type="{{type}}" class="form-control {{class}}"/>',
 	onInit: function() {
-	}
+		/**\
+				<div x-if="!validate.result" class="jquery-validate-error help-block">{{validate.msg}}</div>
+		
+		this.on("impex.validate.result", function(eventCom, result) {
+			this.data.validate = result;
+			this.emit("oms.form.validate.result", result.result);
+		});
+		
+		this.on("oms.form.reset", function() {
+			this.data.validate = null;
+		});*/
 
+	}/**,
+	data:{
+		validate = {
+			result: true,
+			msg: ""
+		}
+	}*/
+	
+	
+		
 });
 
 /**
  * impex-input-file组件
  */
 impex.component('impex-input-file', {
-	template: '<div class="impex-file {{class}}" >\
+	template: '<div class="impex-file {{=class}}" >\
 					<span class="textbox filebox" style="width: 400px;">\
 						<a href="javascript:void(0)" class="textbox-button textbox-button-right l-btn l-btn-small" group="" id="" style="height: 22px; right: 0px;">\
 							<span class="l-btn-left" style="margin-top: -1px;">\
@@ -332,16 +465,16 @@ impex.component('impex-input-file', {
  * @param  datalist:初始化下拉数据  [{text:"",value:""},{text:"",value:""}]
  * @param  value:初始化选项 ["value1","value2"]
  */
-impex.component('impex-multipart-select', {
-	template: '<div class="impex-select {{class}}" >\
+impex.component('impex-combobox-multipart', {
+	template: '<div class="impex-combo {{=class}} {{=style}}" >\
 					<span class="textbox combo" style="width: 100%;"  :click="_showOp()">\
 						<span class="textbox-addon" style="right: 0px;">\
 							<a href="javascript:void(0)" class="textbox-icon combo-arrow" icon-index="0" tabindex="-1" style="width: 18px; height: {{height}};"></a>\
 						</span>\
-						<input id="_impex_select_input1" type="text" class="textbox-text validatebox-text validatebox-readonly" autocomplete="off" tabindex="" readonly="readonly" placeholder="" style="margin-left: 0px; margin-right: 18px; padding-top: 0px; padding-bottom: 0px;" value="{{selectData.texts}}">\
+						<input id="{{id}}" type="text" class="textbox-text validatebox-text validatebox-readonly" autocomplete="off" tabindex="" readonly="readonly" x-disabled="{{xDisabled}}" x-validate="{{xValidate}}" placeholder="" style="margin-left: 0px; margin-right: 18px; padding-top: 0px; padding-bottom: 0px;" value="{{selectData.texts}}">\
 						<input type="hidden" class="textbox-value"  name="{{=name}}" x-each="selectData.values as sd" value="{{sd}}">\
 					</span>\
-					<div x-show="showType" class="combo-panel panel-body panel-body-noheader" :click="_clickOpt()" style="height: 90px;" title="">\
+					<div x-show="showType" class="combo-panel panel-body panel-body-noheader" :click="_clickOpt()" style="max-height: 150px;" title="">\
 						<ul>\
 							<li :click="_selectOptions(d)" class="combobox-item {{d.onSelect ? \'combobox-item-selected\':\'\'}}" x-each="listData as d">{{d.text}}</li>\
 						</ul>\
@@ -349,6 +482,7 @@ impex.component('impex-multipart-select', {
 				</div>', 
 	
 	onInit: function() {
+		this.data.id = this.data.id ? this.data.id:"impex-combobox-multipart-" + getId()
 		//初始化赋值
 		this.data.listData = getData(this,this.data.datalist);
 		var selectValue = getData(this,this.data.value);
@@ -362,9 +496,9 @@ impex.component('impex-multipart-select', {
 				}
 			}
 		};
-		console.log(this.data.selectData.texts.join());
+		//console.log(this.data.selectData.texts.join());
 		//监控下拉数据变化
-		this.watch(this.data.datalist, function(type, newVal) {
+		this.watch(this.data.datalist, function(todos,name,type,newVal) {
 				this.data.listData = newVal;
 				this.data.selectData.values.length = 0;
 				this.data.selectData.texts.length = 0;
@@ -372,28 +506,57 @@ impex.component('impex-multipart-select', {
 				this.$_setValue(selectValue);
 		});
 		//监控赋值变化
-		this.watch(this.data.value, function(type, newVal) {
+		this.watch(this.data.value, function(todos,name,type,newVal) {
 			this.$_setValue(newVal);
 		});
 
 	},
+
+	events: {
+		"form.reset": function() {
+			if(this.data.value === ""){
+				this.$_setValue("");
+			}else{
+				var value = getData(this, this.data.value);
+				this.$_setValue(value);
+			}
+		},
+		"impex.validate.result":function(v,validateResult){
+			if(!validateResult.result){
+				var el = $(this.view.el);
+				var of = el.offset() ;
+				Tip.show("tip-"+this.data.id,{
+					left:of.left+of.width,
+					top:of.top,
+					dir:this.data.tipPosition,
+					message:validateResult.msg
+				});
+			}
+		}
+	},
+
 	data:{
+		id:"",
+		value:"",
 		listData:[],
 		showType:false,//下拉选项是否显示
 		selectData: {texts: [], values: []},//选择选项集合
 		mouseDownType:false,//鼠标单击是否隐藏下拉选项
 		height:"22px",
+		tipPosition:'right' //提示框的位置
 	},
 	methods:{
 		_setValue:function(selectValue){
-			this.data.selectData.values.length = 0;
-			this.data.selectData.texts.length = 0;
+			this.data.selectData.values = [];
+			this.data.selectData.texts = [];
 			if(selectValue==null || selectValue==""){
-				this.data.selectData.values.length = 0;
-				this.data.selectData.texts.length = 0;
+				this.data.selectData.values = [];
+				this.data.selectData.texts = [];
 			}
 			for (j=0;j<this.data.listData.length ;j++ ){	
 				this.data.listData[j].onSelect = false;
+ 
+				if(selectValue==null || selectValue=="") continue;
 				for (i=0;i<selectValue.length ;i++ ){		
 					if(this.data.listData[j].value==selectValue[i]){
 						this.data.listData[j].onSelect = true;
@@ -442,7 +605,7 @@ impex.component('impex-multipart-select', {
 				that.data.selectData.values.push(data.value);
 				that.data.selectData.texts.push(data.text);
 			}
-			
+			$("#"+this.data.id).trigger("input");
 			
 		}
 	},
@@ -479,22 +642,22 @@ impex.component('impex-multipart-select', {
 
 
 /**
- * impex-select  下拉选择（单选）
+ * impex-combo  下拉选择（单选）
  * @param  datalist:初始化下拉数据  [{text:"",value:""},{text:"",value:""}]
  * @param  value:初始化选项 "value1"
  *
  * 选择后触发回调函数 cbk();
  */
-impex.component('impex-select', {
-	template: '<div class="impex-select {{class}}" >\
-					<span class="textbox combo" style="width: 100%;"  :click="_showOp()">\
-						<span class="textbox-addon" style="right: 0px;">\
+impex.component('impex-combo', {
+	template: '<div class="impex-combo {{=class}} {{=style}}" >\
+					<div class="textbox combo" style="width: 100%;"  :click="_showOp()">\
+						<div class="textbox-addon" style="right: 0px;">\
 							<a href="javascript:void(0)" class="textbox-icon combo-arrow" icon-index="0" tabindex="-1" style="width: 18px; height: {{height}};"></a>\
-						</span>\
-						<input id="_impex_select_input2" type="text" class="textbox-text validatebox-text validatebox-readonly" autocomplete="off" tabindex="" readonly="readonly" placeholder="" style="margin-left: 0px; margin-right: 18px; padding-top: 0px; padding-bottom: 0px;" value="{{selectData.text}}">\
+						</div>\
+						<input id="{{id}}" type="text" class="textbox-text validatebox-text validatebox-readonly" x-disabled="{{xDisabled}}" x-validate="{{xValidate}}" autocomplete="off" tabindex="" placeholder="" style="margin-left: 0px; margin-right: 18px; padding-top: 0px; padding-bottom: 0px;" value="{{selectData.text}}">\
 						<input type="hidden" class="textbox-value"  name="{{=name}}" value="{{selectData.value}}">\
-					</span>\
-					<div x-show="showType" class="combo-panel panel-body panel-body-noheader" :click="_clickOpt()" style="height: 90px;" title="">\
+					</div>\
+					<div x-show="showType" class="combo-panel panel-body panel-body-noheader" :click="_clickOpt()" style="max-height: 150px;" title="">\
 						<ul>\
 							<li :click="_selectOptions(d)" class="combobox-item {{d.onSelect ? \'combobox-item-selected\':\'\'}}" x-each="listData as d">{{d.text}}</li>\
 						</ul>\
@@ -502,6 +665,7 @@ impex.component('impex-select', {
 				</div>', 
 	
 	onInit: function() {
+		this.data.id = this.data.id!="" ? this.data.id:"impex-combo-" + getId();
 		//初始化赋值
 		this.data.listData = getData(this,this.data.datalist);
 		var selectValue = getData(this,this.data.value);
@@ -516,7 +680,7 @@ impex.component('impex-select', {
 		
 		
 		//监控下拉数据变化
-		this.watch(this.data.datalist, function(type, newVal) {
+		this.watch(this.data.datalist, function(todos,name,type,newVal) {
 				this.data.listData = newVal;
 				this.data.selectData.value.length = 0;
 				this.data.selectData.text.length = 0;
@@ -524,17 +688,45 @@ impex.component('impex-select', {
 				this.$_setValue(selectValue);
 		});
 		//监控赋值变化
-		this.watch(this.data.value, function(type, newVal) {
+		this.watch(this.data.value, function(todos,name,type,newVal) {
 			this.$_setValue(newVal);
 		});
 
 	},
+
+	events: {
+		//重置
+		"form.reset": function() {
+			if(this.data.value === ""){
+				this.$_setValue("");
+			}else{
+				var value = getData(this, this.data.value);
+				this.$_setValue(value);
+			}
+		},
+		"impex.validate.result":function(v,validateResult){
+			if(!validateResult.result){
+				var el = $(this.view.el);
+				var of = el.offset() ;
+				Tip.show("tip-"+this.data.id,{
+					left:of.left+of.width,
+					top:of.top,
+					dir:this.data.tipPosition,
+					message:validateResult.msg
+				});
+			}
+		}
+	},
+
 	data:{
+		id:"",
+		value:"",
 		listData:[],
 		showType:false,//下拉选项是否显示
 		selectData: {text:"", value:""},//选择选项
 		mouseDownType:false,//鼠标单击是否隐藏下拉选项
 		height:"22px",
+		tipPosition:'right'
 
 	},
 	methods:{
@@ -548,7 +740,7 @@ impex.component('impex-select', {
 			}
 			for (j=0;j<this.data.listData.length ;j++ ){	
 				this.data.listData[j].onSelect = false;
-
+				if(selectValue==null || selectValue=="") continue;
 				if(this.data.listData[j].value==selectValue){
 					this.data.listData[j].onSelect = true;
 					this.data.selectData.value = this.data.listData[j].value;
@@ -580,6 +772,7 @@ impex.component('impex-select', {
 			data.onSelect = true;
 			that.data.selectData.value = (data.value);
 			that.data.selectData.text = (data.text);
+			$("#"+this.data.id).trigger("input");
 			this.data.showType = false;
 			
 			//调用回调函数返回当前选择的 {text:"",value:""}
@@ -633,29 +826,30 @@ impex.component('impex-select', {
 
 
 /**
- * impex-select  下拉选择（单选） 支持手输过滤机鼠标滚轮滚动选择
+ * impex-combo  下拉选择（单选） 支持手输过滤机鼠标滚轮滚动选择
  * @param  datalist:初始化下拉数据  [{text:"",value:""},{text:"",value:""}]
  * @param  value:初始化选项 "value1"
  *
  * 选择后触发回调函数 cbk();
  */
-impex.component('impex-select-aa', {
-	template: '<div class="impex-select {{class}}" >\
-					<span class="textbox combo" style="width: 100%;"  :click="_showOp()">\
-						<span class="textbox-addon" style="right: 0px;">\
+impex.component('impex-combobox', {
+	template: '<div class="impex-combo {{=class}} {{=style}}" >\
+					<div class="textbox combo" style="width: 100%;"  :click="_showOp()">\
+						<div class="textbox-addon" style="right: 0px;">\
 							<a href="javascript:void(0)" class="textbox-icon combo-arrow" icon-index="0" tabindex="-1" style="width: 18px; height: {{height}};"></a>\
-						</span>\
-						<input id="_impex_select_input2" type="text" class="textbox-text validatebox-text validatebox-readonly" autocomplete="off" tabindex="" x-on:focus="bindWheel(this)"  x-on:blur="unbindWheel(this)" :input="_oninput()" placeholder="" style="margin-left: 0px; margin-right: 18px; padding-top: 0px; padding-bottom: 0px;" x-model="filterKey" value="{{selectData.text}}">\
+						</div>\
+						<input id="{{id}}" type="text" class="textbox-text validatebox-text validatebox-readonly" x-disabled="{{xDisabled}}" x-validate="{{xValidate}}"  autocomplete="off" tabindex="" x-on:focus="bindWheel(this)"  x-on:blur="unbindWheel(this)" :input="_oninput()" placeholder="" style="margin-left: 0px; margin-right: 18px; padding-top: 0px; padding-bottom: 0px;" x-model="filterKey" value="{{selectData.text}}">\
 						<input type="hidden" class="textbox-value"  name="{{=name}}" value="{{selectData.value}}">\
-					</span>\
-					<div x-show="showType" class="combo-panel panel-body panel-body-noheader" :click="_clickOpt()" style="height: 90px;" title="">\
+					</div>\
+					<div x-show="showType" class="combo-panel panel-body panel-body-noheader" :click="_clickOpt()" style="max-height: 150px;" title="">\
 						<ul>\
-							<li :click="_selectOptions(d)" class="combobox-item {{d.onSelect ? \'combobox-item-selected\':\'\'}}" x-each="listData as d => filterBy:filterKey:\'text\'">{{d.text}}</li>\
+							<li :click="_selectOptions(d)" class="combobox-item {{d.onSelect ? \'combobox-item-selected\':\'\'}}" x-each="listData as d ">{{d.text}}</li>\
 						</ul>\
 					</div>\
 				</div>', 
 	
 	onInit: function() {
+		this.data.id = this.data.id ? this.data.id:"impex-combobox-" + getId();
 		//初始化赋值
 		this.data.listData = getData(this,this.data.datalist);
 		var selectValue = getData(this,this.data.value);
@@ -670,7 +864,7 @@ impex.component('impex-select-aa', {
 		
 		
 		//监控下拉数据变化
-		this.watch(this.data.datalist, function(type, newVal) {
+		this.watch(this.data.datalist, function(todos,name,type,newVal) {
 				this.data.listData = newVal;
 				this.data.selectData.value.length = 0;
 				this.data.selectData.text.length = 0;
@@ -678,14 +872,39 @@ impex.component('impex-select-aa', {
 				this.$_setValue(selectValue);
 		});
 		//监控赋值变化
-		this.watch(this.data.value, function(type, newVal) {
+		this.watch(this.data.value, function(todos,name,type,newVal) {
 			this.$_setValue(newVal);
 		});
 
 		this.data.type = document.body.onmousewheel === null?'mousewheel':'DOMMouseScroll'
 
 	},
+
+	events: {
+		"form.reset": function() {
+			if(this.data.value === ""){
+				this.$_setValue("");
+			}else{
+				var value = getData(this, this.data.value);
+				this.$_setValue(value);
+			}
+		},
+		"impex.validate.result":function(v,validateResult){
+			if(!validateResult.result){
+				var el = $(this.view.el);
+				var of = el.offset() ;
+				Tip.show("tip-"+this.data.id,{
+					left:of.left+of.width,
+					top:of.top,
+					dir:this.data.tipPosition,
+					message:validateResult.msg
+				});
+			}
+		}
+	},
+
 	data:{
+		value:"",
 		listData:[],
 		showType:false,//下拉选项是否显示
 		selectData: {text:"", value:""},//选择选项
@@ -695,7 +914,8 @@ impex.component('impex-select-aa', {
 		//oninputList:[],
 		bindIndexList:[],
 		bindIndex:-1,
-		type: ""
+		type: "",
+		tipPosition:'right'
 
 	},
 	methods:{
@@ -709,7 +929,8 @@ impex.component('impex-select-aa', {
 			}
 			for (j=0;j<this.data.listData.length ;j++ ){	
 				this.data.listData[j].onSelect = false;
-
+				
+				if(selectValue==null || selectValue=="") continue;
 				if(this.data.listData[j].value==selectValue){
 					this.data.listData[j].onSelect = true;
 					this.data.selectData.value = this.data.listData[j].value;
@@ -727,14 +948,14 @@ impex.component('impex-select-aa', {
 			this.data.filterKey="";
 			this.data.showType = !this.data.showType ;
 			this.data.mouseDownType = true;
-			this.data.bindIndexList.length = 0;//清空过滤ID
+			this.data.bindIndexList = [];//清空过滤ID
 		},
 		//手工输入过滤选项
 		_oninput : function(){
 			this.data.showType = true ;
 			this.data.mouseDownType = true;
 			//this.data.oninputList.length = 0;//清空过滤数组
-			this.data.bindIndexList.length = 0;//清空过滤ID
+			this.data.bindIndexList =[];//清空过滤ID
 			this.data.bindIndex = -1;
 			var count=0;
 			var listIndex=-1;
@@ -765,23 +986,13 @@ impex.component('impex-select-aa', {
 		//选择选项
 		_selectOptions:function(data){
 			var that = this;
+			that.data.showType = false;
 			for (j=0;j<this.data.listData.length ;j++ ){	
 				that.data.listData[j].onSelect = false;
 			}
 			data.onSelect = true;
-			that.data.selectData.value = (data.value);
-			that.data.selectData.text = (data.text);
-			this.data.showType = false;
-			
-			//调用回调函数返回当前选择的 {text:"",value:""}
-			try{
-				if(that.data.cbk!=undefined){
-					//this.parent.closest(that.data.cbk)[that.data.cbk](that.data.selectData);
-					this.m(that.data.cbk)(that.data.selectData);
-				}
-			}catch(e){
-				console.log("调用cbk函数出错");
-			}
+			that.data.selectData.value = data.value;
+			that.data.selectData.text = data.text;
 
 		},
 		unbindWheel : function(comp){
@@ -790,7 +1001,7 @@ impex.component('impex-select-aa', {
 		bindWheel : function(comp){
 			var that = this;
 			if(this.data.filterKey==""){
-				that.data.bindIndexList.length=0;
+				that.data.bindIndexList=[];
 			}
 			comp.view.on(this.data.type,null,function(e){
 				var wd = e.wheelDelta;
@@ -891,21 +1102,21 @@ impex.component('impex-select-aa', {
 
 
 /**
- * impex-select-grid  下拉选择表格
+ * impex-combo-grid  下拉选择表格
  * @param  datalist:初始化下拉数据  dataSource: [],//数据源	columns: [],//列头
  * @param  value:初始化选项 "value"
  *
  * 选择后触发回调函数 cbk();
  */
-impex.component('impex-select-grid', {
-	template: '<div class="impex-select {{class}}" >\
-					<span class="textbox combo" style="width: 100%;"  :click="_showOp()">\
-						<span class="textbox-addon" style="right: 0px;">\
+impex.component('impex-combogrid', {
+	template: '<div class="impex-combo {{=class}} {{style}}" >\
+					<div class="textbox combo" style="width: 100%;"  :click="_showOp()">\
+						<div class="textbox-addon" style="right: 0px;">\
 							<a href="javascript:void(0)" class="textbox-icon combo-arrow" icon-index="0" tabindex="-1" style="width: 18px; height: {{height}};"></a>\
-						</span>\
-						<input id="_impex_select_grid_input1" type="text" class="textbox-text validatebox-text validatebox-readonly" autocomplete="off" tabindex="" readonly="readonly" placeholder="" style="margin-left: 0px; margin-right: 18px; padding-top: 0px; padding-bottom: 0px;" value="{{selectData.textfield}}">\
+						</div>\
+						<input id="{{id}}" type="text" class="textbox-text validatebox-text validatebox-readonly" x-disabled="{{xDisabled}}" x-validate="{{xValidate}}"  autocomplete="off" tabindex="" readonly="readonly" placeholder="" style="margin-left: 0px; margin-right: 18px; padding-top: 0px; padding-bottom: 0px;" value="{{selectData.textfield}}">\
 						<input type="hidden" class="textbox-value"  name="{{name}}" value="{{selectData.idfield}}">\
-					</span>\
+					</div>\
 					<div x-show="showType" class="combo-panel panel-body panel-body-noheader" :click="_clickOpt()" style="height: 90px;" title="">\
 						<table class="table" cellspacing="0" cellpadding="0" border="0">\
 							<thead class="head">\
@@ -925,11 +1136,12 @@ impex.component('impex-select-grid', {
 				</div>', 
 	
 	onInit: function() {
+		this.data.id = this.data.id ? this.data.id:"impex-combogrid-" + getId();
 		//初始化赋值
 		var dataSource = getData(this, this.data.ds);
 		if (null != dataSource) {
 			this.data.dataSource = dataSource;
-			this.watch(this.data.ds, function(type, newVal, oldVal, propChain) {
+			this.watch(this.data.ds, function(todos,name,type,newVal) {
 				this.data.dataSource = newVal;
 				this.$_setValue(value);
 			});
@@ -938,7 +1150,7 @@ impex.component('impex-select-grid', {
 		var columns = getData(this, this.data.cols);
 		if (null != columns) {
 			this.data.columns = columns;
-			this.watch(this.data.cols, function(type, newVal, oldVal, propChain) {
+			this.watch(this.data.cols, function(todos,name,type,newVal) {
 				this.data.columns = newVal;
 			});
 		}
@@ -947,20 +1159,46 @@ impex.component('impex-select-grid', {
 		var value = getData(this, this.data.value);
 		if (null != value) {
 			this.$_setValue(value);
-			this.watch(this.data.value, function(type, newVal, oldVal, propChain) {
+			this.watch(this.data.value, function(todos,name,type,newVal) {
 				this.$_setValue(newVal);
 			});
 		};
-
-	
+		
 	},
+
+	events: {
+		"form.reset": function() {
+			if(this.data.value === ""){
+				this.$_setValue("");
+			}else{
+				var value = getData(this, this.data.value);
+				this.$_setValue(value);
+			}
+		},
+		"impex.validate.result":function(v,validateResult){
+			if(!validateResult.result){
+				var el = $(this.view.el);
+				var of = el.offset() ;
+				Tip.show("tip-"+this.data.id,{
+					left:of.left+of.width,
+					top:of.top,
+					dir:this.data.tipPosition,
+					message:validateResult.msg
+				});
+			}
+		}
+	},
+
 	data:{
+		id:"",
+		value:"",
 		dataSource: [],//数据源
 		columns: [],//列头
 		showType:false,//下拉选项是否显示
 		selectData: {textfield:"", idfield:""},//选择选项
 		mouseDownType:false,//鼠标单击是否隐藏下拉选项
-		height:"22px"
+		height:"22px",
+		tipPosition:'right'
 	},
 	methods:{
 		//下拉选项赋值
@@ -973,7 +1211,7 @@ impex.component('impex-select-grid', {
 			}
 			for (j=0;j<this.data.dataSource.length ;j++ ){	
 				this.data.dataSource[j].onSelect = false;
-
+				if(selectValue==null || selectValue=="") continue ;
 				if(this.data.dataSource[j][this.data.idfield]==selectValue){
 					this.data.dataSource[j].onSelect = true;
 					this.data.selectData.textfield = this.data.dataSource[j][this.data.textfield];
@@ -1006,7 +1244,7 @@ impex.component('impex-select-grid', {
 			that.data.selectData.idfield = (data[this.data.idfield]);
 			that.data.selectData.textfield = (data[this.data.textfield]);
 			this.data.showType = false;
-			
+			$("#"+this.data.id).trigger("input");
 			//调用回调函数返回当前选择的 {text:"",value:""}
 			try{
 				if(that.data.cbk!=undefined){

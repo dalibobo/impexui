@@ -28,7 +28,7 @@
 				<nav class="tV0"> 
 					<div class="wo0">
 						<ul>
-							<li :click="tabChange(fun.code, fun)" class="tab-bg {{fun.code == currentPanel ? 'tab-bg-select' : ''}} {{($index == 9 || ($index + 1) == functions.length) ? 'tr5' : ''}}" x-each="functions as fun => limitBy:10" style="width: 86px;">
+							<li :click="tabChange(fun.code, fun)" class="tab-bg {{fun.code == currentPanel ? 'tab-bg-select' : ''}} {{($index == 9 || ($index + 1) == functions.length) ? 'tr5' : ''}}" x-each="functions as fun => limitBy:8" style="width: 86px;">
 								<span class="label">{{fun.name}}</span>
 								<a :click="tabClose($index)" x-if="false" class="close"><i class="icon"></i></a>
 							</li>

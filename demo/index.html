@@ -24,12 +24,13 @@
 				<nav id="leftNav" x-if="currentMenus && currentMenus.length > 0">
 					<ul class="menu">
 						<li x-each="currentMenus as menu" class="{{currentLink == menu.link ? 'active' : ''}}">
-							<a :click="loadDemo(menu.link)">
+							<a x-if="!menu.type" :click="loadDemo(menu.link)">
 								<div class="label">
 									<i class="icon icon-app"></i>
 									<span>{{# menu.name}}</span>
 								</div>
-							</a>		
+							</a>
+							<h3 x-if="menu.type" style="padding-left:10px;">{{# menu.name}}</h3>
 						</li>
 					</ul>
 				</nav>
@@ -42,8 +43,18 @@
 			var page = impex.render(document.body, {
 				data: {
 					currentMenus: [
+						{name: "Form", type: "category"},
+						{name: "form base", link: "form/form.html"},
+						{name: "form select", link: "form/form-select.html"},
+						{name: "Grid", type: "category"},
+						{name: "grid", link: "grid_tree/grid.html"},
+						{name: "search box", link: "grid_tree/searchBox.html"},
+						{name: "tree", link: "grid_tree/tree.html"},
+						{name: "Window", type: "category"},
 						{name: "window", link: "window/window.html"},
-						{name: "messager", link: "window/messager.html"}
+						{name: "messager", link: "window/messager.html"},
+						{name: "Layout", type: "category"},
+						{name: "layout", link: "layout/layout.html"}
 					]
 				},
 				methods: {
