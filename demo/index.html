@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html >
+    <head>
+        <title>Impexui - layout</title>
+		<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+		<link rel="stylesheet" type="text/css" href="../themes/default/impexui.css"/>
+		<script type="text/javascript" src="../impex.all.js"></script>
+		<script type="text/javascript" src="../build/impexui.all.js"></script>
+		<style>
+			html{height:100%;}
+			body{height:100%;margin:0px;overflow:hidden;font-family: 'Microsoft Yahei', verdana;color:rgb(34,34,34);}
+			ul, ol {list-style: none;padding: 0px;}
+		</style>
+    </head>
+    <body>
+		<div class="impex-layout">
+			<header>
+				<h2 style="width:100%;text-align:center;">Impexui Demo</h2>
+				<div class="hb"></div>
+			</header>
+			
+			<div class="center">
+				<nav id="leftNav" x-if="currentMenus && currentMenus.length > 0">
+					<ul class="menu">
+						<li x-each="currentMenus as menu" class="{{currentLink == menu.link ? 'active' : ''}}">
+							<a :click="loadDemo(menu.link)">
+								<div class="label">
+									<i class="icon icon-app"></i>
+									<span>{{# menu.name}}</span>
+								</div>
+							</a>		
+						</li>
+					</ul>
+				</nav>
+				<div class="container">
+					{{# PANEL_HTML}}
+				</div>
+			</div>
+		</div>
+		<script>
+			var page = impex.render(document.body, {
+				data: {
+					currentMenus: [
+						{name: "window", link: "window/window.html"},
+						{name: "messager", link: "window/messager.html"}
+					]
+				},
+				methods: {
+					loadDemo: function(link) {
+						this.data.PANEL_HTML = '<iframe id="ifr_continer" frameborder="0" style="width:100%;height:100%;"/>';
+						setTimeout(function() {
+							$("#ifr_continer").attr("src", link + "?t=" + Date.now());
+						}, 20);
+					}
+				}
+			});
+		</script>
+    </body>
+</html>
