@@ -1532,9 +1532,11 @@ impex.component('impex-combobox-multipart', {
 				</div>', 
 	
 	onInit: function() {
+		var that = this;
 		this.data.id = this.data.id ? this.data.id:"impex-combobox-multipart-" + getId()
 		//初始化赋值
-		_.extend(this.data.listData,getData(this,this.data.datalist));
+		//_.extend(this.data.listData,getData(this,this.data.datalist));
+		this.data.listData = $.extend(true, [], getData(this,this.data.datalist));
 		var selectValue = getData(this,this.data.value);
 		for (i=0;i<selectValue.length ;i++ ){
 			for (j=0;j<this.data.listData.length ;j++ ){
@@ -1548,16 +1550,17 @@ impex.component('impex-combobox-multipart', {
 		};
 		//console.log(this.data.selectData.texts.join());
 		//监控下拉数据变化
-		this.watch(this.data.datalist, function(todos,name,type,newVal) {
-				this.data.listData = newVal;
-				this.data.selectData.values.length = 0;
-				this.data.selectData.texts.length = 0;
-				var selectValue = getData(this,this.data.value);
-				this.$_setValue(selectValue);
+		
+		this.parent.closest('d',this.data.datalist).watch(this.data.datalist, function(todos,name,type,newVal) {
+				that.data.listData = newVal;
+				that.data.selectData.values = [];
+				that.data.selectData.texts = [];
+				var selectValue = this.d(that.data.value);
+				that.$_setValue(selectValue);
 		});
 		//监控赋值变化
-		this.watch(this.data.value, function(todos,name,type,newVal) {
-			this.$_setValue(newVal);
+		this.parent.closest('d',this.data.value).watch(this.data.value, function(todos,name,type,newVal) {
+			that.$_setValue(newVal);
 		});
 
 	},
@@ -1718,6 +1721,7 @@ impex.component('impex-combo', {
 				</div>', 
 	
 	onInit: function() {
+		var that = this;
 		this.data.id = this.data.id!="" ? this.data.id:"impex-combo-" + getId();
 		//初始化赋值
 		this.data.listData = $.extend(true, [], getData(this,this.data.datalist));
@@ -1734,16 +1738,17 @@ impex.component('impex-combo', {
 		
 		
 		//监控下拉数据变化
-		this.watch(this.data.datalist, function(todos,name,type,newVal) {
-				this.data.listData = newVal;
-				this.data.selectData.value.length = 0;
-				this.data.selectData.text.length = 0;
-				var selectValue = getData(this,this.data.value);
-				this.$_setValue(selectValue);
+		this.parent.closest('d',this.data.datalist).watch(this.data.datalist, function(todos,name,type,newVal) {
+				
+				that.data.listData = newVal;
+				that.data.selectData.value = "";
+				that.data.selectData.text = "";
+				var selectValue = this.d(that.data.value);
+				that.$_setValue(selectValue);
 		});
 		//监控赋值变化
-		this.watch(this.data.value, function(todos,name,type,newVal) {
-			this.$_setValue(newVal);
+		this.parent.closest('d',this.data.value).watch(this.data.value, function(todos,name,type,newVal) {
+			that.$_setValue(newVal);
 		});
 
 	},
@@ -1907,10 +1912,12 @@ impex.component('impex-combobox', {
 				</div>', 
 	
 	onInit: function() {
+		var that = this;
 		this.data.id = this.data.id ? this.data.id:"impex-combobox-" + getId();
 		//初始化赋值
-		_.extend(this.data.listData,getData(this,this.data.datalist));
+		//_.extend(this.data.listData,getData(this,this.data.datalist));
 		//this.data.listData = getData(this,this.data.datalist);
+		this.data.listData = $.extend(true, [], getData(this,this.data.datalist));
 		var selectValue = getData(this,this.data.value);
 		
 		for (j=0;j<this.data.listData.length ;j++ ){
@@ -1922,18 +1929,18 @@ impex.component('impex-combobox', {
 			}
 		}
 		
-		console.log(this.find("x-validate"));
 		//监控下拉数据变化
-		this.watch(this.data.datalist, function(todos,name,type,newVal) {
-				this.data.listData = newVal;
-				this.data.selectData.value.length = 0;
-				this.data.selectData.text.length = 0;
-				var selectValue = getData(this,this.data.value);
-				this.$_setValue(selectValue);
+		this.parent.closest('d',this.data.datalist).watch(this.data.datalist, function(todos,name,type,newVal) {
+				
+				that.data.listData = newVal;
+				that.data.selectData.value = "";
+				that.data.selectData.text = "";
+				var selectValue = this.d(that.data.value);
+				that.$_setValue(selectValue);
 		});
 		//监控赋值变化
-		this.watch(this.data.value, function(todos,name,type,newVal) {
-			this.$_setValue(newVal);
+		this.parent.closest('d',this.data.value).watch(this.data.value, function(todos,name,type,newVal) {
+			that.$_setValue(newVal);
 		});
 
 		this.data.type = document.body.onmousewheel === null?'mousewheel':'DOMMouseScroll'
@@ -2218,23 +2225,26 @@ impex.component('impex-combogrid', {
 				</div>', 
 	
 	onInit: function() {
+		var that = this;
 		this.data.id = this.data.id ? this.data.id:"impex-combogrid-" + getId();
 		//初始化赋值
 
 		var dataSource = getData(this, this.data.ds);
 		if (null != dataSource) {
 			//this.data.dataSource = dataSource;
-			_.extend(this.data.dataSource,dataSource);
-			this.watch(this.data.ds, function(todos,name,type,newVal) {
-				this.data.dataSource = newVal;
-				this.$_setValue(value);
+			//_.extend(this.data.dataSource,dataSource);
+			this.data.dataSource = $.extend(true, [], dataSource);
+			//this.watch(this.data.ds, function(todos,name,type,newVal) {
+			this.parent.closest('d',this.data.ds).watch(this.data.ds, function(todos,name,type,newVal) {
+				that.data.dataSource = newVal;
+				that.$_setValue(value);
 			});
 		};
 		//初始化表头
 		var columns = getData(this, this.data.cols);
 		if (null != columns) {
 			this.data.columns = columns;
-			this.watch(this.data.cols, function(todos,name,type,newVal) {
+			this.parent.closest('d',this.data.cols).watch(this.data.cols, function(todos,name,type,newVal) {
 				this.data.columns = newVal;
 			});
 		}
@@ -2243,10 +2253,12 @@ impex.component('impex-combogrid', {
 		var value = getData(this, this.data.value);
 		if (null != value) {
 			this.$_setValue(value);
-			this.watch(this.data.value, function(todos,name,type,newVal) {
-				this.$_setValue(newVal);
+			this.parent.closest('d',this.data.value).watch(this.data.value, function(todos,name,type,newVal) {
+				that.$_setValue(newVal);
 			});
 		};
+
+
 		
 	},
 
