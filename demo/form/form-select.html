@@ -843,9 +843,9 @@ impex.component('impex-combobox', {
 						<input id="{{id}}" type="text" class="textbox-text validatebox-text validatebox-readonly" x-disabled="{{xDisabled}}" x-validate="{{xValidate}}"  autocomplete="off" tabindex="" x-on:focus="bindWheel(this)"  x-on:blur="unbindWheel(this)" :input="_oninput()" placeholder="" style="margin-left: 0px; margin-right: 18px; padding-top: 0px; padding-bottom: 0px;" x-model="filterKey" value="{{selectData.text}}">\
 						<input type="hidden" class="textbox-value"  name="{{=name}}" value="{{selectData.value}}">\
 					</div>\
-					<div x-show="showType" class="combo-panel panel-body panel-body-noheader" :click="_clickOpt()" style="max-height: 150px;" title="">\
+					<div id="impex-combobox-div"  x-show="showType" class="combo-panel panel-body panel-body-noheader" :click="_clickOpt()" style="max-height: 150px;" title="">\
 						<ul>\
-							<li :click="_selectOptions(d)" class="combobox-item {{d.onSelect ? \'combobox-item-selected\':\'\'}}" x-each="listData as d ">{{d.text}}</li>\
+							<li id="impex-combobox-div-li-{{$index}}" :click="_selectOptions(d)" class="combobox-item {{d.onSelect ? \'combobox-item-selected\':\'\'}}" x-each="listData as d ">{{d.text}}</li>\
 						</ul>\
 					</div>\
 				</div>', 
@@ -861,6 +861,7 @@ impex.component('impex-combobox', {
 				this.data.listData[j].onSelect = true;
 				this.data.selectData.value = this.data.listData[j].value;
 				this.data.selectData.text = this.data.listData[j].text;
+				this.data.bindIndex = j;
 			}
 		}
 		
@@ -937,6 +938,7 @@ impex.component('impex-combobox', {
 					this.data.listData[j].onSelect = true;
 					this.data.selectData.value = this.data.listData[j].value;
 					this.data.selectData.text = this.data.listData[j].text;
+					this.$divScroollTO(j);
 				}
 				
 			}
@@ -951,6 +953,7 @@ impex.component('impex-combobox', {
 			this.data.showType = !this.data.showType ;
 			this.data.mouseDownType = true;
 			this.data.bindIndexList = [];//清空过滤ID
+			this.$divScroollTO(this.data.bindIndex);
 		},
 		//手工输入过滤选项
 		_oninput : function(){
@@ -984,6 +987,14 @@ impex.component('impex-combobox', {
 			//获取远程数据
 			var that = this;
 
+		},
+		divScroollTO:function(liIndex){
+			var container = $('#impex-combobox-div'),
+			scrollTo = $('#impex-combobox-div-li-'+liIndex);
+
+			container.scrollTop(
+				scrollTo.offset().top - container.offset().top + container.scrollTop()
+			);
 		},
 		//选择选项
 		_selectOptions:function(data){
@@ -1026,6 +1037,7 @@ impex.component('impex-combobox', {
 				if(dir>0){
 					var index=-1;
 					that.data.bindIndex++
+
 					if(that.data.bindIndex>that.data.bindIndexList.length-1 && that.data.mouseDownType){
 						that.data.bindIndex = that.data.bindIndexList.length-1;
 					}
@@ -1038,6 +1050,7 @@ impex.component('impex-combobox', {
 						}
 						index = that.data.bindIndex;
 					}
+					
 					
 					that.$setValue(index);
 				}else{
@@ -1058,6 +1071,8 @@ impex.component('impex-combobox', {
 
 					that.$setValue(index);					
 				}
+
+				that.$divScroollTO(that.data.bindIndex);
 
 				return false;
 			});
@@ -1096,7 +1111,8 @@ impex.component('impex-combobox', {
 			}	
 		);
 		
-
+		
+		that.$divScroollTO(that.data.bindIndex);
 
 	}
 	
