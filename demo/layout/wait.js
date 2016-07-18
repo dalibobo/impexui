@@ -14,6 +14,7 @@ impex.component("impex-com-wait", {
 	methods: {
 		openAddWindow: function() {
 			impex.cget("addWindow").$open();
+			console.log(impex.cget("addWindow"));
 		}
 	}
 });

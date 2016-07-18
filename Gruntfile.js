@@ -9,6 +9,7 @@ module.exports = function(grunt) {
 	cfiles[allPath] = [
 		src + "/zepto.js",
 		src + "/impex.util.js",
+		src + "/impex.validate.js",
 		src + "/is.min.js",
 		src + "/underscore-min.js",
 		src + "/alertify.min.js",

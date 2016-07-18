@@ -19,7 +19,7 @@ impex.component("impex-window", impex.extend(impex.coms.base, {
 		hasFooter: true
 	},
 	onInit: function() {
-		if (_.isString(this.modal)) {
+		if (_.isString(this.data.modal)) {
 			this.data.modal = ("true" == this.data.modal);
 		}
 	},
