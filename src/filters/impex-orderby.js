@@ -1,34 +1,3 @@
-/**
- * 格式为数值类型类型
- */
-impex.filter('number', {
-	to:function(place) {
-		if (null === this.value || "" === this.value || undefined === this.value) {
-			return "";
-		}
-		place = place || null;
-		var m = formatMoney(this.value, place, "");
-		if (m.indexOf(".") != -1) {
-			if (parseInt(m.split(".")[1]) === 0) {
-				return m.split(".")[0];
-			}
-		}
-		return m;
-	}
-});
-
-//保留2位小数
-impex.filter('toFixed', {
-    to: function(reChar){
-    	var v = this.$value;
-    	reChar = reChar || '2';
-    	if (v != undefined && null != v && "" !== v && "null" !== v) {
-    		v = v.toFixed(reChar);
-    	}	
-    	return v;
-    }
-});
-
 impex.filter('orderBy',{
     to:function(key,dir){
         if(!key && !dir)return this.value;
