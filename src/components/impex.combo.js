@@ -22,7 +22,7 @@ impex.component('impex-combobox-multipart', {
 	onInit: function() {
 		this.data.id = this.data.id ? this.data.id:"impex-combobox-multipart-" + getId()
 		//初始化赋值
-		this.data.listData = getData(this,this.data.datalist);
+		_.extend(this.data.listData,getData(this,this.data.datalist));
 		var selectValue = getData(this,this.data.value);
 		for (i=0;i<selectValue.length ;i++ ){
 			for (j=0;j<this.data.listData.length ;j++ ){
@@ -64,7 +64,7 @@ impex.component('impex-combobox-multipart', {
 				var el = $(this.view.el);
 				var of = el.offset() ;
 				Tip.show("tip-"+this.data.id,{
-					left:of.left+of.width,
+					left:of.left+el.width(),
 					top:of.top,
 					dir:this.data.tipPosition,
 					message:validateResult.msg
@@ -143,7 +143,10 @@ impex.component('impex-combobox-multipart', {
 				that.data.selectData.values.push(data.value);
 				that.data.selectData.texts.push(data.text);
 			}
-			$("#"+this.data.id).trigger("input");
+			if(_.isString(this.data.xValidate)){
+				$("#"+this.data.id).trigger("input");
+			}
+			
 			
 		}
 	},
@@ -153,7 +156,7 @@ impex.component('impex-combobox-multipart', {
 		var that = this;
 		var view = this.view;
 		//设置浮出框的宽度
-		var divWidth = view.el.offsetWidth;
+		var divWidth = $(view.el).width();
 		var divHeight = view.el.offsetHeight<24?24:view.el.offsetHeight;
 		this.data.height = divHeight - 2 +"px";
 		view.el.childNodes[3].style.width = divWidth+"px";
@@ -205,7 +208,8 @@ impex.component('impex-combo', {
 	onInit: function() {
 		this.data.id = this.data.id!="" ? this.data.id:"impex-combo-" + getId();
 		//初始化赋值
-		this.data.listData = getData(this,this.data.datalist);
+		this.data.listData = $.extend(true, [], getData(this,this.data.datalist));
+		//this.data.listData = getData(this,this.data.datalist);
 		var selectValue = getData(this,this.data.value);
 		
 		for (j=0;j<this.data.listData.length ;j++ ){
@@ -247,7 +251,7 @@ impex.component('impex-combo', {
 				var el = $(this.view.el);
 				var of = el.offset() ;
 				Tip.show("tip-"+this.data.id,{
-					left:of.left+of.width,
+					left:of.left+el.width(),
 					top:of.top,
 					dir:this.data.tipPosition,
 					message:validateResult.msg
@@ -312,7 +316,9 @@ impex.component('impex-combo', {
 			data.onSelect = true;
 			that.data.selectData.value = data.value;
 			that.data.selectData.text = data.text;
-			$("#"+this.data.id).trigger("input");
+			if(_.isString(this.data.xValidate)){
+				$("#"+this.data.id).trigger("input");
+			}
 			this.data.showType = false;
 			
 			//调用回调函数返回当前选择的 {text:"",value:""}
@@ -334,7 +340,7 @@ impex.component('impex-combo', {
 		var that = this;
 		var view = this.view;
 		//设置浮出框的宽度
-		var divWidth = view.el.offsetWidth;
+		var divWidth = $(view.el).width();
 		var divHeight = view.el.offsetHeight<24?24:view.el.offsetHeight;
 		this.data.height = divHeight - 2 +"px";
 		view.el.childNodes[3].style.width = divWidth+"px";
@@ -391,7 +397,8 @@ impex.component('impex-combobox', {
 	onInit: function() {
 		this.data.id = this.data.id ? this.data.id:"impex-combobox-" + getId();
 		//初始化赋值
-		this.data.listData = getData(this,this.data.datalist);
+		_.extend(this.data.listData,getData(this,this.data.datalist));
+		//this.data.listData = getData(this,this.data.datalist);
 		var selectValue = getData(this,this.data.value);
 		
 		for (j=0;j<this.data.listData.length ;j++ ){
@@ -435,7 +442,7 @@ impex.component('impex-combobox', {
 				var el = $(this.view.el);
 				var of = el.offset() ;
 				Tip.show("tip-"+this.data.id,{
-					left:of.left+of.width,
+					left:of.left+el.width(),
 					top:of.top,
 					dir:this.data.tipPosition,
 					message:validateResult.msg
@@ -631,7 +638,7 @@ impex.component('impex-combobox', {
 		var that = this;
 		var view = this.view;
 		//设置浮出框的宽度
-		var divWidth = view.el.offsetWidth;
+		var divWidth = $(view.el).width();
 		var divHeight = view.el.offsetHeight<24?24:view.el.offsetHeight;
 		this.data.height = divHeight - 2 +"px";
 		view.el.childNodes[3].style.width = divWidth+"px";
@@ -701,9 +708,11 @@ impex.component('impex-combogrid', {
 	onInit: function() {
 		this.data.id = this.data.id ? this.data.id:"impex-combogrid-" + getId();
 		//初始化赋值
+
 		var dataSource = getData(this, this.data.ds);
 		if (null != dataSource) {
-			this.data.dataSource = dataSource;
+			//this.data.dataSource = dataSource;
+			_.extend(this.data.dataSource,dataSource);
 			this.watch(this.data.ds, function(todos,name,type,newVal) {
 				this.data.dataSource = newVal;
 				this.$_setValue(value);
@@ -743,7 +752,7 @@ impex.component('impex-combogrid', {
 				var el = $(this.view.el);
 				var of = el.offset() ;
 				Tip.show("tip-"+this.data.id,{
-					left:of.left+of.width,
+					left:of.left+el.width(),
 					top:of.top,
 					dir:this.data.tipPosition,
 					message:validateResult.msg
@@ -807,7 +816,9 @@ impex.component('impex-combogrid', {
 			that.data.selectData.idfield = (data[this.data.idfield]);
 			that.data.selectData.textfield = (data[this.data.textfield]);
 			this.data.showType = false;
-			$("#"+this.data.id).trigger("input");
+			if(_.isString(this.data.xValidate)){
+				$("#"+this.data.id).trigger("input");
+			}
 			//调用回调函数返回当前选择的 {text:"",value:""}
 			try{
 				if(that.data.cbk!=undefined){
@@ -824,7 +835,7 @@ impex.component('impex-combogrid', {
 		var that = this;
 		var view = this.view;
 		//设置浮出框的宽度
-		var divWidth = view.el.offsetWidth;
+		var divWidth = $(view.el).width();
 		var divHeight = view.el.offsetHeight<24?24:view.el.offsetHeight;
 		this.data.height = divHeight - 2 +"px";
 		

@@ -71,7 +71,7 @@ impex.component('impex-form', {
 	},
 	
 	submit: function() {	// 提交表单
-		$(this.view.el).submit();
+		this.$onSubmit();
 	},
 
 	_sendAjax: function(data, hasFile) {	// 发送ajax请求

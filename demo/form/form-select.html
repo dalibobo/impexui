@@ -136,20 +136,10 @@
 			<br>
 			<form name="studentForm" x-submit="submitForm">
 				单选：
-				<impex-combo name="aihaoaa" datalist="student.love1" value="student.loved1" class="impex-multipart-select" cbk="cbkfun" x-validate="required" x-disabled="false" ></impex-combo>
-				<br>
-				多选：
-				<impex-combobox-multipart name="aihao" datalist="student.love" value="student.loved" x-validate="required" ></impex-combobox-multipart>
-				<br>
-				下拉表格
-				<impex-combogrid ds="dataModel.students" cols="dataModel.cols" tableWidth="900px" textField="name" value="gridValue" idField ="studentNo"  x-validate="required" ></impex-combogrid>
-				<br>
-				支持手输过滤机鼠标滚轮滚动选择
-				<impex-combobox name="aihaoaa" datalist="student.love1" value="student.loved1" cbk="cbkfun"  x-validate="required"  ></impex-combobox>
-				<br>
-				日期
-				<impex-date dateFmt="yyyy-MM-dd" value="2016-05-01"  x-validate="required" ></impex-date>
-				<br>
+				<impex-combo name="aihaoaa" datalist="student.love1" class="impex-multipart-select" cbk="cbkfun" x-disabled="false" ></impex-combo>
+				单选：
+				<impex-combo name="aihaoaa" datalist="student.love1" class="impex-multipart-select" cbk="cbkfun" x-disabled="false" ></impex-combo>
+				
 				<br>
 			</form>
 		</fieldset>
@@ -157,6 +147,90 @@
 
 		<script>
 
+		
+		
+		/**
+		 * impex-combo  下拉选择（单选）
+		 * @param  datalist:初始化下拉数据  [{text:"",value:""},{text:"",value:""}]
+		 * @param  value:初始化选项 "value1"
+		 *
+		 * 选择后触发回调函数 cbk();
+		 */
+		impex.component('impex-combo', {
+			template: '<div class="impex-combo {{=class}} {{=style}}" >\
+							<div class="textbox combo" style="width: 100%;"  :click="_showOp()">\
+								<div class="textbox-addon" style="right: 0px;">\
+									<a href="javascript:void(0)" class="textbox-icon combo-arrow" icon-index="0" tabindex="-1" style="width: 18px; height: {{height}};"></a>\
+								</div>\
+								<input id="{{id}}" type="text" class="textbox-text validatebox-text validatebox-readonly" readonly="readonly" x-disabled="{{xDisabled}}" x-validate="{{xValidate}}" autocomplete="off" tabindex="" placeholder="" style="margin-left: 0px; margin-right: 18px; padding-top: 0px; padding-bottom: 0px;" value="{{selectData.text}}">\
+								<input type="hidden" class="textbox-value"  name="{{=name}}" value="{{selectData.value}}">\
+							</div>\
+							<div x-show="showType" class="combo-panel panel-body panel-body-noheader" :click="_clickOpt()" style="max-height: 150px;" title="">\
+								<ul>\
+									<li :click="_selectOptions(d)" class="combobox-item {{d.onSelect ? \'combobox-item-selected\':\'\'}}" x-each="listData as d">{{d.text}}</li>\
+								</ul>\
+							</div>\
+						</div>', 
+			
+			onInit: function() {
+				this.data.id = this.data.id!="" ? this.data.id:"impex-combo-" + getId();
+				//初始化赋值
+				//初始化单选下拉框数据
+				this.data.listData = $.extend(true, [], this.d(this.data.datalist)); 
+				
+			},
+
+			data:{
+				id:"",
+				value:"",
+				listData:[],
+				showType:false,//下拉选项是否显示
+				selectData: {text:"", value:""},//选择选项
+				mouseDownType:false,//鼠标单击是否隐藏下拉选项
+				height:"22px",
+				tipPosition:'right'
+
+			},
+			methods:{
+				//下拉选项赋值
+				_setValue:function(selectValue){
+					
+				},
+				//点击选择选项
+				_clickOpt:function(){
+					this.data.mouseDownType = true;
+				},
+				//显示或隐藏选项
+				_showOp : function(){
+					this.data.showType = !this.data.showType ;
+					this.data.mouseDownType = true;
+				},
+				getRemoteData: function(){
+					//获取远程数据
+					var that = this;
+
+				},
+				//选择选项
+				_selectOptions:function(data){
+					data.onSelect = !data.onSelect;
+				}
+			
+			},
+			
+			onDisplay:function(){
+				var that = this;
+				var view = this.view;
+				//设置浮出框的宽度
+				var divWidth = $(view.el).width();
+				var divHeight = view.el.offsetHeight<24?24:view.el.offsetHeight;
+				this.data.height = divHeight - 2 +"px";
+				view.el.childNodes[3].style.width = divWidth+"px";
+				view.el.childNodes[1].childNodes[3].style.width = divWidth-22+"px";
+				view.el.childNodes[1].childNodes[3].style.height = divHeight-2+"px";
+				view.el.childNodes[1].childNodes[3].style.lineHeight = divHeight-2+"px";
+			}
+		});
+		
 
 			var model = {
 				
@@ -165,18 +239,7 @@
 					
 				},
 				data:{
-					student: {},
-					gridValue:"40231221",
-					dataModel:{
-						cols: [
-							{code: "studentNo", title: "学号", align: "center",width:"90px"},
-							{code: "name", title: "姓名",width:"90px"},
-							{code: "sex", title: "性别",width:"90px"},
-							{code: "class", title: "班级",width:"30%"}
-						],
-						students: []
-						
-					}
+					student: {}
 				},
 				methods:{
 					submitForm: function() {
@@ -210,56 +273,10 @@
 
 				
 				onInit: function() {
-					//初始化多选下拉框数据
-					this.data.student.love = [{text:"旅游",value:"1"},{text:"学习",value:"2"},{text:"看书",value:"3"},{text:"游戏",value:"4"}];
-					this.data.student.loved =  ["1","3"]; 
-					var that = this;
-					setTimeout(function(){
-						that.data.student.love = [{text:"吃饭",value:"1"},{text:"睡觉",value:"2"},{text:"打豆豆",value:"3"},{text:"你呢",value:"4"}];
-						that.data.student.loved =  ["1","3"]; 
-
-						setTimeout(function(){
-							that.data.student.loved =  ["2"]; 
-
-							setTimeout(function(){
-								that.data.student.love = [{text:"吃",value:"1"},{text:"喝",value:"2"},{text:"玩",value:"3"},{text:"乐",value:"4"}];
-								that.data.student.loved =  [];
-							},5000);
-
-						},5000);
-
-					},5000);
-					
 					//初始化单选下拉框数据
 					this.data.student.love1 = [{text:"旅游",value:"1"},{text:"学习",value:"2"},{text:"看书",value:"3"},{text:"游戏",value:"4"}];
 					this.data.student.loved1 = "3"; 
-					setTimeout(function(){
-						that.data.student.love1 = [{text:"篮球",value:"1"},{text:"足球",value:"2"},{text:"羽毛球",value:"3"},{text:"乒乓球",value:"4"}];
-						that.data.student.loved1 = "4"; 
-						setTimeout(function(){
-							that.data.student.love1 = [{text:"篮",value:"1"},{text:"足",value:"2"},{text:"羽毛",value:"3"},{text:"乒羽乓",value:"4"},{text:"乒羽乓5",value:"5"},{text:"乒羽乓6",value:"6"},{text:"乒羽乓7",value:"7"},{text:"乒羽乓8",value:"8"},{text:"乒羽乓9",value:"9"}];
-							that.data.student.loved1 = "9"; 
-						},5000);
-
-					},5000);
-
-
-
-					var students = [];
-					var sex;
-					for (var i = 0; i < 150; i++) {
-						sex = (Math.random() * 10) > 5 ? "男" : "女";
-						students.push({studentNo: 40231220 + i, name: "同学" + i, sex: sex, class: "计算机科学与技术2002-6班"});
-					}
-					this.data.dataModel.students = students;
 				}
-				
-
-				
-			
-			
-
-
 			};
 
 

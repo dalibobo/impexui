@@ -10,4 +10,17 @@
 		<impex-linkbutton click="doDelete" iconcls="icon-remove" text="删除"></impex-linkbutton>
 	</div>
 </div>
-<impex-window id="addWindow" iconCls="icon-add" title="添加事件" show="false" style="width:40%;height:30%;"></impex-window>
+<impex-window id="addWindow" iconCls="icon-add" title="添加事件" show="false" style="width:600px;height:480px;">
+	<impex-form id="addEventForm" url="http://localhost/mt/test_add.do">
+		<div>事件名称：</div>
+		<input type="text" name="event.name" placeholder="请输入事件名称"/>
+		<div>流程名称：</div>
+		<impex-combo id="combo1" name="event.flowName" datalist="flowList"></impex-combo>
+		<div>流程当前节点：</div>
+		<impex-combo id="combo2" name="event.flowNode" datalist="flowList"></impex-combo>
+	</impex-form>
+	<footer>
+		<input type="button" :click="save()" value="保存"/>
+		<input type="button" :click="close()" value="关闭"/>
+	</footer>
+</impex-window>
