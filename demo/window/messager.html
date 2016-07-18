@@ -89,68 +89,6 @@
 				}
 			};
 
-			var Messager = {
-				option: {
-					labels : {
-						ok     : "确定",
-						cancel : "取消"
-					},
-					delay : 5000,
-					buttonReverse : true,
-					buttonFocus   : "ok"
-				},
-				_init: (function() {
-					setTimeout(function() {
-						alertify.set(Messager.option);
-					}, 0);
-				})(),
-				set: function(opt) {
-					alertify.set(_.extend(this.option, opt));
-				},
-				alert: function() {
-					var args = arguments;
-					var m, me, c;
-					for (var i = args.length; i--;) {
-						if (_.isObject(args[i]) && !_.isFunction(args[i])) m = args[i];
-						if (_.isString(args[i])) me = args[i];
-						if (_.isFunction(args[i])) c = args[i];
-					}
-					alertify.alert(me || "", function() {
-						if (_.isFunction(c)) {
-							var thisObj = m || impex.$top();
-							c.apply(thisObj, arguments);
-						}
-					});
-				},
-				confirm: function() {
-					var args = arguments;
-					var m, me, c;
-					for (var i = args.length; i--;) {
-						if (_.isObject(args[i]) && !_.isFunction(args[i])) m = args[i];
-						if (_.isString(args[i])) me = args[i];
-						if (_.isFunction(args[i])) c = args[i];
-					}
-					alertify.confirm(me || "", function() {
-						if (_.isFunction(c)) {
-							var thisObj = m || impex.$top();
-							c.apply(thisObj, arguments);
-						}
-					});
-				},
-				success: function(message, delay) {
-					alertify.log(message, "success", delay);
-				},
-				error: function(message, delay) {
-					alertify.log(message, "error", delay);
-				},
-				log: function(message, delay) {
-					alertify.log(message, "", delay);
-				},
-				custom: function(message, delay) {
-					alertify.log(message, "custom", delay);
-				}
-			}
-
 			$(document).ready(function() {
 				Tip.show("myTip", {
 					top: 50,

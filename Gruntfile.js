@@ -12,11 +12,10 @@ module.exports = function(grunt) {
 		src + "/impex.service.js",
 		src + "/impex.directive.js",
 		src + "/impex.filter.js",
-		src + "/area.js",
-		src + "/impex.component.js",
 		src + "/is.min.js",
 		src + "/underscore-min.js",
-		src + "/alertify.min.js"
+		src + "/alertify.min.js",
+		src + "/components/*.js"
 	];
 	var ufiles = {};
 	ufiles[minPath] = build + '/impexui.all.js';
