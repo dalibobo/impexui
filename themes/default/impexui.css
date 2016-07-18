@@ -722,3 +722,106 @@ ul.ztree.zTreeDragUL {margin:0; padding:0; position:absolute; width:auto; height
 	right:1px;
 }
 /**impex-tip样式结束**/
+
+/**impex-combo样式开始**/
+
+.impex-combo{
+	position:relative;
+}
+
+.impex-combo .combo-arrow {
+    width: 18px;
+    height: 20px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: top;
+    cursor: pointer;
+    opacity: 0.6;
+    filter: alpha(opacity=60);
+	background: url('images/combo_arrow.png') no-repeat center center;
+	 background-color: #E0ECFF;
+}
+.impex-combo .combo-arrow:hover {
+    background-color: #eaf2ff;
+}
+
+.impex-combo .textbox-addon {
+    position: absolute;
+    top: 0;
+}
+.impex-combo .textbox {
+    position: relative;
+    border: 1px solid #95B8E7;
+    background-color: #fff;
+    vertical-align: middle;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0;
+    padding: 0;
+    -moz-border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
+}
+
+.impex-combo .textbox .textbox-text {
+    font-size: 12px;
+    border: 0;
+    margin: 0;
+    padding: 4px;
+    white-space: normal;
+    vertical-align: top;
+    outline-style: none;
+    resize: none;
+    -moz-border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
+}
+
+
+.impex-combo .panel-body-noheader {
+    border-top-width: 1px;
+}
+.impex-combo .panel-body {
+	position: absolute;
+    background-color: #fff;
+    text-align: left;
+    z-index: 100;
+	border-color: #95B8E7;
+	border-width: 1px;
+    border-style: solid;
+	overflow: auto;
+	padding: 0;
+}
+
+.impex-combo .combobox-item {
+    font-size: 12px;
+    padding: 3px;
+	display: list-item;
+    text-align: -webkit-match-parent;
+}
+.impex-combo .combobox-item-selected {
+    background-color: #ffe48d;
+    color: #000000;
+}
+
+.impex-combo{
+	width:200px;
+	height:24px;
+}
+
+
+.impex-combo ul{
+	margin: 0;
+	padding: 0;
+	overflow: auto;
+	height: 100%;
+	width: 100%;
+}
+
+.impex-combo ul li {
+	display: list-item;
+    text-align: -webkit-match-parent;
+}
+
+/**impex-combo样式结束**/
