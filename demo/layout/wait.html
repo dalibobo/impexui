@@ -5,8 +5,9 @@
 <div class="grid">
 	<impex-datagrid url="http://localhost/mt/test_waitList.do" cols="cols" linenumber="true" pagination="true" toolbar="toolbar"></impex-datagrid>
 	<div id="toolbar" x-ignore>
-		<impex-linkbutton click="doAdd" iconcls="icon-add" text="新增"></impex-linkbutton>
+		<impex-linkbutton click="openAddWindow" iconcls="icon-add" text="新增"></impex-linkbutton>
 		<impex-linkbutton click="doEdit" iconcls="icon-edit" text="编辑"></impex-linkbutton>
 		<impex-linkbutton click="doDelete" iconcls="icon-remove" text="删除"></impex-linkbutton>
 	</div>
 </div>
+<impex-window id="addWindow" iconCls="icon-add" title="添加事件" show="false" style="width:100%;height:100%;"></impex-window>

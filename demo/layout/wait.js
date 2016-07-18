@@ -10,5 +10,10 @@ impex.component("impex-com-wait", {
 			{code: "creator", title: "创建人"},
 			{code: "createTime", title: "创建时间"}
 		]
+	},
+	methods: {
+		openAddWindow: function() {
+			impex.cget("addWindow").$open();
+		}
 	}
 });
