@@ -1432,29 +1432,26 @@ impex.component('impex-searchbox',{
 	}
 });
 impex.component("impex-window", impex.extend(impex.coms.base, {
-	template:  '<div id="{{id}}" x-show="opened" class="impex-window {{=class}}" style="{{=style}}">\
-					<div class="title" x-show="hasHeader">\
-						<table>\
-							<tr>\
-								<td class="iocn-container"><i class="icon {{=iconcls}}"></i></td>\
-								<td><span>{{title}}</span>\</td>\
-								<td class="right"><i :click="close()" title="关闭窗口" class="close icon icon-no"></i></td>\
-							</tr>\
-						</table>\
+	template:  '<div id="{{id}}" x-show="opened" class="impex-window {{=class}}" style="width:100%;height:100%;">\
+					<div class="content" style="{{=style}}">\
+						<div class="title" x-show="hasHeader">\
+							<table>\
+								<tr>\
+									<td class="iocn-container"><i class="icon {{=iconcls}}"></i></td>\
+									<td><span>{{title}}</span>\</td>\
+									<td class="right"><i :click="close()" title="关闭窗口" class="close icon icon-no"></i></td>\
+								</tr>\
+							</table>\
+						</div>\
+						<div class="body">##body</div>\
+						<div class="footer" x-show="hasFooter">##footer</div>\
 					</div>\
-					<div class="body">##body</div>\
-					<div class="footer" x-show="hasFooter">##footer</div>\
 				</div>',
 	data: {
 		title: "窗口",
 		modal: true,
 		hasHeader: true,
 		hasFooter: true
-	},
-	onInit: function() {
-		if (_.isString(this.data.modal)) {
-			this.data.modal = ("true" == this.data.modal);
-		}
 	},
 	onBeforeCompile:function(str) {					
 		var target = this.view.__target;
@@ -1482,18 +1479,18 @@ impex.component("impex-window", impex.extend(impex.coms.base, {
 		this._setPosition();
 	},
 	_setBodySize: function() {
-		var el = this.view.el;
-		var h = $(el).height();					
-		var body = el.querySelector(".body");
+		var content = $(this.view.el).find(".content");
+		var h = content.height();					
+		var body = content.find(".body");
 		var offset = this.data.hasHeader ? 30 : 0;
 		offset += this.data.hasFooter ? 44 : 0;
-		$(body).height(h - offset);
+		body.height(h - offset);
 	},
 	_setPosition: function() {
-		var el = this.view.el;
-		var h = $(el).height();
-		var w = $(el).width();
-		$(el).css({
+		var content = $(this.view.el).find(".content");
+		var h = content.height();
+		var w = content.width();
+		content.css({
 			marginLeft: -w/2 + "px",
 			marginTop: -h/2 + "px"
 		});
@@ -1503,10 +1500,8 @@ impex.component("impex-window", impex.extend(impex.coms.base, {
 			if (!this.data.opened) return;
 			this.data.opened = false;
 			this.emit("window.close");
-			if (this.data.modal) MaskLayer.hide(this.data.id);
 		},
 		open: function() {
-			if (this.data.modal) MaskLayer.show(this.data.id);
 			if (this.data.opened) return;
 			this.data.opened = true;
 			this._setBodySize();
