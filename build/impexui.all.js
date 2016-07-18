@@ -1720,7 +1720,7 @@ impex.component('impex-combo', {
 	onInit: function() {
 		this.data.id = this.data.id!="" ? this.data.id:"impex-combo-" + getId();
 		//初始化赋值
-		_.extend(this.data.listData,getData(this,this.data.datalist));
+		this.data.listData = $.extend(true, [], getData(this,this.data.datalist));
 		//this.data.listData = getData(this,this.data.datalist);
 		var selectValue = getData(this,this.data.value);
 		
