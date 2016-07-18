@@ -1,76 +1,4 @@
 /**
- * 表单提交
- */
-impex.directive('submit',{
-	form: null,
-	onCreate: function() {
-		this.view.on("submit", "submit($event)");
-	},
-	onInit: function() {
-		var fname = this.view.attr("name");
-		var top = impex.$top();
-		if (!top[fname]) top[fname] = {};
-		var form = top[fname];
-		if (!form.hasOwnProperty("valid")) {
-			form.valid = true;
-			form.invalid = false;
-			form.__coms = [];
-		}
-		if (!form.clear) {
-			// 清除表单验证
-			form.clear = function() {
-				for (var i = this.__coms.length; i--;) {
-					var com = this.__coms[i];
-					var elName = com.view.attr("name");
-					var fel = getObjByPath(this, elName);
-					fel.valid = true;
-					fel.invalid = false;
-				}
-				this.__initCheck = true;
-				var that = this;
-				setTimeout(function() {
-					that.validate();
-				}, 20);
-			}
-		}
-		this.form = form;
-		// 表单初始化验证标记
-		form.__initCheck = true;
-		form.validate = function(delay) {
-			var dy = delay || 0;
-			var that = this;
-			setTimeout(function() {
-				var coms = that.__coms;
-				if (!coms) {
-					that.__initCheck = false;
-					return;
-				}
-				for (var i = coms.length;i--;) {
-					coms[i].validate();
-				}
-				that.__initCheck = false;
-			}, dy);
-		}
-		setTimeout(function() {
-			form.validate();
-		}, 20);
-	},
-	submit: function(e) {
-		this.form.validate();
-		var that = this;
-		var obj = that.closest(that.$value);
-		if (obj && is.function(obj[that.$value])) obj[that.$value](this);
-
-		// 阻止浏览器默认提交行为
-		if (is.ie()) {
-			window.event.returnValue = false;
-		}else{
-			e.preventDefault();
-		}
-	}
-});
-
-/**
  * 可用性
  */
 impex.directive("disabled", {
@@ -141,4 +69,79 @@ impex.directive("checked", {
 	observe: function(rs) {
 		this.view.el.checked = rs;
 	}
-})
+});
+
+/**
+ * 校验指令
+ * <br/>使用方式：<input x-validate="required,isint:'+',length:2:6}"></input>
+ * true:表示需要校验，false:不做校验
+ * msg:提示消息
+ * 例子：required,  需要做required校验，
+ * isint:'+'
+ */
+impex.directive('validate',{
+	checkModel:"",
+	enabled: true,
+	do: function() {
+		if (!this.enabled) return true;
+		var obj = this.checkModel.split(",");
+		var objValue = this.view.el.value;
+		var reType = true;
+		var msg = "验证通过！";
+		var v;
+		var validateResult = {result: true};
+		for ( var p in obj ){ // 方法 
+			v = obj[p];
+			var lr = v.split(":");
+			if(!lr[0] || lr[0] === 'msg'){
+				continue;
+			}
+			
+			var rs = {type:true,msg:""};
+			if(undefined === impex.validate[lr[0]]){
+				rs.type = false;
+				rs.msg = lr[0]+"函数不存在!";
+			}else{
+				rs = impex.validate[lr[0]](objValue,lr.splice(1));
+			}
+			
+			if(!rs.type){
+				reType = false;
+				validateResult.result = false;
+				validateResult.msg = obj.msg || rs.msg ;
+				break;
+			}
+		}
+		//this.emit("impex.validate.result",  validateResult);
+		
+		if(!validateResult.result){
+			var el = $(this.view.el);
+			var of = el.offset() ;
+			Tip.show("tip-"+this.view.el.id,{
+				left:of.left+of.width,
+				top:of.top,
+				right:0,
+				bottom:0,
+				dir:'right',
+				message:validateResult.msg
+			});
+		}else{
+			$("#tip-"+this.view.el.id).remove();
+		}
+		this.emit("impex.validate.result",  validateResult);
+		return reType;
+	},
+	onInit: function() {
+		var that = this;
+		$(this.view.el).on("input", function() {
+			that.emit("validate.fire", that.do());
+		});
+		this.checkModel = this.value + "";
+		if (undefined == this.data.xDisabled) {
+			this.enabled = true;
+		}else{
+			this.enabled = this.data.xDisabled;
+		}
+	}
+		
+});

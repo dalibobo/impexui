@@ -17,7 +17,7 @@
 		<ul>
 			<li x-each="1 to 100 as k">{{k}}</li>
 		</ul>
-		<impex-window iconCls="icon-add">
+		<impex-window iconCls="icon-add" style="width:400px;height:300px;">
 			<div>
 				打开一个页面
 				<input type="button" value="open a window" :click="openWindow()"/>
@@ -36,7 +36,7 @@
 			</footer>
 		</impex-window>
 		
-		<impex-window iconCls="icon-remove" hasHeader="false" id="detailWindow" show="false" width="200" height="100" hasFooter="false">
+		<impex-window iconCls="icon-remove" hasHeader="false" id="detailWindow" show="false" hasFooter="false">
 			i am inner wondow!
 		</impex-window>
 		
@@ -48,39 +48,9 @@
 					}
 				}		
 			};
-			
-			impexui.component = function(name, param, service) {
-				var def = {
-					data: {},
-					methods: {},
-					events: {}
-				}
-				
-				for (var k in param) {
-					if (k == "data" || k == "events" || k == "methods") {
-						_.extend(def[k], param[k]);
-						continue;
-					}
-					if (k == "onInit" || k == "onDisplay") {
-						continue;
-					}
-					def[k] = param[k];
-				}
 
-				def.onInit = function() {
-					if (param.onInit) param.onInit.apply(this);
-					
-					if (!_.isString(this.data.id)) this.data.id = this.name + "-" + getId()
-				}
-				def.onDisplay = function() {
-					if (param.onDisplay) param.onDisplay.apply(this);
-				}
-
-				impex.component(name, def, service);
-			}
-			
-			impexui.component("impex-window", {
-				template:  '<div id="{{id}}" x-show="opened" class="impex-window {{=class}}" style="width:{{width}}px;height:{{height}}px;">\
+			impex.component("impex-window", impex.extend(impex.coms.base, {
+				template:  '<div id="{{id}}" x-show="opened" class="impex-window {{=class}}" style="{{=style}}">\
 								<div class="title" x-show="hasHeader">\
 									<table>\
 										<tr>\
@@ -94,8 +64,6 @@
 								<div class="footer" x-show="hasFooter">##footer</div>\
 							</div>',
 				data: {
-					width: 400,
-					height: 300,
 					title: "窗口",
 					modal: true,
 					hasHeader: true,
@@ -133,18 +101,20 @@
 				},
 				_setBodySize: function() {
 					var el = this.view.el;
-					var h = el.style.height;					
+					var h = $(el).height();					
 					var body = el.querySelector(".body");
 					var offset = this.data.hasHeader ? 30 : 0;
 					offset += this.data.hasFooter ? 44 : 0;
-					body.style.height = (parseFloat(h) - offset) + "px";
+					$(body).height(h - offset);
 				},
 				_setPosition: function() {
 					var el = this.view.el;
-					var h = el.style.height;
-					var w = el.style.width;
-					el.style.marginLeft =  -parseFloat(w)/2 + "px";
-					el.style.marginTop =  -parseFloat(h)/2 + "px";
+					var h = $(el).height();
+					var w = $(el).width();
+					$(el).css({
+						marginLeft: -w/2 + "px",
+						marginTop: -h/2 + "px"
+					});
 				},
 				methods: {
 					close: function() {
@@ -157,10 +127,12 @@
 						if (this.data.modal) MaskLayer.show(this.data.id);
 						if (this.data.opened) return;
 						this.data.opened = true;
+						this._setBodySize();
+						this._setPosition();
 						this.emit("window.opened");
 					}
-				}		
-			});
+				}
+			}));
 			
 			var page = impex.render(document.body, model);
 		</script>

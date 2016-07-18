@@ -149,7 +149,7 @@
 /**分页组件样式结束**/
 
 /**窗口组件样式**/
-.impex-window{position:fixed;border:1px solid #95B8E7;padding-bottom:2px;left:50%;top:50%;}
+.impex-window{width:400px;height:300px;position:fixed;border:1px solid #95B8E7;padding-bottom:2px;left:50%;top:50%;}
 .impex-window .title{font-size:12px;background-color:rgb(242, 242, 242);border-bottom:1px solid #ddd;}
 .impex-window .title .icon{display: inline-block;width: 16px;height: 16px;line-height: 16px;font-size: 1px;margin: 4px 2px 0px 2px}
 .impex-window .title table{width:100%;height:30px;}

@@ -246,24 +246,6 @@ function getParentModel(comModel, path) {
 }
 
 /**
- * 查找具有valid属性的对象
- * @param  {Object} obj 对象
- */
-function getObjectHasValid(obj, rsAry) {
-	if (!is.object(obj)) return;
-	for (var k in obj) {
-		if (k.indexOf("_") == 0 || k.indexOf("$") == 0 || !k || k.indexOf(".") != -1) continue;
-		if (is.object(obj[k])) {
-			if (obj[k].hasOwnProperty("valid")) {
-				rsAry.push(obj);
-			}else{
-				getObjectHasValid(obj[k], rsAry);
-			}
-		}
-	}
-}
-
-/**
  * 给dom绑定事件
  * @param  {Object} obj dom对象
  * @param  {String} type 事件类型
@@ -367,76 +349,63 @@ var Tip = {
 }
 
 /**
- * 校验指令
- * <br/>使用方式：<input x-validate="required,isint:'+',length:2:6}"></input>
- * true:表示需要校验，false:不做校验
- * msg:提示消息
- * 例子：required,  需要做required校验，
- * isint:'+'
+ * 通用组件模型
  */
-impex.directive('validate',{
-	checkModel:"",
-	enabled: true,
-	do: function() {
-		if (!this.enabled) return true;
-		var obj = this.checkModel.split(",");
-		var objValue = this.view.el.value;
-		var reType = true;
-		var msg = "验证通过！";
-		var v;
-		var validateResult = {result: true};
-		for ( var p in obj ){ // 方法 
-			v = obj[p];
-			var lr = v.split(":");
-			if(!lr[0] || lr[0] === 'msg'){
-				continue;
-			}
-			
-			var rs = {type:true,msg:""};
-			if(undefined === impex.validate[lr[0]]){
-				rs.type = false;
-				rs.msg = lr[0]+"函数不存在!";
-			}else{
-				rs = impex.validate[lr[0]](objValue,lr.splice(1));
-			}
-			
-			if(!rs.type){
-				reType = false;
-				validateResult.result = false;
-				validateResult.msg = obj.msg || rs.msg ;
-				break;
-			}
-		}
-		//this.emit("impex.validate.result",  validateResult);
-		
-		if(!validateResult.result){
-			var el = $(this.view.el);
-			var of = el.offset() ;
-			Tip.show("tip-"+this.view.el.id,{
-				left:of.left+of.width,
-				top:of.top,
-				right:0,
-				bottom:0,
-				dir:'right',
-				message:validateResult.msg
-			});
-		}else{
-			$("#tip-"+this.view.el.id).remove();
-		}
-		this.emit("impex.validate.result",  validateResult);
-		return reType;
-	},
-	onInit: function() {
-		var that = this;
-		$(this.view.el).on("input", function() {
-			that.emit("validate.fire", that.do());
-		});
-		this.checkModel = this.value + "";
-		if (undefined == this.data.xDisabled) {
-			this.enabled = true;
-		}else{
-			this.enabled = this.data.xDisabled;
+impex.coms = {
+	base: {	// 基本组件模型，所有组件都应该继承该组件模型
+		data: {},
+		methods: {},
+		events: {},
+		onInit: function() {
+			// 为组件设置默认id
+			if (!_.isString(this.data.id)) this.data.id = this.name + "-" + getId();
 		}
 	}
-		
-});
+}
+
+/**
+ * 模型继承方法
+ * @param	parent	{Object}	父模型
+ * @param	target	{Object}	目标模型
+ * @return	Object 新的模型
+ */
+impex.extend = function(parent, target) {
+	var model = {
+		data: {},
+		methods: {},
+		events: {}
+	};
+	
+	for (var k in parent) {
+		if (k == "data" || k == "events" || k == "methods") {
+			_.extend(model[k], parent[k]);
+			continue;
+		}
+		if (k == "onInit" || k == "onDisplay") {
+			continue;
+		}
+		model[k] = parent[k];
+	}
+
+	for (var k in target) {
+		if (k == "data" || k == "events" || k == "methods") {
+			_.extend(model[k], target[k]);
+			continue;
+		}
+		if (k == "onInit" || k == "onDisplay") {
+			continue;
+		}
+		model[k] = target[k];
+	}
+
+	model.onInit = function() {
+		if (parent.onInit) parent.onInit.apply(this);
+		if (target.onInit) target.onInit.apply(this);
+	}
+	model.onDisplay = function() {
+		if (parent.onDisplay) parent.onDisplay.apply(this);
+		if (target.onDisplay) target.onDisplay.apply(this);
+	}
+	
+	return model;
+}
