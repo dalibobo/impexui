@@ -92,15 +92,6 @@ impex.component("impex-datagrid", {
 		// 初始化表头
 		var columns = getData(this, this.data.cols);
 		if (null != columns) this.data.columns = columns;
-		
-		// 初始化工具栏
-		if (_.isString(this.data.toolbar)) {
-			var barEl = document.getElementById(this.data.toolbar);
-			if (null != barEl) {
-				this.data.toolbarHtml = barEl.innerHTML;
-				barEl.style.display = "none";
-			}
-		}
 
 		if (!this.data.id) this.data.id = "impex_grid_" + getId();
 	},
@@ -120,6 +111,15 @@ impex.component("impex-datagrid", {
 				this.data.pageSize = 0;
 				this.data.startSize = 0;
 				this.getPager().setConfig({});
+			}
+		}
+		
+		// 初始化工具栏
+		if (_.isString(this.data.toolbar)) {
+			var barEl = document.getElementById(this.data.toolbar);
+			if (null != barEl) {
+				this.data.toolbarHtml = barEl.innerHTML;
+				barEl.style.display = "none";
 			}
 		}
 

@@ -28,7 +28,7 @@ var FUNCTIONS = [
 // 菜单集合
 var MENUS = {
 	"home": [
-		{name: "主页", link: "/home", component: "impex-com-wait", componentjs: "wait.js"}
+		{name: "主页", link: "/home", component: "impex-com-home", componentjs: "home.js"}
 	],
 	"daily": [
 		{name: "待办事项", link: "/wait", component: "impex-com-wait", componentjs: "wait.js"},
