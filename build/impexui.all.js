@@ -1132,10 +1132,10 @@ impex.component("impex-datagrid", {
 		// 初始化工具栏
 		if (_.isString(this.data.toolbar)) {
 			var barEl = document.getElementById(this.data.toolbar);
-			if (null != barEl) {
-				this.data.toolbarHtml = barEl.innerHTML;
-				barEl.style.display = "none";
-			}
+				if (null != barEl) {
+					this.data.toolbarHtml = barEl.innerHTML;
+					barEl.style.display = "none";
+				}
 		}
 
 		// 监听分页跳转

@@ -389,17 +389,23 @@ var Util = new function () {
 		    			target.__im__innerProps[name] = observeData(pc,v,comp);
 		    		}
 		    		Object.defineProperty(target,name,{
-	    				get:function(){return getter.call(this,name)},
-						set:function(v){setter.call(this,name,v)},
+	    				get:function(){
+	    					return getter.call(this,name)
+	    				},
+						set:function(v){
+							setter.call(this,name,v)
+						},
 						enumerable:true,
 						configurable:true
-	    			})
+	    			});
+		    		if(v !== target[name])
+	    				target[name] = v;//for IE
 		    	}
 
 		    	if(type === 'delete'){
 		    		var obj = snap[name];
 		    		if(typeof obj === 'object'){
-
+		    			clearObserve(obj);
 		    		}
 		    		delete snap[name];
 		    	}

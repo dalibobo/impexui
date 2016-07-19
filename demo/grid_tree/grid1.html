@@ -16,15 +16,6 @@
 		<script type="text/javascript" src="../../src/impexui.js"></script>
     </head>
     <body>
-		<!--
-		<h3>基本表格</h3>
-		<impex-datagrid id="baseGrid" title="基本的表格" titleIconCls="icon-grid" ds="studentData" cols="baseGrid.cols"></impex-datagrid>
-		-->
-		
-		<h3>带排序的表格</h3>
-		<impex-datagrid title="带排序的表格" titleIconCls="icon-grid" ds="studentData" cols="orderGrid.cols"></impex-datagrid>
-
-		<!--
 		<h3>带工具栏的表格</h3>
 		<impex-datagrid title="带工具栏的表格" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="studentData" cols="toolbarGrid.cols"></impex-datagrid>
 		<div id="grid_toolbar" x-ignore>
@@ -32,29 +23,6 @@
 			<impex-linkbutton click="doEdit" iconcls="icon-edit" text="编辑"></impex-linkbutton>
 			<impex-linkbutton click="doDelete" iconcls="icon-remove" text="删除"></impex-linkbutton>
 		</div>
-		
-		<h3>带复选框的表格</h3>
-		<impex-datagrid id="checkboxGrid" title="带复选框的表格" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="studentData" cols="checkboxGrid.cols"></impex-datagrid>
-		
-		
-		<h3>带分页的表格</h3>
-		<impex-datagrid id="paginationGrid" title="带分页的表格" pagination="true" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="students" cols="pagerGrid.cols"></impex-datagrid>
-
-		<h3>异步数据无分页的表格</h3>
-		<impex-datagrid url="http://localhost/mt/test_listAll.do" id="agrid" title="异步数据无分页的表格" toolbar="atool" titleIconCls="icon-grid" cols="pagerGrid.cols"></impex-datagrid>
-		<div id="atool" x-ignore>
-			<impex-linkbutton click="doQuery" iconcls="icon-add" text="查询"></impex-linkbutton>
-		</div>
-		
-		<h3>异步数据带分页的表格</h3>
-		<impex-datagrid url="http://localhost/mt/test_list.do" linenumber="true" id="pgrid" title="异步数据带分页的表格" pagination="true" toolbar="ptool" titleIconCls="icon-grid" cols="pagerGrid.cols"></impex-datagrid>
-		<div id="ptool" x-ignore>
-			<impex-linkbutton click="doQuery" iconcls="icon-add" text="查询"></impex-linkbutton>
-		</div>
-		
-		<h3>带行号的表格</h3>
-		<impex-datagrid title="带行号的表格" pagination="true" linenumber="true" toolbar="grid_toolbar" titleIconCls="icon-grid" ds="students" cols="linenumberGrid.cols"></impex-datagrid>
-		-->
 		
 		<script>			
 			imLog.level = 0;
@@ -187,57 +155,6 @@
 				}
 			};
 			
-			/**
-			 * 排序
-			 */
-			impex.directive("order", {
-				onDisplay: function() {
-					var view = this.view;
-					view.addClass("x-order");
-					var el = view.el;
-					var top = impex.$top();
-					if (!top.data) top.data = {};
-					if (!top.data[this.value]) top.data[this.value] = {key: "", dir: ""};
-					var that = this;
-					setTimeout(function() {
-						var cns = el.children;
-						for (var i = cns.length; i--;) {
-							if (cns[i].hasAttribute("order")) {
-								var order = cns[i].getAttribute("order");
-								if (order == '') continue;
-								addClass(cns[i], "sorticon");
-								addEvent(cns[i], "click", function() {
-									that.order(this);
-								});
-							}
-						}
-					}, 20);
-					
-				},
-				order: function(dom) {
-					var t1 = Date.now();
-					console.log(t1)
-					var order = dom.getAttribute("order");
-					var top = impex.$top();
-					var orderObj = top.data[this.value];
-					if (orderObj.key != order) {
-						orderObj.dir = "asc";
-					}else{
-						orderObj.dir = orderObj.dir == "asc" ? "desc" : "asc";
-					}
-					var el = this.view.el;
-					orderObj.key = order;
-					var desc_els = el.querySelectorAll(".sorticon-desc");
-					var asc_els = el.querySelectorAll(".sorticon-asc");
-					for (var i = desc_els.length; i--;) {
-						removeClass(desc_els[i], "sorticon-desc");
-					}
-					for (var i = asc_els.length; i--;) {
-						removeClass(asc_els[i], "sorticon-asc");
-					}
-					addClass(dom, "sorticon-" + orderObj.dir);
-				}
-			});
 
 			var page = impex.render(document.body, model);
 		</script>
