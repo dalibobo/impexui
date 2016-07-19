@@ -50,7 +50,13 @@
 				<input type="submit" value="提交" x-disabled="invalid"/>
 				<input type="button" value="重置表单" :click="reset()"/>
 				<input type="button" value="编辑" :click="edit()"/>
+				<br>
+				<br>
+				表单数据：
+				<div>{{formData}}</div>
 			</impex-form>
+				
+				
 		</fieldset>
 
 		<script>

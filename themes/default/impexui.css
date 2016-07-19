@@ -825,4 +825,16 @@ ul.ztree.zTreeDragUL {margin:0; padding:0; position:absolute; width:auto; height
     text-align: -webkit-match-parent;
 }
 
+.impex-combo li:hover { 
+	background: #eaf2ff;
+    color: #000000;
+    cursor: default;
+}
+.impex-combo table tbody tr:hover { 
+	background: #eaf2ff;
+    color: #000000;
+    cursor: default;
+}
+
 /**impex-combo样式结束**/
+

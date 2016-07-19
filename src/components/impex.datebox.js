@@ -23,15 +23,24 @@ impex.component('impex-datebox', {
 		_setValue:function(value){
 			this.data.dateValue = value;
 			if(this.find("x-validate")){
-				this.find("x-validate")[0].do();
+				var model = this.find("x-validate")[0];
+				model.do();
+				model.emit("validate.fire", model.do());
 			}
 		},
 		wdatePickerOpen :function(element){
 			var that = this;
-			WdatePicker({el:element.view.el,onpicking:function(dp){
-				console.log(dp.cal.getNewDateStr());
-				that.$_setValue(dp.cal.getNewDateStr())
-			},dateFmt:this.data.dateFmt});
+			WdatePicker({
+			el:element.view.el,
+			onpicking:function(dp){
+				//console.log(dp.cal.getNewDateStr());
+				that.$_setValue(dp.cal.getNewDateStr());
+			},
+			onclearing:function(){
+				that.$_setValue("");
+			},
+			dateFmt:this.data.dateFmt
+			});
 		}
 	},
 	

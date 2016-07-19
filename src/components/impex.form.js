@@ -6,7 +6,6 @@ impex.component('impex-form', {
 
 	// 组件初始化	
 	onInit: function() {
-		this._findValidateCom();
 		this.data.novalidate = _.isString(this.data.novalidate);
 
 		if (!_.isString(this.data.id)) this.data.id = "impex_form_" + getId();
@@ -14,6 +13,7 @@ impex.component('impex-form', {
 
 	// 组件显示
 	onDisplay: function() {
+		this._findValidateCom();
 		this.validate();
 	},
 	
@@ -24,11 +24,33 @@ impex.component('impex-form', {
 		var cs = this.children;
 		for (var i = 0; i < cs.length; i++) {
 			if (cs[i].name && cs[i].name == "x-validate") {
-				this.validates.push({
-					com: cs[i],
-					invalid: false
-				});
+				var el = $(cs[i].view.el);
+				if (el.attr("disabled") || el.css("display") == "none") {
+					continue
+				}else{
+					this.validates.push({
+						com: cs[i],
+						invalid: false
+					});
+				};
+				
+			}else if((cs[i].template && cs[i].template!="") || (cs[i].templateURL  && cs[i].templateURL!="")){
+				var csc = cs[i].children;
+				for (var j = 0; j < csc.length; j++) {
+					if (csc[j].name && csc[j].name == "x-validate") {
+						var el = $(csc[j].view.el);
+						if (el.attr("disabled") || el.css("display") == "none") {
+							continue
+						}else{
+							this.validates.push({
+								com: csc[j],
+								invalid: false
+							});
+						}
+					}
+				}
 			}
+
 		}
 	},
 	
@@ -44,7 +66,8 @@ impex.component('impex-form', {
 	data: {
 		novalidate: false,
 		invalid: false,
-		url: ""
+		url: "",
+		formData:""
 	},
 
 	validate: function() {	// 验证表单
@@ -74,6 +97,7 @@ impex.component('impex-form', {
 	},
 
 	_sendAjax: function(data, hasFile) {	// 发送ajax请求
+		this.data.formData = $(this.view.el).serialize();
 		if (_.isString(this.data.onbeforesubmit)) {
 			if (!this.m(this.data.onbeforesubmit)(data)) return;
 		}
