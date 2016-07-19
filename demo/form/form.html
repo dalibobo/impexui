@@ -4,11 +4,15 @@
         <title>Impexui</title>
 		<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
         <meta http-equiv="content-type" content="text/html;charset=utf-8">
+		<link rel="stylesheet" type="text/css" href="../../themes/default/impexui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css"/>
 		<script type="text/javascript" src="../../impex.all.js"></script>
 		<script type="text/javascript" src="../../build/impexui.all.js"></script>
 		<script type="text/javascript" src="../../src/impex.util.js"></script>
-		<script type="text/javascript" src="../../src/impex.directive.js"></script>
 		<script type="text/javascript" src="../../src/components/impex.form.js"></script>
+		<script type="text/javascript" src="../../src/components/impex.datebox.js"></script>
+		<script src="DatePicker/WdatePicker.js"></script>
+		<script type="text/javascript" src="../../src/components/impex.combo.js"></script>
 		<style>
 			.invalid{
 				background-color:#ddd;
@@ -21,17 +25,28 @@
 		<fieldset>
 			<legend>学生信息表单</legend>
 			<br>
-			<impex-form onSuccess="onSuccess" url="http://localhost/mt/test_add.do">
+			<impex-form id="f1" onBeforeSubmit="beforeSubmit" onSuccess="onSuccess" url="http://localhost/mt/test_add.do">
 				学生姓名：<input id="sname" type="text" x-disabled="true" autocomplete="false" value="{{student.name}}" x-validate="required" name="student.name"/>
 				<br><br>
-				学生年龄：<input style="display:none;" type="text" value="{{student.age}}" name="student.age" x-validate="required"/>
+				学生年龄：<input type="text" value="{{student.age}}" name="student.age" x-validate="required"/>
 				<br><br>
 				学生照片：<impex-file name="photo" style="display:inline-block;"></impex-file>
 				<br><br>
-				入学日期：<input type="text" value="{{student.sdate}}" name="student.sdate"/>
+				入学日期：<impex-datebox dateFmt="yyyy-MM-dd" value="" name="student.sdate"  x-validate="required" ></impex-datebox>
 				<br><br>
-				离校日期：<input type="text" value="{{student.edate}}" name="student.edate"/>
+				离校日期：<impex-datebox dateFmt="yyyy-MM-dd" value="" name="student.edate"  x-validate="required" ></impex-datebox>
 				<br><br>
+				单选：
+				<impex-combo name="aihaoaa" datalist="student.love1" value="student.loved1" class="impex-multipart-select" cbk="cbkfun" x-validate="required" x-disabled="false" ></impex-combo>
+				<br>
+				多选：
+				<impex-combobox-multipart name="aihao" datalist="student.love" value="student.loved" x-validate="required" ></impex-combobox-multipart>
+				<br>
+				下拉表格
+				<impex-combogrid ds="dataModel.students" cols="dataModel.cols" tableWidth="900px" textField="name" value="gridValue" idField ="studentNo"  x-validate="required" ></impex-combogrid>
+				<br>
+				支持手输过滤机鼠标滚轮滚动选择
+				<impex-combobox name="aihaoaa" datalist="student.love1" value="student.loved1" cbk="cbkfun"  x-validate="required"  ></impex-combobox>
 				<input type="submit" value="提交" x-disabled="invalid"/>
 				<input type="button" value="重置表单" :click="reset()"/>
 				<input type="button" value="编辑" :click="edit()"/>
@@ -39,38 +54,62 @@
 		</fieldset>
 
 		<script>
-			// 自定义验证标签
-			impex.directive("validate", {
-				onCreate: function() {
-				},
-				
-				onInit: function() {
-					var that = this;
-					$(this.view.el).on("input", function() {
-						that.emit("validate.fire", that.do());
-					});
-				},
-				
-				do: function() {
-					return this.view.el.value != "";
-				}
-			});
+			
 
 			var model = {
+				onInit:function(){
+					//初始化多选下拉框数据
+					this.data.student.love = [{text:"旅游",value:"1"},{text:"学习",value:"2"},{text:"看书",value:"3"},{text:"游戏",value:"4"}];
+					this.data.student.loved =  ["1","3"]; 
+					//初始化单选下拉框数据
+					this.data.student.love1 = [{text:"旅游",value:"1"},{text:"学习",value:"2"},{text:"看书",value:"3"},{text:"游戏",value:"4"}];
+					this.data.student.loved1 = "3"; 
+
+					var students = [];
+					var sex;
+					for (var i = 0; i < 150; i++) {
+						sex = (Math.random() * 10) > 5 ? "男" : "女";
+						students.push({studentNo: 40231220 + i, name: "同学" + i, sex: sex, class: "计算机科学与技术2002-6班"});
+					}
+					this.data.dataModel.students = students;
+
+				},
 				onDisplay: function() {
 					
+				},
+				data:{
+					student: {},
+					gridValue:"40231221",
+					dataModel:{
+						cols: [
+							{code: "studentNo", title: "学号", align: "center",width:"90px"},
+							{code: "name", title: "姓名",width:"90px"},
+							{code: "sex", title: "性别",width:"90px"},
+							{code: "class", title: "班级",width:"30%"}
+						],
+						students: []
+						
+					}
 				},
 				events: {
 					"form.success": function(com, rs) {
 						console.log("form.success => " + rs);
+					},
+					"form.error": function() {
+						Messager.error("网络错误，表单提交失败", 2000);
 					}
 				},
 				methods: {
 					"onSuccess": function(rs) {
 						console.log("onSuccess = >" + rs);
+					},
+					"beforeSubmit": function(data) {
+						return true;
 					}
 				}
 			};
+
+			
 			var page = impex.render(document.body, model);
 		</script>
     </body>

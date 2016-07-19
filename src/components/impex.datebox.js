@@ -2,44 +2,55 @@
  * impex-date组件
  */
 impex.component('impex-datebox', {
-	template: "<input name='{{=name}}' x-model='value' type='text' value='{{value}}' x-on:blur='getValue()' id='{{id}}' placeholder='{{=placeholder}}' x-disabled='{{xDisabled}}' x-validate='{{xValidate}}'  class='{{=class}}' onclick=WdatePicker({dateFmt:'{{=dateFmt}}'})><div>{{value}}</div>",   
+	template: "<input name='{{=name}}' x-model='dateValue' type='text' value='{{dateValue}}' id='{{id}}' placeholder='{{=placeholder}}' x-disabled='{{xDisabled}}' x-validate='{{xValidate}}'  class='{{=class}}' :click='wdatePickerOpen(this)'>",   
 	data:{
 		id:"",
-		value:"",
+		dateValue:"",
 	},
 	onInit: function() {
 		this.data.id = this.data.id ? this.data.id:"impex-date-" + getId();
+		var that = this;
 		//监控赋值变化
-		this.watch(this.data.value, function(todos,name,type,newVal) {
-			this.$_setValue(newVal);
-		});
+		if(this.data.value){
+			this.parent.closest('d',this.data.value).watch(this.data.value, function(todos,name,type,newVal) {
+				that.$_setValue(newVal);
+			});
+		}
+		
 	},
 	methods:{
+		
 		_setValue:function(value){
-			this.data.value = value;
+			this.data.dateValue = value;
 			if(this.find("x-validate")){
 				this.find("x-validate")[0].do();
 			}
+		},
+		wdatePickerOpen :function(element){
+			var that = this;
+			WdatePicker({el:element.view.el,onpicking:function(dp){
+				console.log(dp.cal.getNewDateStr());
+				that.$_setValue(dp.cal.getNewDateStr())
+			},dateFmt:this.data.dateFmt});
 		}
 	},
-	getValue:function(){
-		this.data.value = $(this.value.el).val() ;
-	},
+	
 	events: {
 		//重置
 		"form.reset": function() {
-			if(this.data.value === ""){
-				this.$_setValue("");
-			}else{
-				var value = getData(this, this.data.value);
+			if(this.data.value){
+				var value = getData(this,this.data.value);
 				this.$_setValue(value);
+			}else{
+				this.$_setValue("");
 			}
+			
 		},
 		"impex.validate.result":function(v,validateResult){
 			if(!validateResult.result){
 				var el = $(v.view.el);
 				var of = el.offset() ;
-				Tip.show("tip-"+v.data.id,{
+				Tip.show("tip-"+this.data.id,{
 					left:of.left+of.width,
 					top:of.top,
 					dir:v.data.tipPosition,
@@ -48,5 +59,12 @@ impex.component('impex-datebox', {
 			}
 		}
 	},
+	onDisplay:function(){
+		if(this.data.value){
+			this.$_setValue(getData(this,this.data.value));
+		}
+		
+	}
+		
 
 });

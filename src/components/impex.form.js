@@ -14,7 +14,6 @@ impex.component('impex-form', {
 
 	// 组件显示
 	onDisplay: function() {
-		console.log(this.validates);
 		this.validate();
 	},
 	
@@ -66,7 +65,7 @@ impex.component('impex-form', {
 	},
 	
 	reset: function() {	// 重置表单
-		console.log(this.broadcast);
+		this.view.el.reset();
 		this.broadcast("form.reset");
 	},
 	
@@ -75,6 +74,10 @@ impex.component('impex-form', {
 	},
 
 	_sendAjax: function(data, hasFile) {	// 发送ajax请求
+		if (_.isString(this.data.onbeforesubmit)) {
+			if (!this.m(this.data.onbeforesubmit)(data)) return;
+		}
+
 		var hasFile = hasFile || false;
 		var that = this;
 		var setting = {
@@ -111,7 +114,7 @@ impex.component('impex-form', {
 					var files = $(this.view.el).find("input[type='file']");
 					if (files.length > 0) {
 						var formData = new FormData();
-						var formobj =  this.view.el.children;
+						var formobj =  this.view.el.elements;
 						for (var k = 0; k < formobj.length; k++) {
 							if(formobj[k].type != "file" && formobj[k].name != ""){
 								formData.append(formobj[k].name, formobj[k].value);
