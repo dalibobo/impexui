@@ -18,7 +18,8 @@ impex.component("impex-window", impex.extend(impex.coms.base, {
 		title: "窗口",
 		modal: true,
 		hasHeader: true,
-		hasFooter: true
+		hasFooter: true,
+		opened: false
 	},
 	onBeforeCompile:function(str) {					
 		var target = this.view.__target;
@@ -42,8 +43,6 @@ impex.component("impex-window", impex.extend(impex.coms.base, {
 		if (_.isString(this.data.hasheader)) {
 			this.data.hasHeader = ("true" == this.data.hasheader);
 		}
-		this._setBodySize();
-		this._setPosition();
 	},
 	_setBodySize: function() {
 		var content = $(this.view.el).find(".content");
@@ -54,13 +53,17 @@ impex.component("impex-window", impex.extend(impex.coms.base, {
 		body.height(h - offset);
 	},
 	_setPosition: function() {
-		var content = $(this.view.el).find(".content");
-		var h = content.height();
-		var w = content.width();
-		content.css({
-			marginLeft: -w/2 + "px",
-			marginTop: -h/2 + "px"
-		});
+		var that = this;
+		setTimeout(function() {
+			var content = $(that.view.el).find(".content");
+			var h = content.height();
+			var w = content.width();
+			console.log(h + "..." + w);
+			content.css({
+				marginLeft: -w/2 + "px",
+				marginTop: -h/2 + "px"
+			});
+		}, 100);
 	},
 	methods: {
 		close: function() {
