@@ -64,12 +64,12 @@ impex.component('impex-combobox-multipart', {
 	},
 	methods:{
 		_setValue:function(selectValue){
-			this.data.selectData.values = [];
-			this.data.selectData.texts = [];
+			this.data.selectData = {texts: [], values: []};
 			if(selectValue==null || selectValue==""){
-				this.data.selectData.values = [];
-				this.data.selectData.texts = [];
+				this.data.selectData = {texts: [], values: []};
 			}
+			var dateModel = {texts: [], values: []};
+
 			for (j=0;j<this.data.listData.length ;j++ ){	
 				this.data.listData[j].onSelect = false;
  
@@ -77,8 +77,10 @@ impex.component('impex-combobox-multipart', {
 				for (i=0;i<selectValue.length ;i++ ){		
 					if(this.data.listData[j].value==selectValue[i]){
 						this.data.listData[j].onSelect = true;
-						this.data.selectData.values.push(this.data.listData[j].value);
-						this.data.selectData.texts.push(this.data.listData[j].text);
+						dateModel.values.push(this.data.listData[j].value);
+						dateModel.texts.push(this.data.listData[j].text);
+						//this.data.selectData.values.push(this.data.listData[j].value);
+						//this.data.selectData.texts.push(this.data.listData[j].text);
 						if(_.isString(this.data.xValidate)){
 							$("#"+this.data.id).trigger("input");
 						}	
@@ -86,6 +88,7 @@ impex.component('impex-combobox-multipart', {
 					}
 				}
 			}
+			this.data.selectData = dateModel;
 		},
 		//点击选择选项
 		_clickOpt:function(){
@@ -105,6 +108,7 @@ impex.component('impex-combobox-multipart', {
 		_selectOptions:function(data){
 			var aa = document.activeElement;
 			var that = this;
+
 			if(data.onSelect == undefined){
 				data.onSelect = true;
 				that.data.selectData.values.push(data.value);
@@ -162,12 +166,13 @@ impex.component('impex-combobox-multipart', {
 		//_.extend(this.data.listData,getData(this,this.data.datalist));
 		if(this.data.datalist){
 			//监控下拉数据变化
-			if(this.parent.closest('d',this.data.datalist)){
+			var plistModel = this.parent.closest('d',this.data.datalist);
+			if(plistModel){
 				//初始化赋值
 				this.data.listData = $.extend(true, [], getData(this,this.data.datalist));
 				
 				//监控数据
-				this.parent.closest('d',this.data.datalist).watch(this.data.datalist, function(todos,name,type,newVal) {
+				plistModel.watch(this.data.datalist, function(todos,name,type,newVal) {
 						that.data.listData = newVal;
 						that.data.selectData.values = [];
 						that.data.selectData.texts = [];
@@ -177,21 +182,26 @@ impex.component('impex-combobox-multipart', {
 			}
 			
 			//监控赋值变化
-			if(this.parent.closest('d',this.data.value)){
+			var pvalueModel = this.parent.closest('d',this.data.value);
+			if(pvalueModel){
 				//赋值
 				var selectValue = getData(this,this.data.value);
+				var dateModel = {texts: [], values: []};
 				for (i=0;i<selectValue.length ;i++ ){
 					for (j=0;j<this.data.listData.length ;j++ ){
 						if(this.data.listData[j].value==selectValue[i]){
 							this.data.listData[j].onSelect = true;
-							this.data.selectData.values.push(this.data.listData[j].value);
-							this.data.selectData.texts.push(this.data.listData[j].text);
-							continue;
+							dateModel.values.push(this.data.listData[j].value);
+							dateModel.texts.push(this.data.listData[j].text);
+							//this.data.selectData.values.push(this.data.listData[j].value);
+							//this.data.selectData.texts.push(this.data.listData[j].text);
+							break;
 						}
 					}
 				};
+				this.data.selectData = dateModel;
 
-				this.parent.closest('d',this.data.value).watch(this.data.value, function(todos,name,type,newVal) {
+				pvalueModel.watch(this.data.value, function(todos,name,type,newVal) {
 					that.$_setValue(newVal);
 				});
 			}
@@ -287,19 +297,22 @@ impex.component('impex-combo', {
 				this.data.selectData.value = "";
 				this.data.selectData.text = "";
 			}
+			var dataModel = {}
 			for (j=0;j<this.data.listData.length ;j++ ){	
 				this.data.listData[j].onSelect = false;
 				if(selectValue==null || selectValue=="") continue;
 				if(this.data.listData[j].value==selectValue){
 					this.data.listData[j].onSelect = true;
-					this.data.selectData.value = this.data.listData[j].value;
-					this.data.selectData.text = this.data.listData[j].text;
+					dataModel.value = this.data.listData[j].value;
+					dataModel.text = this.data.listData[j].text;
 					if(_.isString(this.data.xValidate)){
 							$("#"+this.data.id).trigger("input");
 					}
 				}
 				
 			}
+
+			this.data.selectData = dataModel;
 		},
 		//点击选择选项
 		_clickOpt:function(){
@@ -324,6 +337,7 @@ impex.component('impex-combo', {
 				that.data.listData[j].onSelect = false;
 			}
 			data.onSelect = true;
+
 			that.data.selectData.value = data.value;
 			that.data.selectData.text = data.text;
 			if(_.isString(this.data.xValidate)){
@@ -335,7 +349,10 @@ impex.component('impex-combo', {
 			try{
 				if(that.data.cbk!=undefined){
 					//this.parent.closest(that.data.cbk)[that.data.cbk](that.data.selectData);
-					this.m(that.data.cbk)(that.data.selectData);
+					if(this.m(that.data.cbk)){
+						this.m(that.data.cbk)(that.data.selectData);
+					}
+					
 				}
 			}catch(e){
 				console.log("调用cbk函数出错");
@@ -372,12 +389,13 @@ impex.component('impex-combo', {
 		);
 		
 		if(this.data.datalist){
-			if(this.parent.closest('d',this.data.datalist)){
+			var plistModel = this.parent.closest('d',this.data.datalist);
+			if(plistModel){
 				//初始化赋值
 				this.data.listData = $.extend(true, [], getData(this,this.data.datalist));
 
 				//监控下拉数据变化
-				this.parent.closest('d',this.data.datalist).watch(this.data.datalist, function(todos,name,type,newVal) {
+				plistModel.watch(this.data.datalist, function(todos,name,type,newVal) {
 					that.data.listData = newVal;
 					that.data.selectData.value = "";
 					that.data.selectData.text = "";
@@ -385,18 +403,24 @@ impex.component('impex-combo', {
 					that.$_setValue(selectValue);
 				});
 			}
-			if(this.parent.closest('d',this.data.value)){
+			var pvalueModel = this.parent.closest('d',this.data.value);
+			if(pvalueModel){
 				//赋值
 				var selectValue = getData(this,this.data.value);
+				var dataModel = {}
 				for (j=0;j<this.data.listData.length ;j++ ){
 					if(this.data.listData[j].value==selectValue){
 						this.data.listData[j].onSelect = true;
-						this.data.selectData.value = this.data.listData[j].value;
-						this.data.selectData.text = this.data.listData[j].text;
+						dataModel.value = this.data.listData[j].value;
+						dataModel.text = this.data.listData[j].text;
+						//this.data.selectData.value = this.data.listData[j].value;
+						//this.data.selectData.text = this.data.listData[j].text;
+						break;
 					}
 				}
+				this.data.selectData = dataModel;
 				//监控赋值变化
-				this.parent.closest('d',this.data.value).watch(this.data.value, function(todos,name,type,newVal) {
+				pvalueModel.watch(this.data.value, function(todos,name,type,newVal) {
 					that.$_setValue(newVal);
 				});
 			}
@@ -497,14 +521,17 @@ impex.component('impex-combobox', {
 				this.data.selectData.value = "";
 				this.data.selectData.text = "";
 			}
+			var dataModel = {}
 			for (j=0;j<this.data.listData.length ;j++ ){	
 				this.data.listData[j].onSelect = false;
 				
 				if(selectValue==null || selectValue=="") continue;
 				if(this.data.listData[j].value==selectValue){
 					this.data.listData[j].onSelect = true;
-					this.data.selectData.value = this.data.listData[j].value;
-					this.data.selectData.text = this.data.listData[j].text;
+					dataModel.value = this.data.listData[j].value;
+					dataModel.text = this.data.listData[j].text;
+					//this.data.selectData.value = this.data.listData[j].value;
+					//this.data.selectData.text = this.data.listData[j].text;
 					if(this.find("x-validate")){
 						var model = this.find("x-validate")[0];
 						model.do();
@@ -514,6 +541,7 @@ impex.component('impex-combobox', {
 				}
 				
 			}
+			this.data.selectData = dataModel;
 		},
 		//点击选择选项
 		_clickOpt:function(){
@@ -698,12 +726,13 @@ impex.component('impex-combobox', {
 
 
 		if(this.data.datalist){
-			if(this.parent.closest('d',this.data.datalist)){
+			var plistModel = this.parent.closest('d',this.data.datalist);
+			if(plistModel){
 				//初始化赋值
 				this.data.listData = $.extend(true, [], getData(this,this.data.datalist));
 				
 				//监控下拉数据变化
-				this.parent.closest('d',this.data.datalist).watch(this.data.datalist, function(todos,name,type,newVal) {
+				plistModel.watch(this.data.datalist, function(todos,name,type,newVal) {
 						
 						that.data.listData = newVal;
 						that.data.selectData.value = "";
@@ -714,19 +743,23 @@ impex.component('impex-combobox', {
 			}
 			
 			//监控赋值变化
-			if(this.parent.closest('d',this.data.value)){
+			var pvalueModel = this.parent.closest('d',this.data.value);
+			if(pvalueModel){
 				//赋值
 				var selectValue = getData(this,this.data.value);
+				var dataModel = {};
 				for (j=0;j<this.data.listData.length ;j++ ){
 					if(this.data.listData[j].value==selectValue){
 						this.data.listData[j].onSelect = true;
-						this.data.selectData.value = this.data.listData[j].value;
-						this.data.selectData.text = this.data.listData[j].text;
+						dataModel.value = this.data.listData[j].value;
+						dataModel.text = this.data.listData[j].text;
 						this.data.bindIndex = j;
+						break;
 					}
 				}
+				this.data.selectData = dataModel;
 
-				this.parent.closest('d',this.data.value).watch(this.data.value, function(todos,name,type,newVal) {
+				pvalueModel.watch(this.data.value, function(todos,name,type,newVal) {
 					that.$_setValue(newVal);
 				});
 			}
@@ -830,18 +863,23 @@ impex.component('impex-combogrid', {
 				this.data.selectData.textfield = "";
 				this.data.selectData.idfield = "";
 			}
+			var dataModel = {};
 			for (j=0;j<this.data.dataSource.length ;j++ ){	
 				this.data.dataSource[j].onSelect = false;
 				if(selectValue==null || selectValue=="") continue ;
 				if(this.data.dataSource[j][this.data.idfield]==selectValue){
 					this.data.dataSource[j].onSelect = true;
-					this.data.selectData.textfield = this.data.dataSource[j][this.data.textfield];
-					this.data.selectData.idfield = this.data.dataSource[j][this.data.idfield];
-					if(_.isString(this.data.xValidate)){
-							$("#"+this.data.id).trigger("input");
-						}
+					dataModel.textfield = this.data.dataSource[j][this.data.textfield];
+					dataModel.idfield = this.data.dataSource[j][this.data.idfield];
+					//this.data.selectData.textfield = this.data.dataSource[j][this.data.textfield];
+					//this.data.selectData.idfield = this.data.dataSource[j][this.data.idfield];
+					
 				}
 				
+			}
+			this.data.selectData = dataModel;
+			if(_.isString(this.data.xValidate)){
+				$("#"+this.data.id).trigger("input");
 			}
 		},
 		//点击选择选项
@@ -875,7 +913,9 @@ impex.component('impex-combogrid', {
 			try{
 				if(that.data.cbk!=undefined){
 					//this.$parent.closest(that.cbk)[that.cbk](that.selectData);
-					this.m(that.data.cbk)(that.data.selectData);
+					if(this.m(that.data.cbk)){
+						this.m(that.data.cbk)(that.data.selectData);
+					}
 				}
 			}catch(e){
 				console.log("调用cbk函数出错");
@@ -912,11 +952,12 @@ impex.component('impex-combogrid', {
 
 		//初始化赋值
 		if(this.data.ds){
-			if(this.parent.closest('d',this.data.ds)){
+			var pdataModel = this.parent.closest('d',this.data.ds);
+			if(pdataModel){
 				var dataSource = getData(this, this.data.ds);
 				if (null != dataSource) {
 					this.data.dataSource = $.extend(true, [], dataSource);
-					this.parent.closest('d',this.data.ds).watch(this.data.ds, function(todos,name,type,newVal) {
+					pdataModel.watch(this.data.ds, function(todos,name,type,newVal) {
 						that.data.dataSource = newVal;
 						that.$_setValue(value);
 					});
@@ -925,11 +966,12 @@ impex.component('impex-combogrid', {
 			
 			
 			//赋值
-			if(this.parent.closest('d',this.data.value)){
+			var pvalueModel = this.parent.closest('d',this.data.value);
+			if(pvalueModel){
 				var value = getData(this, this.data.value);
 				if (null != value) {
 					this.$_setValue(value);
-					this.parent.closest('d',this.data.value).watch(this.data.value, function(todos,name,type,newVal) {
+					pvalueModel.watch(this.data.value, function(todos,name,type,newVal) {
 						that.$_setValue(newVal);
 					});
 				};
@@ -938,11 +980,12 @@ impex.component('impex-combogrid', {
 		}
 		//初始化表头
 		if(this.data.ds){
-			if(this.parent.closest('d',this.data.cols)){
+			var pcolsModel = this.parent.closest('d',this.data.cols);
+			if(pcolsModel){
 				var columns = getData(this, this.data.cols);
 				if (null != columns) {
 					this.data.columns = columns;
-					this.parent.closest('d',this.data.cols).watch(this.data.cols, function(todos,name,type,newVal) {
+					pcolsModel.watch(this.data.cols, function(todos,name,type,newVal) {
 						this.data.columns = newVal;
 					});
 				}
