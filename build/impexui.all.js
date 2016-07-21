@@ -1539,7 +1539,7 @@ impex.component('impex-combobox-multipart', {
 					</span>\
 					<div x-show="showType" class="combo-panel panel-body panel-body-noheader" :click="_clickOpt()" style="max-height: 150px;" title="">\
 						<ul>\
-							<li :click="_selectOptions(d)" class="combobox-item {{d.onSelect ? \'combobox-item-selected\':\'\'}}" x-each="listData as d">{{d.text}}</li>\
+							<div :click="_selectOptions(d)" class="combobox-item {{d.onSelect ? \'combobox-item-selected\':\'\'}}" x-each="listData as d">{{d.text}}</div>\
 						</ul>\
 					</div>\
 				</div>', 
@@ -1589,6 +1589,7 @@ impex.component('impex-combobox-multipart', {
 	},
 	methods:{
 		_setValue:function(selectValue){
+			var that = this;
 			this.data.selectData = {texts: [], values: []};
 			if(selectValue==null || selectValue==""){
 				this.data.selectData = {texts: [], values: []};
@@ -1604,16 +1605,17 @@ impex.component('impex-combobox-multipart', {
 						this.data.listData[j].onSelect = true;
 						dateModel.values.push(this.data.listData[j].value);
 						dateModel.texts.push(this.data.listData[j].text);
-						//this.data.selectData.values.push(this.data.listData[j].value);
-						//this.data.selectData.texts.push(this.data.listData[j].text);
-						if(_.isString(this.data.xValidate)){
-							$("#"+this.data.id).trigger("input");
-						}	
 						continue;
 					}
 				}
 			}
 			this.data.selectData = dateModel;
+			if(_.isString(this.data.xValidate)){
+				setTimeout(function(){
+					$("#"+that.data.id).trigger("input");
+				},100);
+			}	
+
 		},
 		//点击选择选项
 		_clickOpt:function(){
@@ -1654,9 +1656,12 @@ impex.component('impex-combobox-multipart', {
 				that.data.selectData.values.push(data.value);
 				that.data.selectData.texts.push(data.text);
 			}
+			
 			if(_.isString(this.data.xValidate)){
-				$("#"+this.data.id).trigger("input");
-			}
+				setTimeout(function(){
+					$("#"+that.data.id).trigger("input");
+				},100);
+			}	
 			
 			
 		}
@@ -1694,7 +1699,27 @@ impex.component('impex-combobox-multipart', {
 			var plistModel = this.parent.closest('d',this.data.datalist);
 			if(plistModel){
 				//初始化赋值
-				this.data.listData = $.extend(true, [], getData(this,this.data.datalist));
+				
+				var that = this;
+				var listModel = $.extend(true, [], getData(that,that.data.datalist));
+				//赋值
+				var selectValue = getData(this,this.data.value);
+				var dateModel = {texts: [], values: []};
+				if(selectValue){
+					for (i=0;i<selectValue.length ;i++ ){
+						for (j=0;j<listModel.length ;j++ ){
+							if(listModel[j].value==selectValue[i]){
+								listModel[j].onSelect = true;
+								dateModel.values.push(listModel[j].value);
+								dateModel.texts.push(listModel[j].text);
+								break;
+							}
+						}
+					};
+				}
+				
+				this.data.selectData = dateModel;
+				this.data.listData = listModel;
 				
 				//监控数据
 				plistModel.watch(this.data.datalist, function(todos,name,type,newVal) {
@@ -1709,34 +1734,11 @@ impex.component('impex-combobox-multipart', {
 			//监控赋值变化
 			var pvalueModel = this.parent.closest('d',this.data.value);
 			if(pvalueModel){
-				//赋值
-				var selectValue = getData(this,this.data.value);
-				var dateModel = {texts: [], values: []};
-				for (i=0;i<selectValue.length ;i++ ){
-					for (j=0;j<this.data.listData.length ;j++ ){
-						if(this.data.listData[j].value==selectValue[i]){
-							this.data.listData[j].onSelect = true;
-							dateModel.values.push(this.data.listData[j].value);
-							dateModel.texts.push(this.data.listData[j].text);
-							//this.data.selectData.values.push(this.data.listData[j].value);
-							//this.data.selectData.texts.push(this.data.listData[j].text);
-							break;
-						}
-					}
-				};
-				this.data.selectData = dateModel;
-
 				pvalueModel.watch(this.data.value, function(todos,name,type,newVal) {
 					that.$_setValue(newVal);
 				});
 			}
-			
-
 		}
-
-
-
-
 	}
 	
 
@@ -1866,7 +1868,9 @@ impex.component('impex-combo', {
 			that.data.selectData.value = data.value;
 			that.data.selectData.text = data.text;
 			if(_.isString(this.data.xValidate)){
-				$("#"+this.data.id).trigger("input");
+				setTimeout(function(){
+					$("#"+that.data.id).trigger("input");
+				},100);				
 			}
 			this.data.showType = false;
 			
@@ -1917,7 +1921,23 @@ impex.component('impex-combo', {
 			var plistModel = this.parent.closest('d',this.data.datalist);
 			if(plistModel){
 				//初始化赋值
-				this.data.listData = $.extend(true, [], getData(this,this.data.datalist));
+				var listModel  = $.extend(true, [], getData(this,this.data.datalist));
+				//赋值
+				var selectValue = getData(this,this.data.value);
+				var dataModel = {};
+				if(selectValue){
+					for (j=0;j<listModel.length ;j++ ){
+						if(listModel[j].value==selectValue){
+							listModel[j].onSelect = true;
+							dataModel.value = listModel[j].value;
+							dataModel.text = listModel[j].text;
+							break;
+						}
+					}
+				}
+				
+				this.data.selectData = dataModel;
+				this.data.listData  = listModel;
 
 				//监控下拉数据变化
 				plistModel.watch(this.data.datalist, function(todos,name,type,newVal) {
@@ -1930,20 +1950,6 @@ impex.component('impex-combo', {
 			}
 			var pvalueModel = this.parent.closest('d',this.data.value);
 			if(pvalueModel){
-				//赋值
-				var selectValue = getData(this,this.data.value);
-				var dataModel = {}
-				for (j=0;j<this.data.listData.length ;j++ ){
-					if(this.data.listData[j].value==selectValue){
-						this.data.listData[j].onSelect = true;
-						dataModel.value = this.data.listData[j].value;
-						dataModel.text = this.data.listData[j].text;
-						//this.data.selectData.value = this.data.listData[j].value;
-						//this.data.selectData.text = this.data.listData[j].text;
-						break;
-					}
-				}
-				this.data.selectData = dataModel;
 				//监控赋值变化
 				pvalueModel.watch(this.data.value, function(todos,name,type,newVal) {
 					that.$_setValue(newVal);
@@ -1986,12 +1992,7 @@ impex.component('impex-combobox', {
 	onInit: function() {
 		var that = this;
 		this.data.id = this.data.id ? this.data.id:"impex-combobox-" + getId();
-		
-		
-		
-
-		this.data.type = document.body.onmousewheel === null?'mousewheel':'DOMMouseScroll'
-
+		this.data.type = document.body.onmousewheel === null?'mousewheel':'DOMMouseScroll';
 	},
 
 	events: {
@@ -2040,6 +2041,7 @@ impex.component('impex-combobox', {
 	methods:{
 		//下拉选项赋值
 		_setValue:function(selectValue){
+			var that = this;
 			this.data.selectData.value = "";
 			this.data.selectData.text = "";
 			if(selectValue==null || selectValue==""){
@@ -2057,11 +2059,20 @@ impex.component('impex-combobox', {
 					dataModel.text = this.data.listData[j].text;
 					//this.data.selectData.value = this.data.listData[j].value;
 					//this.data.selectData.text = this.data.listData[j].text;
-					if(this.find("x-validate")){
-						var model = this.find("x-validate")[0];
-						model.do();
-						model.emit("validate.fire", model.do());
-					}
+					if(_.isString(this.data.xValidate)){
+						if(this.find("x-validate")){
+							setTimeout(function(){
+								var model = that.find("x-validate")[0];
+								model.do();
+								model.emit("validate.fire", model.do());
+							},100);
+						}
+					}	
+					//if(this.find("x-validate")){
+						//var model = this.find("x-validate")[0];
+						//model.do();
+						//model.emit("validate.fire", model.do());
+					//}
 					this.$divScroollTO(j);
 				}
 				
@@ -2135,10 +2146,19 @@ impex.component('impex-combobox', {
 			data.onSelect = true;
 			that.data.selectData.value = data.value;
 			that.data.selectData.text = data.text;
-			if(this.find("x-validate")){
-				var model = this.find("x-validate")[0];
-				model.do();
-				model.emit("validate.fire", model.do());
+			//if(this.find("x-validate")){
+				//var model = this.find("x-validate")[0];
+				//model.do();
+				//model.emit("validate.fire", model.do());
+			//}
+			if(_.isString(this.data.xValidate)){
+				if(this.find("x-validate")){
+					setTimeout(function(){
+						var model = that.find("x-validate")[0];
+						model.do();
+						model.emit("validate.fire", model.do());
+					},100);
+				}
 			}
 		},
 		unbindWheel : function(comp){
@@ -2207,14 +2227,26 @@ impex.component('impex-combobox', {
 			});
 		},
 		setValue:function(index){
+			var that = this;
 			this.data.listData[index].onSelect = true;
 			this.data.selectData.value = this.data.listData[index].value;
 			this.data.selectData.text = this.data.listData[index].text;
-			if(this.find("x-validate")){
-				var model = this.find("x-validate")[0];
-				model.do();
-				model.emit("validate.fire", model.do());
+			//if(this.find("x-validate")){
+			//	var model = this.find("x-validate")[0];
+			//	model.do();
+			//	model.emit("validate.fire", model.do());
+			//}
+
+			if(_.isString(this.data.xValidate)){
+				if(this.find("x-validate")){
+					setTimeout(function(){
+						var model = that.find("x-validate")[0];
+						model.do();
+						model.emit("validate.fire", model.do());
+					},100);
+				}
 			}
+
 		}
 	
 	},
@@ -2254,11 +2286,28 @@ impex.component('impex-combobox', {
 			var plistModel = this.parent.closest('d',this.data.datalist);
 			if(plistModel){
 				//初始化赋值
-				this.data.listData = $.extend(true, [], getData(this,this.data.datalist));
+				var listModel = $.extend(true, [], getData(this,this.data.datalist));
 				
+				//赋值
+				var selectValue = getData(this,this.data.value);
+				var dataModel = {};
+				if(selectValue){
+					for (j=0;j<listModel.length ;j++ ){
+						if(listModel[j].value==selectValue){
+							listModel[j].onSelect = true;
+							dataModel.value = listModel[j].value;
+							dataModel.text = listModel[j].text;
+							this.data.bindIndex = j;
+							break;
+						}
+					}
+				}
+				
+				this.data.selectData = dataModel;
+				this.data.listData = listModel;
+
 				//监控下拉数据变化
 				plistModel.watch(this.data.datalist, function(todos,name,type,newVal) {
-						
 						that.data.listData = newVal;
 						that.data.selectData.value = "";
 						that.data.selectData.text = "";
@@ -2270,20 +2319,6 @@ impex.component('impex-combobox', {
 			//监控赋值变化
 			var pvalueModel = this.parent.closest('d',this.data.value);
 			if(pvalueModel){
-				//赋值
-				var selectValue = getData(this,this.data.value);
-				var dataModel = {};
-				for (j=0;j<this.data.listData.length ;j++ ){
-					if(this.data.listData[j].value==selectValue){
-						this.data.listData[j].onSelect = true;
-						dataModel.value = this.data.listData[j].value;
-						dataModel.text = this.data.listData[j].text;
-						this.data.bindIndex = j;
-						break;
-					}
-				}
-				this.data.selectData = dataModel;
-
 				pvalueModel.watch(this.data.value, function(todos,name,type,newVal) {
 					that.$_setValue(newVal);
 				});
@@ -2316,22 +2351,7 @@ impex.component('impex-combogrid', {
 						<input id="{{id}}" type="text" class="textbox-text validatebox-text validatebox-readonly" x-disabled="{{xDisabled}}" x-validate="{{xValidate}}"  autocomplete="off" tabindex="" readonly="readonly" placeholder="" style="margin-left: 0px; margin-right: 18px; padding-top: 0px; padding-bottom: 0px;" value="{{selectData.textfield}}">\
 						<input type="hidden" class="textbox-value"  name="{{name}}" value="{{selectData.idfield}}">\
 					</div>\
-					<div x-show="showType" class="combo-panel panel-body panel-body-noheader" :click="_clickOpt()" style="height: 90px;" title="">\
-						<table class="table" cellspacing="0" cellpadding="0" border="0">\
-							<thead class="head">\
-							<tr x-order="##orderId">\
-								<th x-each="columns as col"  style="text-align:{{col.align}};width:{{col.width}};">\
-									<span>{{col.title}}</span>\
-								</th>\
-							</tr>\
-							</thead>\
-							<tbody>\
-								<tr x-each="dataSource as d" :click="_selectOptions(d)"  class="{{d.onSelect ? \'combobox-item-selected\':\'\'}}">\
-									<td x-each="columns as col">{{d[col.code]}}</td>\
-								</tr>\
-							</tbody>\
-						</table>\
-					</div>\
+					<div x-show="showType" class="combo-panel panel-body panel-body-noheader" :click="_clickOpt()" title="">{{=CONTENT}}</div>\
 				</div>', 
 	
 	onInit: function() {
@@ -2365,14 +2385,14 @@ impex.component('impex-combogrid', {
 					message:validateResult.msg
 				});
 			}
+		},
+		"row.click":function(v,d){
+			this.$_selectOptions(d);
 		}
 	},
 
 	data:{
 		id:"",
-		value:"",
-		dataSource: [],//数据源
-		columns: [],//列头
 		showType:false,//下拉选项是否显示
 		selectData: {textfield:"", idfield:""},//选择选项
 		mouseDownType:false,//鼠标单击是否隐藏下拉选项
@@ -2380,33 +2400,7 @@ impex.component('impex-combogrid', {
 		tipPosition:'right'
 	},
 	methods:{
-		//下拉选项赋值
-		_setValue:function(selectValue){
-			this.data.selectData.idfield = "";
-			this.data.selectData.textfield = "";
-			if(selectValue==null || selectValue==""){
-				this.data.selectData.textfield = "";
-				this.data.selectData.idfield = "";
-			}
-			var dataModel = {};
-			for (j=0;j<this.data.dataSource.length ;j++ ){	
-				this.data.dataSource[j].onSelect = false;
-				if(selectValue==null || selectValue=="") continue ;
-				if(this.data.dataSource[j][this.data.idfield]==selectValue){
-					this.data.dataSource[j].onSelect = true;
-					dataModel.textfield = this.data.dataSource[j][this.data.textfield];
-					dataModel.idfield = this.data.dataSource[j][this.data.idfield];
-					//this.data.selectData.textfield = this.data.dataSource[j][this.data.textfield];
-					//this.data.selectData.idfield = this.data.dataSource[j][this.data.idfield];
-					
-				}
-				
-			}
-			this.data.selectData = dataModel;
-			if(_.isString(this.data.xValidate)){
-				$("#"+this.data.id).trigger("input");
-			}
-		},
+		
 		//点击选择选项
 		_clickOpt:function(){
 			this.data.mouseDownType = true;
@@ -2424,20 +2418,21 @@ impex.component('impex-combogrid', {
 		//选择选项
 		_selectOptions:function(data){
 			var that = this;
-			for (j=0;j<this.data.dataSource.length ;j++ ){	
-				that.data.dataSource[j].onSelect = false;
-			}
-			data.onSelect = true;
-			that.data.selectData.idfield = (data[this.data.idfield]);
-			that.data.selectData.textfield = (data[this.data.textfield]);
+			var selectValueModel = {
+					"textfield":data[that.data.textfield], 
+					"idfield":data[that.data.idfield]
+				};
+			that.data.selectData = selectValueModel;
 			this.data.showType = false;
+			
 			if(_.isString(this.data.xValidate)){
-				$("#"+this.data.id).trigger("input");
+				setTimeout(function(){
+					$("#"+that.data.id).trigger("input");
+				},100);
 			}
 			//调用回调函数返回当前选择的 {text:"",value:""}
 			try{
 				if(that.data.cbk!=undefined){
-					//this.$parent.closest(that.cbk)[that.cbk](that.selectData);
 					if(this.m(that.data.cbk)){
 						this.m(that.data.cbk)(that.data.selectData);
 					}
@@ -2455,8 +2450,6 @@ impex.component('impex-combogrid', {
 		var divWidth = $(view.el).width();
 		var divHeight = view.el.offsetHeight<24?24:view.el.offsetHeight;
 		this.data.height = divHeight - 2 +"px";
-		
-		view.el.childNodes[3].style.width = this.data.tablewidth ? this.data.tablewidth:"300px";
 		view.el.childNodes[1].childNodes[3].style.width = divWidth-22+"px";
 		view.el.childNodes[1].childNodes[3].style.height = divHeight-2+"px";
 		view.el.childNodes[1].childNodes[3].style.lineHeight = divHeight-2+"px";
@@ -2472,51 +2465,6 @@ impex.component('impex-combogrid', {
 				},200);
 			}	
 		);
-		
-
-
-		//初始化赋值
-		if(this.data.ds){
-			var pdataModel = this.parent.closest('d',this.data.ds);
-			if(pdataModel){
-				var dataSource = getData(this, this.data.ds);
-				if (null != dataSource) {
-					this.data.dataSource = $.extend(true, [], dataSource);
-					pdataModel.watch(this.data.ds, function(todos,name,type,newVal) {
-						that.data.dataSource = newVal;
-						that.$_setValue(value);
-					});
-				};
-			}
-			
-			
-			//赋值
-			var pvalueModel = this.parent.closest('d',this.data.value);
-			if(pvalueModel){
-				var value = getData(this, this.data.value);
-				if (null != value) {
-					this.$_setValue(value);
-					pvalueModel.watch(this.data.value, function(todos,name,type,newVal) {
-						that.$_setValue(newVal);
-					});
-				};
-			}
-			
-		}
-		//初始化表头
-		if(this.data.ds){
-			var pcolsModel = this.parent.closest('d',this.data.cols);
-			if(pcolsModel){
-				var columns = getData(this, this.data.cols);
-				if (null != columns) {
-					this.data.columns = columns;
-					pcolsModel.watch(this.data.cols, function(todos,name,type,newVal) {
-						this.data.columns = newVal;
-					});
-				}
-			}
-		}
-
 
 	}
 	
