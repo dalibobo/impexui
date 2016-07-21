@@ -7,7 +7,7 @@
  * Released under the MIT license
  *
  * website: http://impexjs.org
- * last build: 2016-07-19
+ * last build: 2016-07-21
  */
 !function (global) {
 	'use strict';
@@ -146,6 +146,8 @@ var Util = new function () {
 		
 		var p = new Proxy(t, handler);
 		Object.defineProperty(p,'__im__target',{enumerable: false,writable: false,value:t});
+		var id = Date.now() + Math.random();
+		Object.defineProperty(t,'__im__oid',{enumerable: false,writable: false,value:id});
 		return p;
 	}
 
@@ -181,7 +183,7 @@ var Util = new function () {
 			    	var xpath = target.__im__extPropChain;
 
 			    	var changeObj = {object:target,name:name,pc:path,xpc:xpath,oldVal:old,newVal:v,comp:this.comp,type:isAdd?'add':'update'};
-			    	Builder.handleChange(changeObj);
+			    	ChangeHandler.handle(changeObj);
 			    	
 			    	return true;
 			    },
@@ -198,7 +200,7 @@ var Util = new function () {
 			    	var xpath = target.__im__extPropChain;
 
 				    var changeObj = {object:target,name:name,pc:path,xpc:xpath,oldVal:old,comp:this.comp,type:'delete'};
-			    	Builder.handleChange(changeObj);
+			    	ChangeHandler.handle(changeObj);
 
 				    return true;
 				}
@@ -420,7 +422,7 @@ var Util = new function () {
 		    	}
 
 		    	var changeObj = {object:target,name:name,pc:path,xpc:xpath,oldVal:old,newVal:v,comp:comp,type:type};
-		    	Builder.handleChange(changeObj);
+		    	ChangeHandler.handle(changeObj);
 		    }
 		}
 	}//end if
@@ -1130,24 +1132,6 @@ var Builder = new function() {
 				}
 			}
 		}
-
-		// //build components
-		// for(var i=comp.children.length;i--;){
-		// 	var subComp = comp.children[i];
-		// 	if(subComp instanceof Directive)continue;
-
-		// 	//激活组件
-		// 	subComp.init();
-		// 	// subComp.display();
-		// }
-
-		// //build directives
-		// for(var i=comp.children.length;i--;){
-		// 	var subComp = comp.children[i];
-		// 	if(!(subComp instanceof Directive))continue;
-
-		// 	subComp.init();
-		// }
 	}
 
  	function buildExpModel(ctrlScope,varObj,expNode){
@@ -1162,7 +1146,6 @@ var Builder = new function() {
  			prop = walkPropTree(prop.subProps,varObj.segments[i],expNode);
  		}
  	}
-
  	this.buildExpModel = buildExpModel;
 
  	function walkPropTree(parentProp,propName,expNode){
@@ -1193,27 +1176,91 @@ var Builder = new function() {
 		prelink(component);
 	}
 
-	var __propStr = null,
-		__lastMatch = undefined;
-	function changeHandler(change){
+}
+/**
+ * 变更处理器，处理所有变量变更，并触发渲染
+ */
 
-		var newVal = change.newVal;
-		var oldVal = change.oldVal;
-		var pc = change.pc;
-		var xpc = change.xpc;
-		var comp = change.comp;
-		var type = change.type;
-		var name = change.name;
-		var object = change.object;
+var ChangeHandler = new function() {
 
-		
-		handlePath(newVal,oldVal,comp,type,name,object,pc);
-
-		xpc.forEach(function(pc){
-			handlePath(newVal,oldVal,comp,type,name,object,pc);
-		});
+	function mergeChange(change){
+		for(var i=changeQ.length;i--;){
+			var c = changeQ[i];
+			if(c.object.__im__oid === change.object.__im__oid && c.name === change.name)break;
+		}
+		if(i > -1)
+			changeQ.splice(i,1,change);
+		else{
+			changeQ.push(change);
+		}
 	}
 
+	var combineChange = false;
+	var changeQ = [];
+	var expProps = [];
+
+	this.handle = function (change){
+		if(combineChange){
+			mergeChange(change);
+		}else{
+			changeQ = [];
+			expProps = [];
+			combineChange = true;
+			changeQ.push(change);
+			setTimeout(function(){
+				combineChange = false;
+
+				changeQ.forEach(function(change){
+					var newVal = change.newVal;
+					var oldVal = change.oldVal;
+					var pc = change.pc;
+					var xpc = change.xpc;
+					var comp = change.comp;
+					var type = change.type;
+					var name = change.name;
+					var object = change.object;
+
+					// console.log('处理变更',change);
+					
+					handlePath(newVal,oldVal,comp,type,name,object,pc);
+
+					xpc.forEach(function(pc){
+						handlePath(newVal,oldVal,comp,type,name,object,pc);
+					});
+
+					
+				});//end for
+
+				//render
+				var expNodes = mergeExpNodes(expProps);
+				Renderer.renderExpNode(expNodes);
+
+				//callback observe attrs
+				callObserves(expProps);
+				//watch path
+				callWatchs(expProps);
+
+				//watch all
+				changeQ.forEach(function(change){
+					var newVal = change.newVal;
+					var oldVal = change.oldVal;
+					var pc = change.pc.concat();
+					var comp = change.comp;
+					var type = change.type;
+					var name = change.name;
+					var object = change.object;
+					pc.push(name);
+
+					if(comp.__watcher instanceof Function){
+			        	comp.__watcher(object,name,type,newVal,oldVal,pc);
+			        }
+				});//end for
+			},50);
+		}
+	}
+	
+	var __propStr = null,
+		__lastMatch = undefined;
 	function handlePath(newVal,oldVal,comp,type,name,object,pc){
 		__propStr = null;
         __lastMatch = undefined;
@@ -1234,16 +1281,23 @@ var Builder = new function() {
         
         if(!comp)return;
 
-        recurRender(object,name,comp,chains,type,newVal,oldVal,0,comp);
-        if(comp.__watcher instanceof Function){
-        	comp.__watcher(type,newVal,oldVal,chains);
-        }
+        findExpProp(object,name,comp,chains,type,newVal,oldVal,0,comp);
 	}
 
-	this.handleChange = changeHandler;
+	function mergeExpNodes(expProps){
+		var expNodes = [];
+		for(var i=expProps.length;i--;){
+			for(var j=expProps[i].expNodes.length;j--;){
+				var expNode = expProps[i].expNodes[j];
+				if(expNodes.indexOf(expNode) < 0)
+					expNodes.push(expNode);
+			}
+		}
+		return expNodes;
+	}
 
 	var sqbExp = /(^\[)|(,\[)/;
-	function rerender(object,name,component,propChain,changeType,newVal,oldVal){
+	function mergeExpProp(object,name,component,propChain,changeType,newVal,oldVal){
 		var props = component.__expPropRoot.subProps;
 		var prop;
 		var hasSqb = false;
@@ -1276,22 +1330,90 @@ var Builder = new function() {
             matchs.push(prop);
         }
 
-
-		
-		var invokedWatchs = [];
-		for(var i=matchs.length;i--;){
-			//rerender matchs
-			Renderer.renderExpNode(matchs[i].expNodes);
-			//callback observe attrs
-			for(var j=matchs[i].attrObserveNodes.length;j--;){
-				var aon = matchs[i].attrObserveNodes[j];
-
-				var rs = Renderer.evalExp(aon.directive,aon.expObj);
-				aon.directive.observe(rs);
+        //merge
+        for(var i=matchs.length;i--;){
+        	var prop = matchs[i];
+        	prop.propChain = propChain;
+        	prop.newVal = newVal;
+        	prop.oldVal = oldVal;
+        	prop.name = name;
+        	prop.type = changeType;
+        	prop.object = object;
+        	expProps.push(prop);
+        }
+	}
+	function findMatchProps(prop,findLength,matchs){
+		if(findLength < 1){
+			matchs.push(prop);
+			return;
+		}
+		for(var k in prop.subProps){
+			findMatchProps(prop.subProps[k],findLength-1,matchs);
+		}
+	}
+	function findExpProp(object,name,component,propChain,changeType,newVal,oldVal,depth,topComp){
+		var toRender = true;
+		if(depth > 0){
+			if(!__propStr){
+				__propStr = '';
+				for(var k=0;k<propChain.length;k++){
+					var seg = propChain[k];
+					__propStr += seg[0]==='['?seg:'.'+seg;
+				}
 			}
+			var prop = undefined;
+            try{
+                prop = eval('impex._cs["'+component.__id+'"].data'+__propStr);
+            }catch(e){}
+
+            if(!Util.isUndefined(prop)){
+            	__lastMatch = component;
+                toRender = false;
+            }else 
+            if(__lastMatch && __lastMatch !== topComp)toRender = false;
+		}
+		if(toRender){
+			mergeExpProp(object,name,component,propChain,changeType,newVal,oldVal);
+		}
+		if(component.isolate){
+			var pc0 = propChain[0];
+			for(var i=component.isolate.length;i--;){
+				var k = component.isolate[i];
+				if(k.indexOf('.')>0){
+					var kc = k.split('.');
+					var matchAll = true;
+					for(var kci=0;kci<kc.length;kci++){
+						if(kc[kci] !== propChain[kci]){
+							matchAll = false;
+						}
+					}
+					if(matchAll)return;
+				}else if(k === pc0){
+					return;
+				}
+			}
+		}
+
+		for(var j=component.children.length;j--;){
+			var subCtrlr = component.children[j];
+ 			findExpProp(object,name,subCtrlr,propChain,changeType,newVal,oldVal,depth+1,topComp);
+ 		}
+	}
+
+	function callWatchs(expProps){
+		var invokedWatchs = [];
+		for(var i=expProps.length;i--;){
+			var prop = expProps[i];
+			var propChain = prop.propChain;
+			var newVal = prop.newVal;
+			var oldVal = prop.oldVal;
+			var name = prop.name;
+			var object = prop.object;
+			var changeType = prop.type;
+
 			//callback watchs
-			for(var j=matchs[i].watchs.length;j--;){
-				var watch = matchs[i].watchs[j];
+			for(var j=prop.watchs.length;j--;){
+				var watch = prop.watchs[j];
 
 				if(watch.segments.length < propChain.length)continue;
 				if(invokedWatchs.indexOf(watch) > -1)continue;
@@ -1324,7 +1446,7 @@ var Builder = new function() {
 							nv = new Function("$var","return "+findStr)(newVal);
 							ov = new Function("$var","return "+findStr)(oldVal);
 						}catch(e){
-							LOGGER.debug('error on parse watch params');
+							LOGGER.debug('error on parse watch params',e);
 							nv = null;
 						}
 					}
@@ -1334,62 +1456,17 @@ var Builder = new function() {
 			}
 		}
 	}
-	function findMatchProps(prop,findLength,matchs){
-		if(findLength < 1){
-			matchs.push(prop);
-			return;
-		}
-		for(var k in prop.subProps){
-			findMatchProps(prop.subProps[k],findLength-1,matchs);
-		}
-	}
-	function recurRender(object,name,component,propChain,changeType,newVal,oldVal,depth,topComp){
-		var toRender = true;
-		if(depth > 0){
-			if(!__propStr){
-				__propStr = '';
-				for(var k=0;k<propChain.length;k++){
-					var seg = propChain[k];
-					__propStr += seg[0]==='['?seg:'.'+seg;
-				}
-			}
-			var prop = undefined;
-            try{
-                prop = eval('impex._cs["'+component.__id+'"].data'+__propStr);
-            }catch(e){}
 
-            if(!Util.isUndefined(prop)){
-            	__lastMatch = component;
-                toRender = false;
-            }else 
-            if(__lastMatch && __lastMatch !== topComp)toRender = false;
-		}
-		if(toRender){
-			rerender(object,name,component,propChain,changeType,newVal,oldVal);
-		}
-		if(component.isolate){
-			var pc0 = propChain[0];
-			for(var i=component.isolate.length;i--;){
-				var k = component.isolate[i];
-				if(k.indexOf('.')>0){
-					var kc = k.split('.');
-					var matchAll = true;
-					for(var kci=0;kci<kc.length;kci++){
-						if(kc[kci] !== propChain[kci]){
-							matchAll = false;
-						}
-					}
-					if(matchAll)return;
-				}else if(k === pc0){
-					return;
-				}
+	function callObserves(expProps){
+		for(var i=expProps.length;i--;){
+			var prop = expProps[i];
+			for(var j=prop.attrObserveNodes.length;j--;){
+				var aon = prop.attrObserveNodes[j];
+
+				var rs = Renderer.evalExp(aon.directive,aon.expObj);
+				aon.directive.observe(rs);
 			}
 		}
-
-		for(var j=component.children.length;j--;){
-			var subCtrlr = component.children[j];
- 			recurRender(object,name,subCtrlr,propChain,changeType,newVal,oldVal,depth+1,topComp);
- 		}
 	}
 }
 /**
@@ -1402,6 +1479,16 @@ var Renderer = new function() {
 	 * 渲染组件
 	 */
 	this.render = function(component){
+		
+		var children = component.children;
+ 		renderExpNode(component.__expNodes);
+
+ 		// for(var j=children.length;j--;){
+ 		// 	Renderer.render(children[j]);
+ 		// }
+	}
+
+	this.recurRender = function(component){
 		
 		var children = component.children;
  		renderExpNode(component.__expNodes);
@@ -1435,6 +1522,7 @@ var Renderer = new function() {
 				}
 			}
 			if(val !== null){
+				// console.log('更新DOM');
 				updateDOM(expNode.node,expNode.attrName,val);
 			}
 		}//over for
@@ -4086,7 +4174,8 @@ impex.service('Transitions',new function(){
                     subComp.init();
                 }
                 subComp.display();
-                Renderer.render(subComp);
+                if(subComp.__state === "displayed")
+                    Renderer.recurRender(subComp);
                 
                 // isSuspend &&　Builder.build(subComp);
                 onDisplay(subComp);

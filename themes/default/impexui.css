@@ -416,7 +416,7 @@ ul.ztree.zTreeDragUL {margin:0; padding:0; position:absolute; width:auto; height
 .impex-layout header ul li.tab-bg:hover{background-color:rgba(226, 237, 246, 0.5);border-top:1px solid transparent;}
 .impex-layout header ul li.tab-bg-select{background-color:rgb(16,97,154);border-top:1px solid transparent;}
 .impex-layout header ul li.tab-bg-select:hover{background-color:rgb(16,97,154);border-top:1px solid transparent;}
-.impex-layout header ul li .label{margin-left:6px;display: block;width: 100%;white-space: nowrap;position: relative;overflow: hidden;line-height: 16px;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;-khtml-user-select: none;user-select: none;}
+.impex-layout header ul li .label{margin-left:6px;display: block;width: 100%;white-space: nowrap;text-overflow:ellipsis;overflow:hidden;position: relative;overflow: hidden;line-height: 16px;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;-khtml-user-select: none;user-select: none;}
 .impex-layout header ul li.tab-bg-select .label{color:#FFF;font-weight:bold;text-overflow: ellipsis;-o-text-overflow: ellipsis;}
 .impex-layout header ul li .close{outline:0;position:absolute;display:inline-block;height:15px;width:15px;right:3px;top:8px;border:1px solid transparent;}
 .impex-layout header ul li .close .icon{width:14px;height:14px;background-position:0 -288px;position:absolute;left:4px;top:3px;background-image:url(images/tool.png);display:block;}

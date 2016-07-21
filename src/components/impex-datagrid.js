@@ -18,7 +18,7 @@ impex.component("impex-datagrid", {
 						</tr>\
 						</thead>\
 						<tbody>\
-							<tr x-each="dataSource as d => limitBy:pageSize:startSize .orderBy:##orderId[\'key\']:##orderId[\'dir\']">\
+							<tr :dblclick="rowDblClick(d)" :click="rowClick(d)" x-each="dataSource as d => limitBy:pageSize:startSize .orderBy:##orderId[\'key\']:##orderId[\'dir\']">\
 								<td class="line-number" x-if="_.isString(linenumber) && \'true\' == linenumber">{{$index + 1 + start}}</td>\
 								<td x-each="columns as col" style="text-align:{{col.align}};width:{{col.width}}px;">\
 									<span x-if="!col.checkbox">\
@@ -194,6 +194,16 @@ impex.component("impex-datagrid", {
 			var all = gridEl.querySelectorAll(".checkAll input");
 			var itemChecks = gridEl.querySelectorAll(".checkbox input");
 			all[0].checked = this.data.$checkIds.length == itemChecks.length;
+		},
+		// 单击行
+		rowClick: function(d) {
+			if (_.isString(this.data.rowclick)) this.m(this.data.rowclick)(d);
+			this.emit("row.click", d);
+		},
+		// 双击行
+		rowDblClick: function(d) {
+			if (_.isString(this.data.rowdblclick)) this.m(this.data.rowdblclick)(d);
+			this.emit("row.dblclick", d);
 		}
 	},
 	getChecked: function() {
