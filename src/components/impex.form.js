@@ -13,8 +13,11 @@ impex.component('impex-form', {
 
 	// 组件显示
 	onDisplay: function() {
+		var that = this;
 		this._findValidateCom();
-		this.validate();
+		setTimeout(function(){
+			that.validate();
+		},100);
 	},
 	
 	// form内部所有的validate组件

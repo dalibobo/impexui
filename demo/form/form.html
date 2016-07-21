@@ -43,7 +43,9 @@
 				<impex-combobox-multipart name="aihao" datalist="student.love" value="student.loved" x-validate="required" ></impex-combobox-multipart>
 				<br>
 				下拉表格
-				<impex-combogrid ds="dataModel.students" cols="dataModel.cols" tableWidth="900px" textField="name" value="gridValue" idField ="studentNo"  x-validate="required" ></impex-combogrid>
+				<impex-combogrid ds="dataModel.students" cols="dataModel.cols" tableWidth="900px" textField="name" idField ="studentNo" x-validate="required" >
+					<impex-datagrid ds="dataModel.students" cols="dataModel.cols" style="width:600px;height:200px"></impex-datagrid>
+				</impex-combogrid>
 				<br>
 				支持手输过滤机鼠标滚轮滚动选择
 				<impex-combobox name="aihaoaa" datalist="student.love1" value="student.loved1" cbk="cbkfun"  x-validate="required"  ></impex-combobox>
