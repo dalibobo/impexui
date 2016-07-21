@@ -1017,7 +1017,7 @@ impex.component('impex-area', {
  * impex-datagrid组件
  */
 impex.component("impex-datagrid", {
-	template: '<div id="{{id}}" class="impex-datagrid {{=class}}">\
+	template: '<div id="{{id}}" class="impex-datagrid {{=class}}" style="{{=style}}">\
 					<div class="title" x-if="_.isString(title)"><i x-if="_.isString(titleiconcls)" class="icon {{=titleiconcls}}"></i> <div class="text">{{# title}}</div></div>\
 					<div class="toolbar" x-if="_.isString(toolbar)">\
 						{{# toolbarHtml}}\
