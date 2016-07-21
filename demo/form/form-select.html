@@ -135,10 +135,12 @@
 				<impex-combo name="aihaoaa" datalist="student.love1" value="student.loved1" class="impex-multipart-select" cbk="cbkfun" x-validate="required" x-disabled="false" ></impex-combo>
 				<br>
 				多选：
-				<impex-combobox-multipart name="aihao" datalist="student.love" value="student.loved" x-validate="required" ></impex-combobox-multipart>
+				<impex-combobox-multipart name="aihao" datalist="love" value="loved" x-validate="required" ></impex-combobox-multipart>
 				<br>
 				下拉表格
-				<impex-combogrid ds="dataModel.students" cols="dataModel.cols" tableWidth="900px" textField="name" value="gridValue" idField ="studentNo"  x-validate="required" ></impex-combogrid>
+				<impex-combogrid ds="dataModel.students" cols="dataModel.cols" tableWidth="900px" textField="name" idField ="studentNo" x-validate="required" >
+					<impex-datagrid ds="dataModel.students" cols="dataModel.cols" style="width:600px;height:200px"></impex-datagrid>
+				</impex-combogrid>
 				<br>
 				支持手输过滤机鼠标滚轮滚动选择
 				<impex-combobox name="aihaoaa" datalist="student.love1" value="student.loved1" cbk="cbkfun"  x-validate="required"  ></impex-combobox>
@@ -161,6 +163,8 @@
 				},
 				data:{
 					student: {},
+					love:[],
+					loved:[],
 					gridValue:"40231221",
 					dataModel:{
 						cols: [
@@ -206,14 +210,14 @@
 				
 				onInit: function() {
 					//初始化多选下拉框数据
-					this.data.student.love = [{text:"旅游",value:"1"},{text:"学习",value:"2"},{text:"看书",value:"3"},{text:"游戏",value:"4"}];
-					this.data.student.loved =  ["1","3"]; 
+					this.data.love = [{text:"旅游",value:"1"},{text:"学习",value:"2"},{text:"看书",value:"3"},{text:"游戏",value:"4"}];
+					this.data.loved =  ["1","3"]; 
 					var that = this;
 					
 					
 					//初始化单选下拉框数据
 					this.data.student.love1 = [{text:"旅游",value:"1"},{text:"学习",value:"2"},{text:"看书",value:"3"},{text:"游戏",value:"4"}];
-					this.data.student.loved1 = ""; 
+					this.data.student.loved1 = "2"; 
 					
 
 
