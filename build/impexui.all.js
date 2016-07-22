@@ -423,6 +423,14 @@ impex.coms = {
 		data: {},
 		methods: {},
 		events: {},
+		onCreate: function() {
+			this.timeout = function(cbk, delay) {
+				var that = this;
+				setTimeout(function() {
+					cbk && cbk.apply(that);
+				}, delay);
+			}
+		},
 		onInit: function() {
 			// 为组件设置默认id
 			if (!_.isString(this.data.id)) this.data.id = this.name + "-" + getId();
@@ -448,7 +456,7 @@ impex.extend = function(parent, target) {
 			_.extend(model[k], parent[k]);
 			continue;
 		}
-		if (k == "onInit" || k == "onDisplay") {
+		if (k == "onCreate" || k == "onInit" || k == "onDisplay") {
 			continue;
 		}
 		model[k] = parent[k];
@@ -459,12 +467,16 @@ impex.extend = function(parent, target) {
 			_.extend(model[k], target[k]);
 			continue;
 		}
-		if (k == "onInit" || k == "onDisplay") {
+		if (k == "onCreate" || k == "onInit" || k == "onDisplay") {
 			continue;
 		}
 		model[k] = target[k];
 	}
 
+	model.onCreate = function() {
+		if (parent.onCreate) parent.onCreate.apply(this);
+		if (target.onCreate) target.onCreate.apply(this);
+	}
 	model.onInit = function() {
 		if (parent.onInit) parent.onInit.apply(this);
 		if (target.onInit) target.onInit.apply(this);
