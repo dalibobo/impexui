@@ -7,7 +7,7 @@
  * Released under the MIT license
  *
  * website: http://impexjs.org
- * last build: 2016-07-21
+ * last build: 2016-07-22
  */
 !function (global) {
 	'use strict';
@@ -1255,7 +1255,7 @@ var ChangeHandler = new function() {
 			        	comp.__watcher(object,name,type,newVal,oldVal,pc);
 			        }
 				});//end for
-			},50);
+			},40);
 		}
 	}
 	
@@ -1482,10 +1482,7 @@ var Renderer = new function() {
 		
 		var children = component.children;
  		renderExpNode(component.__expNodes);
-
- 		// for(var j=children.length;j--;){
- 		// 	Renderer.render(children[j]);
- 		// }
+		
 	}
 
 	this.recurRender = function(component){
@@ -1718,8 +1715,6 @@ var Renderer = new function() {
  		}
  		component = varInCtrlScope(component,searchPath);
 
- 		
-
  		if(component){
  			if(dataType === 'data'){
 	 			fullPath = '.data' + fullPath;
@@ -1754,28 +1749,31 @@ var Renderer = new function() {
 	function renderHTML(expNode,val,node,component){
 		if(expNode.__lastVal === val)return;
 		if(node.nodeType != 3)return;
-		var nView = new View(null,null,[node]);
-		if(Util.isUndefined(expNode.__lastVal)){
-
-			var ph = ViewManager.createPlaceholder('-- [html] placeholder --');
-			ViewManager.insertBefore(ph,nView);
+		if(!expNode.__placeholder){
+			var ph = document.createComment('-- [html] placeholder --');
+			node.parentNode.insertBefore(ph,node);
 			expNode.__lastVal = val;
 			expNode.__placeholder = ph;
+			node.parentNode.removeChild(node);
 		}
+
+		var container = document.createElement('span');
+		var nView = new View(null,container,[container]);
 
 		if(expNode.__lastComp){
 			//release
 			expNode.__lastComp.destroy();
-
-			nView = ViewManager.createPlaceholder('');
-			ViewManager.insertAfter(nView,expNode.__placeholder);
 		}
 
 		if(!Util.isDOMStr(val)){
 			val = val.replace(/</mg,'&lt;').replace(/>/mg,'&gt;');
 		}
 
+		//插入替换DOM
+		expNode.__placeholder.parentNode.insertBefore(container,expNode.__placeholder);
+
 		var subComp = component.createSubComponent(val,nView);
+		subComp.template = val;
 		subComp.init();
 		subComp.display();
 
@@ -2327,15 +2325,17 @@ View.prototype = {
             compileStr = component.onBeforeCompile(compileStr);
         }
 
-		var nodes = DOMViewProvider.compile(compileStr);
+		var nodes = DOMViewProvider.compile(compileStr,this.__target,component.replace);
 		if(!nodes || nodes.length < 1){
 			LOGGER.error('invalid template "'+tmpl+'" of component['+component.name+']');
 			return false;
 		}
-		this.__nodes = nodes;
+		
 		if(component.replace){
+			this.__nodes = nodes;
 			this.el = nodes.length===1 && nodes[0].nodeType===1?nodes[0]:null;
 		}else{
+			this.__nodes = [this.__target];
 			this.el = this.__target;
 		}
 		
@@ -2354,6 +2354,9 @@ View.prototype = {
 		}
 
 		this.__comp = component;
+
+		//组件已经直接插入DOM中
+		this.__target = null;
 	},
 	__display:function(component){
 		if(!this.__target ||!this.__target.parentNode)return;
@@ -2668,21 +2671,42 @@ var DOMViewProvider = new function(){
 		return view;
 	}
 
-	this.compile = function(template){
-		compiler.innerHTML = template;
-
-		var nodes = [];
-		while(compiler.childNodes.length>0){
-			var tmp = compiler.removeChild(compiler.childNodes[0]);
-			var tn = tmp.nodeName.toLowerCase();
-
-			if(tmp.nodeType === 3){
-				var v = tmp.nodeValue.replace(/\s/mg,'');
-				if(v === '')continue;
+	this.compile = function(template,target,replace){
+		if(replace){
+			var nodes = [];
+			if(!target.insertAdjacentHTML){
+				var span = document.createElement('span');
+				span.style.display = 'none';
+				target.parentNode.insertBefore(span,target);
+				target.parentNode.removeChild(target);
+				target = span;
 			}
+			target.insertAdjacentHTML('beforebegin', '<!-- c -->');
+			var start = target.previousSibling;
+			target.insertAdjacentHTML('afterend', '<!-- c -->');
+			var end = target.nextSibling;
+			target.insertAdjacentHTML('afterend', template);
 
-			nodes.push(tmp);
+			target.parentNode.removeChild(target);
+
+			var next = start.nextSibling;
+			while(next !== end){
+				if(next.nodeType === 3){
+					var v = next.nodeValue.replace(/\s/mg,'');
+					if(v === ''){
+						next = next.nextSibling;
+						continue;
+					}
+				}
+				nodes.push(next);
+				next = next.nextSibling;
+			}
+			start.parentNode.removeChild(start);
+			end.parentNode.removeChild(end);
+		}else{
+			target.innerHTML = template;
 		}
+
 		return nodes;
 	}
 }
@@ -4006,6 +4030,7 @@ impex.service('Transitions',new function(){
             this.eachExp = /^(.+?)\s+as\s+((?:[a-zA-Z0-9_$]+?\s*,)?\s*[a-zA-Z0-9_$]+?)\s*(?:=>\s*(.+?))?$/;
             this.forExp = /^\s*(\d+|[a-zA-Z_$].+?)\s+to\s+(\d+|[a-zA-Z_$].+?)\s*$/;
             this.viewManager = viewManager;
+            this.fragment = document.createDocumentFragment();
             this.expInfo = this.parseExp(this.value);
             this.parentComp = this.parent;
             this.__view = this.view;
@@ -4038,7 +4063,7 @@ impex.service('Transitions',new function(){
                     end = RegExp.$2,
                     step = parseFloat(this.step);
                 if(step < 0){
-                    LOGGER.error('step <=0 : '+step);
+                    LOGGER.error('step <= 0 : '+step);
                     return;
                 }
                 step = step || 1;
@@ -4081,6 +4106,11 @@ impex.service('Transitions',new function(){
             
             this.placeholder = this.viewManager.createPlaceholder('-- directive [each] placeholder --');
             this.viewManager.insertBefore(this.placeholder,this.view);
+
+            this.fragmentPlaceholder = this.viewManager.createPlaceholder('-- fragment placeholder --');
+            
+            this.fragment.appendChild(this.fragmentPlaceholder.__nodes[0]);
+
             if(this.ds)
                 this.build(this.ds,this.expInfo.k,this.expInfo.v);
             //更新视图
@@ -4193,10 +4223,12 @@ impex.service('Transitions',new function(){
         }
         this.createSubComp = function(){
             var parent = this.parentComp;
-            var target = this.viewManager.createPlaceholder('');
-            this.viewManager.insertBefore(target,this.placeholder);
             //视图
             var copy = this.__view.clone();
+
+            var target = this.viewManager.createPlaceholder('');
+            this.viewManager.insertBefore(target,this.placeholder);
+            
             //创建子组件
             var subComp = parent.createSubComponent(copy,target);
             this.subComponents.push(subComp);
@@ -4309,9 +4341,30 @@ impex.service('Transitions',new function(){
             //初始化组件
             for(var i=this.subComponents.length;i--;){
                 this.subComponents[i].init();
-                // this.subComponents[i].display();
+                this.subComponents[i].__state = Component.state.displayed;
             }
+
+            var queue = this.subComponents.concat();
+            renderEach(queue);
+
+            //insert DOM
+            // var p = this.__view.el.parentNode;
+            // p.insertBefore(this.fragment,this.placeholder.__nodes[0]);
         }
+        function renderEach(queue){
+            setTimeout(function(){
+                var list = queue.splice(0,50);
+                for(var i=0;i<list.length;i++){
+                    list[i].__state = Component.state.inited;
+                    list[i].display();
+                }
+
+                if(queue.length > 0){
+                    renderEach(queue);
+                }
+            },0);
+        }
+
         this.parseExp = function(exp){
             var ds,k,v;
             var that = this;

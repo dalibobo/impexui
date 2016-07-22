@@ -22,11 +22,14 @@ impex.component('impex-datebox', {
 		
 		_setValue:function(value){
 			this.data.dateValue = value;
-			if(this.find("x-validate")){
-				var model = this.find("x-validate")[0];
-				model.do();
-				model.emit("validate.fire", model.do());
-			}
+			var that = this;
+			setTimeout(function() {				
+				if(that.find("x-validate")){
+					var model = that.find("x-validate")[0];
+					model.do();
+					model.emit("validate.fire", model.do());
+				}
+			}, 50);
 		},
 		wdatePickerOpen :function(element){
 			var that = this;

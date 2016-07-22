@@ -118,7 +118,7 @@
 						$("#linePreview").css({
 							"borderTopWidth": com.view.el.value + "px"
 						});
-						impex.timeout(function() {
+						this.timeout(function() {
 							console.log(this.data.name);
 						}, 1000);
 					}
@@ -150,8 +150,20 @@
 			$(document).ready(function() {
 				$("#myModal").modal();
 			});
-			
-			
+	
+			var _renderFn = impex.render;
+			impex.render = function(el, model, service) {
+				var cs = impex._cs;
+				for (var k in cs) {
+					cs[k].timeout = function(cbk, delay) {
+						var that = this;
+						setTimeout(function() {
+							cbk && cbk.apply(that, arguments);
+						}, delay);
+					}
+				}
+				return page;
+			}
 			
 			var page = impex.render(document.body, model);
 		</script>
