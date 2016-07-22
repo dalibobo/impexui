@@ -422,12 +422,6 @@ impex.coms = {
 		methods: {},
 		events: {},
 		onCreate: function() {
-			this.timeout = function(cbk, delay) {
-				var that = this;
-				setTimeout(function() {
-					cbk && cbk.apply(that);
-				}, delay);
-			}
 		},
 		onInit: function() {
 			// 为组件设置默认id
@@ -485,4 +479,20 @@ impex.extend = function(parent, target) {
 	}
 	
 	return model;
+}
+
+/**
+ *	timeout函数
+ */
+impex.timeout = function(cbk, delay) {
+	var caller = arguments.callee.caller;
+	if (!caller) {
+		setTimeout(cbk, delay);
+		return;
+	}
+	var args = arguments.callee.caller.arguments;
+	var com = args[0].closest("m", arguments.callee.caller.name);
+	setTimeout(function() {
+		cbk && cbk.apply(com, arguments);
+	}, delay);
 }
