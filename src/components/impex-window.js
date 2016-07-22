@@ -58,7 +58,6 @@ impex.component("impex-window", impex.extend(impex.coms.base, {
 			var content = $(that.view.el).find(".content");
 			var h = content.height();
 			var w = content.width();
-			console.log(h + "..." + w);
 			content.css({
 				marginLeft: -w/2 + "px",
 				marginTop: -h/2 + "px"
