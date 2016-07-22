@@ -73,7 +73,7 @@
 .impex-window .title .right{text-align:right;}
 .impex-window .title .right .close{background-color:transparent;opacity:0.5;}
 .impex-window .title .right .close:hover{cursor: pointer;opacity:1;}
-.impex-window .body{overflow:auto;background-color:#fff;}
+.impex-window .body{overflow:auto;overflow-x:hidden;background-color:#fff;flex: 1}
 .impex-window .footer{height:44px;background-color:#F0F0F0;border-top:1px solid #ddd;}
 /**窗口组件样式结束**/
 

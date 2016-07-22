@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html >
+    <head>
+        <title>Impexui - grid</title>
+		<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+		<link rel="stylesheet" type="text/css" href="../../themes/default/impexui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css"/>
+		<script type="text/javascript" src="../../impex.all1.js"></script>
+		<script type="text/javascript" src="../../build/impexui.all.js"></script>
+		<script type="text/javascript" src="../../src/impex.component.js"></script>
+		<script type="text/javascript" src="../../src/impex.directive.js"></script>
+		<script type="text/javascript" src="../../src/impex.util.js"></script>
+		<script type="text/javascript" src="../../src/impexui.js"></script>
+    </head>
+    <body>
+		<div id="windowContainer"></div>
+		
+		<script>
+			var model = {
+				methods: {
+					openWindow: function() {
+						impex.cget("detailWindow").$open();
+					}
+				}		
+			};
+			
+			var page;
+			$(document).ready(function() {
+				var html = "";
+				for (var i = 0; i < 1000; i ++) {
+					var w = 1000 * Math.random();
+					var h = 600 * Math.random();
+					w = w < 100 ? 100 : w;
+					h = h < 100 ? 100 : h;
+					html += '<impex-window iconCls="icon-add" style="width:'+ w +'px;height:'+ h +'px;">\
+								<div>\
+									这是第'+ (i + 1) +'个window\
+								</div>\
+								<footer>\
+									<input type="button" :click="close()" value="close"/>\
+								</footer>\
+							</impex-window>';
+				}
+				$("#windowContainer").html(html);
+				
+				var l1 = Date.now();
+				page = impex.render(document.body, model);
+				console.log(Date.now() - l1);
+			});
+			
+			
+		</script>
+    </body>
+</html>

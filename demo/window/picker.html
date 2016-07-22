@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html >
+    <head>
+        <title>Impexui - grid</title>
+		<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+		<link rel="stylesheet" type="text/css" href="../../themes/default/impexui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/jquery.minicolors.css"/>
+		<script type="text/javascript" src="../../impex.all.js"></script>
+		<script type="text/javascript" src="../../build/impexui.all.js"></script>
+		<script type="text/javascript" src="../../src/impex.util.js"></script>
+		<script type="text/javascript" src="../../src/impexui.js"></script>
+		<script type="text/javascript" src="../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.minicolors.js"></script>
+    </head>
+    <body>
+		<ul>
+			<li x-each="1 to 100 as k">{{k}}</li>
+		</ul>
+		
+		
+		<!-- 模态框（Modal） -->
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" 
+		   aria-labelledby="myModalLabel" aria-hidden="true">
+		   <div class="modal-dialog">
+			  <div class="modal-content">
+				 <div class="modal-header">
+					<button type="button" class="close" 
+					   data-dismiss="modal" aria-hidden="true">
+						  &times;
+					</button>
+					<h4 class="modal-title" id="myModalLabel">
+					   模态框（Modal）标题
+					</h4>
+				 </div>
+				 <div class="modal-body">
+					<input type="text" id="hue-demo" class="form-control demo" data-control="hue" value="#ff6161">
+				 </div>
+				 <div class="modal-footer">
+					<button type="button" class="btn btn-default" 
+					   data-dismiss="modal">关闭
+					</button>
+					<button type="button" class="btn btn-primary">
+					   提交更改
+					</button>
+				 </div>
+			  </div>
+		</div>
+		
+		<impex-window iconCls="icon-add" style="width:400px;height:500px;">
+			<div style="padding:10px;">
+				<form>
+					<label>线条配置</label>
+					<div class="row">
+						<div class="col-md-4">
+							<div class="input-group">
+								<input type="number" :change="changeLineWidth(this)" id="lineWidth" value="1" class="form-control">
+								<span class="input-group-addon">px</span>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="dropdown">
+							   <button type="button" style="min-width:100%;" class="btn dropdown-toggle" id="dropdownMenu1" 
+								  data-toggle="dropdown">
+								  <span id="btnTxt">实线</span>
+								  <span class="caret"></span>
+							   </button>
+							   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+									<li role="presentation" :click="setLineStyle('solid')" style="position:relative;cursor:pointer;">
+										<a>&nbsp;</a>
+										<div style="position:absolute;top:13px;left:10%;font-size:0px;width:80%;border-bottom:1px solid #000;"></div>
+									</li>
+									<li role="presentation" :click="setLineStyle('dashed')" style="position:relative;cursor:pointer;">
+										<a>&nbsp;</a>
+										<div style="position:absolute;top:13px;left:10%;font-size:0px;width:80%;border-bottom:1px dashed #000;"></div>
+									</li>
+									<li role="presentation" :click="setLineStyle('dotted')" style="position:relative;cursor:pointer;">
+										<a>&nbsp;</a>
+										<div style="position:absolute;top:13px;left:10%;font-size:0px;width:80%;border-bottom:1px dotted #000;"></div>
+									</li>
+							   </ul>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<input type="text" data-position="bottom right" class="form-control demo" data-control="hue" value="#ff6161">
+						</div>
+					</div>
+					<div id="linePreview" style="margin-top:20px;width:100%;font-size:0px;border-top-width:1px;border-top-style:solid;border-top-color:#ff6161;"></div>
+				</form>
+			</div>
+			<footer>
+				<input type="button" :click="close()" value="close"/>
+			</footer>
+		</impex-window>
+		
+		<script>
+			var jQuery = $;	
+				
+			var model = {
+				methods: {
+					setLineStyle: function(style) {
+						var styleName = "";
+						if (style == 'solid') styleName = "实线";
+						if (style == 'dashed') styleName = "虚线";
+						if (style == 'dotted') styleName = "点线";
+						$("#btnTxt").text(styleName);
+						$("#linePreview").css({
+							"borderTopStyle": style
+						});
+					},
+					changeLineWidth: function(com) {
+						$("#linePreview").css({
+							"borderTopWidth": com.view.el.value + "px"
+						});
+					},
+					changLineStyle: function(com) {
+						
+					}
+				},
+				onDisplay: function() {
+					$('.demo').each( function() {
+						$(this).minicolors({
+							control: $(this).attr('data-control') || 'hue',
+							defaultValue: $(this).attr('data-defaultValue') || '',
+							inline: $(this).attr('data-inline') === 'true',
+							letterCase: $(this).attr('data-letterCase') || 'lowercase',
+							opacity: $(this).attr('data-opacity'),
+							position: $(this).attr('data-position') || 'bottom left',
+							change: function(hex, opacity) {
+								if( !hex ) return;
+								if( opacity ) hex += ', ' + opacity;
+								try {
+									$("#linePreview").css({
+										"borderTopColor": hex
+									});
+								} catch(e) {}
+							},
+							theme: 'bootstrap'
+						});
+					});
+				}
+			};
+			
+			$(document).ready(function() {
+				$("#myModal").modal();
+			});
+			
+			var page = impex.render(document.body, model);
+		</script>
+    </body>
+</html>
