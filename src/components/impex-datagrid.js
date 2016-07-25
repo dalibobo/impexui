@@ -108,9 +108,13 @@ impex.component("impex-datagrid", {
 					this.getPager().setConfig(pagerConfig);
 				}
 			}else{
-				this.data.pageSize = 0;
 				this.data.startSize = 0;
-				this.getPager().setConfig({});
+				this.data.pageSize = 10;
+				this.getPager().setConfig({
+					current: 1,
+					pageSize: this.data.pageSize,
+					total: this.data.dataSource.length
+				});			
 			}
 		}
 		
