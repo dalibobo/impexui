@@ -7,7 +7,7 @@
  * Released under the MIT license
  *
  * website: http://impexjs.org
- * last build: 2016-07-22
+ * last build: 2016-07-25
  */
 !function (global) {
 	'use strict';
@@ -1255,7 +1255,7 @@ var ChangeHandler = new function() {
 			        	comp.__watcher(object,name,type,newVal,oldVal,pc);
 			        }
 				});//end for
-			},40);
+			},20);
 		}
 	}
 	
@@ -3497,7 +3497,7 @@ var TransitionFactory = {
 	     */
 		this.version = {
 	        v:[0,20,0],
-	        state:'beta',
+	        state:'beta3',
 	        toString:function(){
 	            return impex.version.v.join('.') + ' ' + impex.version.state;
 	        }
@@ -4355,6 +4355,7 @@ impex.service('Transitions',new function(){
             setTimeout(function(){
                 var list = queue.splice(0,50);
                 for(var i=0;i<list.length;i++){
+                    if(list[i].__state === Component.state.suspend)continue;
                     list[i].__state = Component.state.inited;
                     list[i].display();
                 }
