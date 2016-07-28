@@ -154,7 +154,8 @@ impex.component("impex-datagrid", {
 			for (var i = itemChecks.length; i--;) {
 				itemChecks[i].checked = false;
 			}
-		}		
+		}
+		this.data.$checkIds = [];
 	},
 	onBeforeCompile:function(str){
 		this.data.pagerId = "pagerId_" + getId();
