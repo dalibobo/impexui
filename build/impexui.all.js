@@ -1444,8 +1444,7 @@ impex.component('impex-searchbox',{
 				this.data.searchBoxValue.selectedText = selectElement.options[index].text;
 				this.data.searchBoxValue.selectedValue= selectElement.options[index].value;
 			}
-			alert(this.data.searchBoxValue.selectedText+","+this.data.searchBoxValue.selectedValue+","+this.data.searchBoxValue.value);
-			com.emit("searchbox.doSearch",this.data.searchBoxValue);	
+			this.emit("searchbox.doSearch",this.data.searchBoxValue);	
 		}
 	},
 	onInit:function(){
@@ -2496,7 +2495,7 @@ impex.component('impex-datebox', {
 	},
 	onInit: function() {
 		this.data.id = this.data.id ? this.data.id:"impex-date-" + getId();
-		var that = this;
+		
 		//监控赋值变化
 		if(this.data.value){
 			this.parent.closest('d',this.data.value).watch(this.data.value, function(todos,name,type,newVal) {
@@ -2529,7 +2528,7 @@ impex.component('impex-datebox', {
 			onclearing:function(){
 				that.$_setValue("");
 			},
-			dateFmt:this.data.dateFmt
+			dateFmt:that.data.datefmt
 			});
 		}
 	},
@@ -2560,7 +2559,8 @@ impex.component('impex-datebox', {
 	},
 	onDisplay:function(){
 		if(this.data.value){
-			this.$_setValue(getData(this,this.data.value));
+			var selectValue1 = this.d(this.data.value);
+			this.$_setValue(selectValue1);
 		}
 		
 	}

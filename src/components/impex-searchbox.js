@@ -38,8 +38,7 @@ impex.component('impex-searchbox',{
 				this.data.searchBoxValue.selectedText = selectElement.options[index].text;
 				this.data.searchBoxValue.selectedValue= selectElement.options[index].value;
 			}
-			alert(this.data.searchBoxValue.selectedText+","+this.data.searchBoxValue.selectedValue+","+this.data.searchBoxValue.value);
-			com.emit("searchbox.doSearch",this.data.searchBoxValue);	
+			this.emit("searchbox.doSearch",this.data.searchBoxValue);	
 		}
 	},
 	onInit:function(){
