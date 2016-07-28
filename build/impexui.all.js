@@ -1248,6 +1248,7 @@ impex.component("impex-datagrid", {
 		if ($.isPlainObject(reloadParams)) {
 			params = _.extend(params, reloadParams);
 		}
+		this.clearCheckbox();
 		this.loadUrl();
 	},
 	loadUrl: function(cbk) {
