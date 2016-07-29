@@ -8,6 +8,7 @@ impex.component('impex-datebox', {
 		dateValue:"",
 	},
 	onInit: function() {
+		var that = this;
 		this.data.id = this.data.id ? this.data.id:"impex-date-" + getId();
 		
 		//监控赋值变化
@@ -21,6 +22,7 @@ impex.component('impex-datebox', {
 	methods:{
 		
 		_setValue:function(value){
+			if(value==null || value == undefined) return;
 			this.data.dateValue = value;
 			var that = this;
 			setTimeout(function() {				
@@ -74,7 +76,9 @@ impex.component('impex-datebox', {
 	onDisplay:function(){
 		if(this.data.value){
 			var selectValue1 = this.d(this.data.value);
-			this.$_setValue(selectValue1);
+			if(selectValue1){
+				this.$_setValue(selectValue1);
+			}			
 		}
 		
 	}

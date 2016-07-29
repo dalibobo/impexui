@@ -1603,9 +1603,10 @@ impex.component('impex-combobox-multipart', {
 	},
 	methods:{
 		_setValue:function(selectValue){
+			if(selectValue==null || selectValue == undefined) return;
 			var that = this;
 			this.data.selectData = {texts: [], values: []};
-			if(selectValue==null || selectValue==""){
+			if(selectValue==null || selectValue===""){
 				this.data.selectData = {texts: [], values: []};
 			}
 			var dateModel = {texts: [], values: []};
@@ -1613,7 +1614,7 @@ impex.component('impex-combobox-multipart', {
 			for (j=0;j<this.data.listData.length ;j++ ){	
 				this.data.listData[j].onSelect = false;
  
-				if(selectValue==null || selectValue=="") continue;
+				if(selectValue==null || selectValue==="") continue;
 				for (i=0;i<selectValue.length ;i++ ){		
 					if(this.data.listData[j].value==selectValue[i]){
 						this.data.listData[j].onSelect = true;
@@ -1832,16 +1833,12 @@ impex.component('impex-combo', {
 	methods:{
 		//下拉选项赋值
 		_setValue:function(selectValue){
-			this.data.selectData.value = "";
-			this.data.selectData.text = "";
-			if(selectValue==null || selectValue==""){
-				this.data.selectData.value = "";
-				this.data.selectData.text = "";
-			}
+			if(selectValue==null || selectValue == undefined) return;
+			this.data.selectData  = {text:"", value:""};
 			var dataModel = {}
 			for (j=0;j<this.data.listData.length ;j++ ){	
 				this.data.listData[j].onSelect = false;
-				if(selectValue==null || selectValue=="") continue;
+				if(selectValue==null || selectValue==="") continue;
 				if(this.data.listData[j].value==selectValue){
 					this.data.listData[j].onSelect = true;
 					dataModel.value = this.data.listData[j].value;
@@ -2055,18 +2052,14 @@ impex.component('impex-combobox', {
 	methods:{
 		//下拉选项赋值
 		_setValue:function(selectValue){
+			if(selectValue==null || selectValue == undefined) return;
 			var that = this;
-			this.data.selectData.value = "";
-			this.data.selectData.text = "";
-			if(selectValue==null || selectValue==""){
-				this.data.selectData.value = "";
-				this.data.selectData.text = "";
-			}
+			this.data.selectData  = {text:"", value:""};			
 			var dataModel = {}
 			for (j=0;j<this.data.listData.length ;j++ ){	
 				this.data.listData[j].onSelect = false;
 				
-				if(selectValue==null || selectValue=="") continue;
+				if(selectValue==null || selectValue==="") continue;
 				if(this.data.listData[j].value==selectValue){
 					this.data.listData[j].onSelect = true;
 					dataModel.value = this.data.listData[j].value;
@@ -2414,7 +2407,25 @@ impex.component('impex-combogrid', {
 		tipPosition:'right'
 	},
 	methods:{
-		
+		//下拉选项赋值
+		_setValue:function(selectValue){
+			if(selectValue==null || selectValue == undefined) return;
+			this.data.selectData = {textfield:"", idfield:""};
+			var dataModel = {};
+			for (j=0;j<this.data.dataSource.length ;j++ ){	
+				if(selectValue==null || selectValue==="") continue ;
+				if(this.data.dataSource[j][this.data.idfield]==selectValue){
+					dataModel.textfield = this.data.dataSource[j][this.data.textfield];
+					dataModel.idfield = this.data.dataSource[j][this.data.idfield];
+					break;
+				}
+				
+			}
+			this.data.selectData = dataModel;
+			if(_.isString(this.data.xValidate)){
+				$("#"+this.data.id).trigger("input");
+			}
+		},
 		//点击选择选项
 		_clickOpt:function(){
 			this.data.mouseDownType = true;
@@ -2495,6 +2506,7 @@ impex.component('impex-datebox', {
 		dateValue:"",
 	},
 	onInit: function() {
+		var that = this;
 		this.data.id = this.data.id ? this.data.id:"impex-date-" + getId();
 		
 		//监控赋值变化
@@ -2508,6 +2520,7 @@ impex.component('impex-datebox', {
 	methods:{
 		
 		_setValue:function(value){
+			if(value==null || value == undefined) return;
 			this.data.dateValue = value;
 			var that = this;
 			setTimeout(function() {				
@@ -2561,7 +2574,9 @@ impex.component('impex-datebox', {
 	onDisplay:function(){
 		if(this.data.value){
 			var selectValue1 = this.d(this.data.value);
-			this.$_setValue(selectValue1);
+			if(selectValue1){
+				this.$_setValue(selectValue1);
+			}			
 		}
 		
 	}
