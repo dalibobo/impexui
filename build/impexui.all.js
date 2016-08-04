@@ -331,16 +331,21 @@ impex.findByName = function(name, view) {
 /**
  *	tip提示框
  *  @param	id	{String}	提示框的id
+ *  @param  innerModel	将提示框插入这个元素中
  *  @param	opt	{{Object}}	参数。{left:0px,top:0px,right:0px;bottom:0px,dir:'down'|'top'|'left'|'right',message:"提示框"}
  */
 var Tip = {
-	show: function(id, opt) {
+	show: function(id  , innerModel ,  opt) {
 		var html = '<div id="'+ id +'" class="impex-tip impex-tip-'+ opt.dir +'" style="left:'+ opt.left +'px;top:'+ opt.top +'px;">\
 						<span><em></em></span><div class="text">'+ opt.message +'</div>\
 					</div>';
 		var tip = $("#" + id);
 		if (!tip.attr("id")) {
-			$(document.body).append(html);
+			if(innerModel){
+				innerModel.append(html);
+			}else{
+				$(document.body).append(html);
+			}
 		}else{
 			tip.find(".text").html(opt.message);
 			tip.css({
@@ -747,6 +752,7 @@ impex.directive("order", {
  * <br/>使用方式：<input x-validate="required,isint:'+',length:2:6}"></input>
  * true:表示需要校验，false:不做校验
  * msg:提示消息
+ * tipInner: 将提示消息插入哪个元素中
  * 例子：required,  需要做required校验，
  * isint:'+'
  */
@@ -761,13 +767,18 @@ impex.directive('validate',{
 		var msg = "验证通过！";
 		var v;
 		var validateResult = {result: true};
+		var tipInnerModel = null;//将提示框插入到哪个元素里
 		for ( var p in obj ){ // 方法 
 			v = obj[p];
 			var lr = v.split(":");
-			if(!lr[0] || lr[0] === 'msg'){
+			if(!lr[0] || lr[0] === 'msg' || lr[0]==='undefined' || lr[0]===undefined){
 				continue;
 			}
-			
+			if(lr[0] === 'tipInner'){
+				tipInnerModel = $("#"+lr[1]);
+				continue;
+			}
+
 			var rs = {type:true,msg:""};
 			if(undefined === impex.validate[lr[0]]){
 				rs.type = false;
@@ -788,16 +799,16 @@ impex.directive('validate',{
 		if(!validateResult.result){
 			var el = $(this.view.el);
 			var of = el.offset() ;
-			Tip.show("tip-"+this.view.el.id,{
-				left:of.left+of.width,
+			Tip.show("tip-"+(this.view.el.id || this.view.el.name).replace(/\./g,'-'),{
+				left:of.left+el.width(),
 				top:of.top,
 				right:0,
 				bottom:0,
 				dir:'right',
 				message:validateResult.msg
-			});
+			},tipInnerModel);
 		}else{
-			$("#tip-"+this.view.el.id).remove();
+			$("#tip-"+(this.view.el.id || this.view.el.name).replace(/\./g,'-')).remove();
 		}
 		this.emit("impex.validate.result",  validateResult);
 		return reType;
@@ -1571,17 +1582,17 @@ impex.component('impex-combobox-multipart', {
 			}else{
 				if(this.data.value){
 					var value = getData(this, this.data.value);
-					this.$_setValue(value);
+					this.$_setValue(value,"reset");
 				}else{
-					this.$_setValue("");
+					this.$_setValue("","reset");
 				}
 			}
 		},
-		"impex.validate.result":function(v,validateResult){
+		"impex.validate.result":function(v,validateResult,tipInnerModel){
 			if(!validateResult.result){
 				var el = $(this.view.el);
 				var of = el.offset() ;
-				Tip.show("tip-"+this.data.id,{
+				Tip.show("tip-"+this.data.id,tipInnerModel,{
 					left:of.left+el.width(),
 					top:of.top,
 					dir:this.data.tipPosition,
@@ -1602,7 +1613,7 @@ impex.component('impex-combobox-multipart', {
 		tipPosition:'right' //提示框的位置
 	},
 	methods:{
-		_setValue:function(selectValue){
+		_setValue:function(selectValue,type){
 			if(selectValue==null || selectValue == undefined) return;
 			var that = this;
 			this.data.selectData = {texts: [], values: []};
@@ -1627,7 +1638,9 @@ impex.component('impex-combobox-multipart', {
 			this.data.selectData = dateModel;
 			if(_.isString(this.data.xValidate)){
 				setTimeout(function(){
-					$("#"+that.data.id).trigger("input");
+					if(type!=="reset"){
+						$("#"+that.data.id).trigger("input");
+					}
 				},100);
 			}	
 
@@ -1786,9 +1799,6 @@ impex.component('impex-combo', {
 	onInit: function() {
 		var that = this;
 		this.data.id = this.data.id!="" ? this.data.id:"impex-combo-" + getId();
-		
-		
-		
 	},
 
 	events: {
@@ -1799,17 +1809,17 @@ impex.component('impex-combo', {
 			}else{
 				if(this.data.value){
 					var value = getData(this, this.data.value);
-					this.$_setValue(value);
+					this.$_setValue(value,"reset");
 				}else{
-					this.$_setValue("");
+					this.$_setValue("","reset");
 				}				
 			}
 		},
-		"impex.validate.result":function(v,validateResult){
+		"impex.validate.result":function(v,validateResult,tipInnerModel){
 			if(!validateResult.result){
 				var el = $(this.view.el);
 				var of = el.offset() ;
-				Tip.show("tip-"+this.data.id,{
+				Tip.show("tip-"+this.data.id,tipInnerModel,{
 					left:of.left+el.width(),
 					top:of.top,
 					dir:this.data.tipPosition,
@@ -1832,7 +1842,7 @@ impex.component('impex-combo', {
 	},
 	methods:{
 		//下拉选项赋值
-		_setValue:function(selectValue){
+		_setValue:function(selectValue,type){
 			if(selectValue==null || selectValue == undefined) return;
 			this.data.selectData  = {text:"", value:""};
 			var dataModel = {}
@@ -1844,7 +1854,9 @@ impex.component('impex-combo', {
 					dataModel.value = this.data.listData[j].value;
 					dataModel.text = this.data.listData[j].text;
 					if(_.isString(this.data.xValidate)){
+						if(type!=="reset"){
 							$("#"+this.data.id).trigger("input");
+						}
 					}
 				}
 				
@@ -2013,18 +2025,18 @@ impex.component('impex-combobox', {
 			}else{
 				if(this.data.value){
 					var value = getData(this, this.data.value);
-					this.$_setValue(value);
+					this.$_setValue(value,"reset");
 				}else{
-					this.$_setValue("");
+					this.$_setValue("","reset");
 				}
 				
 			}
 		},
-		"impex.validate.result":function(v,validateResult){
+		"impex.validate.result":function(v,validateResult,tipInnerModel){
 			if(!validateResult.result){
 				var el = $(this.view.el);
 				var of = el.offset() ;
-				Tip.show("tip-"+this.data.id,{
+				Tip.show("tip-"+this.data.id,tipInnerModel,{
 					left:of.left+el.width(),
 					top:of.top,
 					dir:this.data.tipPosition,
@@ -2051,7 +2063,7 @@ impex.component('impex-combobox', {
 	},
 	methods:{
 		//下拉选项赋值
-		_setValue:function(selectValue){
+		_setValue:function(selectValue,type){
 			if(selectValue==null || selectValue == undefined) return;
 			var that = this;
 			this.data.selectData  = {text:"", value:""};			
@@ -2069,9 +2081,11 @@ impex.component('impex-combobox', {
 					if(_.isString(this.data.xValidate)){
 						if(this.find("x-validate")){
 							setTimeout(function(){
-								var model = that.find("x-validate")[0];
-								model.do();
-								model.emit("validate.fire", model.do());
+								if(type!=="reset"){
+									var model = that.find("x-validate")[0];
+									model.do();
+									model.emit("validate.fire", model.do());
+								}
 							},100);
 						}
 					}	
@@ -2381,11 +2395,11 @@ impex.component('impex-combogrid', {
 				
 			}
 		},
-		"impex.validate.result":function(v,validateResult){
+		"impex.validate.result":function(v,validateResult,tipInnerModel){
 			if(!validateResult.result){
 				var el = $(this.view.el);
 				var of = el.offset() ;
-				Tip.show("tip-"+this.data.id,{
+				Tip.show("tip-"+this.data.id,tipInnerModel,{
 					left:of.left+el.width(),
 					top:of.top,
 					dir:this.data.tipPosition,
@@ -2411,20 +2425,24 @@ impex.component('impex-combogrid', {
 		_setValue:function(selectValue){
 			if(selectValue==null || selectValue == undefined) return;
 			this.data.selectData = {textfield:"", idfield:""};
-			var dataModel = {};
-			for (j=0;j<this.data.dataSource.length ;j++ ){	
+			var dataModel = {textfield:"", idfield:""};
+			var dataSource = this.d(this.data.ds);
+			if(!dataSource) return;
+			for (j=0;j<dataSource.length ;j++ ){	
 				if(selectValue==null || selectValue==="") continue ;
-				if(this.data.dataSource[j][this.data.idfield]==selectValue){
-					dataModel.textfield = this.data.dataSource[j][this.data.textfield];
-					dataModel.idfield = this.data.dataSource[j][this.data.idfield];
+				if(dataSource[j][this.data.idfield]==selectValue){
+					dataModel.textfield = dataSource[j][this.data.textfield];
+					dataModel.idfield = dataSource[j][this.data.idfield];
 					break;
 				}
 				
 			}
-			this.data.selectData = dataModel;
-			if(_.isString(this.data.xValidate)){
-				$("#"+this.data.id).trigger("input");
+			if(dataModel.textfield!==""){
+				this.data.selectData = dataModel;
 			}
+			//if(_.isString(this.data.xValidate)){
+			//	$("#"+this.data.id).trigger("input");
+			//}
 		},
 		//点击选择选项
 		_clickOpt:function(){
@@ -2508,7 +2526,6 @@ impex.component('impex-datebox', {
 	onInit: function() {
 		var that = this;
 		this.data.id = this.data.id ? this.data.id:"impex-date-" + getId();
-		
 		//监控赋值变化
 		if(this.data.value){
 			this.parent.closest('d',this.data.value).watch(this.data.value, function(todos,name,type,newVal) {
@@ -2518,7 +2535,6 @@ impex.component('impex-datebox', {
 		
 	},
 	methods:{
-		
 		_setValue:function(value){
 			if(value==null || value == undefined) return;
 			this.data.dateValue = value;
@@ -2536,7 +2552,6 @@ impex.component('impex-datebox', {
 			WdatePicker({
 			el:element.view.el,
 			onpicking:function(dp){
-				//console.log(dp.cal.getNewDateStr());
 				that.$_setValue(dp.cal.getNewDateStr());
 			},
 			onclearing:function(){
@@ -2552,18 +2567,22 @@ impex.component('impex-datebox', {
 		"form.reset": function() {
 			if(this.data.value){
 				var value = getData(this,this.data.value);
-				this.$_setValue(value);
+				if(value==null || value == undefined){
+					this.data.dateValue = "";
+				}else{
+					this.data.dateValue = value;
+				};
 			}else{
-				this.$_setValue("");
+				this.data.dateValue = "";
 			}
 			
 		},
-		"impex.validate.result":function(v,validateResult){
+		"impex.validate.result":function(v,validateResult,tipInnerModel){
 			if(!validateResult.result){
 				var el = $(v.view.el);
 				var of = el.offset() ;
-				Tip.show("tip-"+this.data.id,{
-					left:of.left+of.width,
+				Tip.show("tip-"+this.data.id,tipInnerModel,{
+					left:of.left+el.width(),
 					top:of.top,
 					dir:v.data.tipPosition,
 					message:validateResult.msg
@@ -2575,13 +2594,12 @@ impex.component('impex-datebox', {
 		if(this.data.value){
 			var selectValue1 = this.d(this.data.value);
 			if(selectValue1){
-				this.$_setValue(selectValue1);
+				if(selectValue1==null || selectValue1 == undefined) return;
+				this.data.dateValue = selectValue1;
 			}			
 		}
 		
 	}
-		
-
 });
 /**
  * impex-form组件

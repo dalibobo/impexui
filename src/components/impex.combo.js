@@ -32,17 +32,17 @@ impex.component('impex-combobox-multipart', {
 			}else{
 				if(this.data.value){
 					var value = getData(this, this.data.value);
-					this.$_setValue(value);
+					this.$_setValue(value,"reset");
 				}else{
-					this.$_setValue("");
+					this.$_setValue("","reset");
 				}
 			}
 		},
-		"impex.validate.result":function(v,validateResult){
+		"impex.validate.result":function(v,validateResult,tipInnerModel){
 			if(!validateResult.result){
 				var el = $(this.view.el);
 				var of = el.offset() ;
-				Tip.show("tip-"+this.data.id,{
+				Tip.show("tip-"+this.data.id,tipInnerModel,{
 					left:of.left+el.width(),
 					top:of.top,
 					dir:this.data.tipPosition,
@@ -63,7 +63,7 @@ impex.component('impex-combobox-multipart', {
 		tipPosition:'right' //提示框的位置
 	},
 	methods:{
-		_setValue:function(selectValue){
+		_setValue:function(selectValue,type){
 			if(selectValue==null || selectValue == undefined) return;
 			var that = this;
 			this.data.selectData = {texts: [], values: []};
@@ -88,7 +88,9 @@ impex.component('impex-combobox-multipart', {
 			this.data.selectData = dateModel;
 			if(_.isString(this.data.xValidate)){
 				setTimeout(function(){
-					$("#"+that.data.id).trigger("input");
+					if(type!=="reset"){
+						$("#"+that.data.id).trigger("input");
+					}
 				},100);
 			}	
 
@@ -247,9 +249,6 @@ impex.component('impex-combo', {
 	onInit: function() {
 		var that = this;
 		this.data.id = this.data.id!="" ? this.data.id:"impex-combo-" + getId();
-		
-		
-		
 	},
 
 	events: {
@@ -260,17 +259,17 @@ impex.component('impex-combo', {
 			}else{
 				if(this.data.value){
 					var value = getData(this, this.data.value);
-					this.$_setValue(value);
+					this.$_setValue(value,"reset");
 				}else{
-					this.$_setValue("");
+					this.$_setValue("","reset");
 				}				
 			}
 		},
-		"impex.validate.result":function(v,validateResult){
+		"impex.validate.result":function(v,validateResult,tipInnerModel){
 			if(!validateResult.result){
 				var el = $(this.view.el);
 				var of = el.offset() ;
-				Tip.show("tip-"+this.data.id,{
+				Tip.show("tip-"+this.data.id,tipInnerModel,{
 					left:of.left+el.width(),
 					top:of.top,
 					dir:this.data.tipPosition,
@@ -293,7 +292,7 @@ impex.component('impex-combo', {
 	},
 	methods:{
 		//下拉选项赋值
-		_setValue:function(selectValue){
+		_setValue:function(selectValue,type){
 			if(selectValue==null || selectValue == undefined) return;
 			this.data.selectData  = {text:"", value:""};
 			var dataModel = {}
@@ -305,7 +304,9 @@ impex.component('impex-combo', {
 					dataModel.value = this.data.listData[j].value;
 					dataModel.text = this.data.listData[j].text;
 					if(_.isString(this.data.xValidate)){
+						if(type!=="reset"){
 							$("#"+this.data.id).trigger("input");
+						}
 					}
 				}
 				
@@ -474,18 +475,18 @@ impex.component('impex-combobox', {
 			}else{
 				if(this.data.value){
 					var value = getData(this, this.data.value);
-					this.$_setValue(value);
+					this.$_setValue(value,"reset");
 				}else{
-					this.$_setValue("");
+					this.$_setValue("","reset");
 				}
 				
 			}
 		},
-		"impex.validate.result":function(v,validateResult){
+		"impex.validate.result":function(v,validateResult,tipInnerModel){
 			if(!validateResult.result){
 				var el = $(this.view.el);
 				var of = el.offset() ;
-				Tip.show("tip-"+this.data.id,{
+				Tip.show("tip-"+this.data.id,tipInnerModel,{
 					left:of.left+el.width(),
 					top:of.top,
 					dir:this.data.tipPosition,
@@ -512,7 +513,7 @@ impex.component('impex-combobox', {
 	},
 	methods:{
 		//下拉选项赋值
-		_setValue:function(selectValue){
+		_setValue:function(selectValue,type){
 			if(selectValue==null || selectValue == undefined) return;
 			var that = this;
 			this.data.selectData  = {text:"", value:""};			
@@ -530,9 +531,11 @@ impex.component('impex-combobox', {
 					if(_.isString(this.data.xValidate)){
 						if(this.find("x-validate")){
 							setTimeout(function(){
-								var model = that.find("x-validate")[0];
-								model.do();
-								model.emit("validate.fire", model.do());
+								if(type!=="reset"){
+									var model = that.find("x-validate")[0];
+									model.do();
+									model.emit("validate.fire", model.do());
+								}
 							},100);
 						}
 					}	
@@ -842,11 +845,11 @@ impex.component('impex-combogrid', {
 				
 			}
 		},
-		"impex.validate.result":function(v,validateResult){
+		"impex.validate.result":function(v,validateResult,tipInnerModel){
 			if(!validateResult.result){
 				var el = $(this.view.el);
 				var of = el.offset() ;
-				Tip.show("tip-"+this.data.id,{
+				Tip.show("tip-"+this.data.id,tipInnerModel,{
 					left:of.left+el.width(),
 					top:of.top,
 					dir:this.data.tipPosition,
@@ -872,20 +875,24 @@ impex.component('impex-combogrid', {
 		_setValue:function(selectValue){
 			if(selectValue==null || selectValue == undefined) return;
 			this.data.selectData = {textfield:"", idfield:""};
-			var dataModel = {};
-			for (j=0;j<this.data.dataSource.length ;j++ ){	
+			var dataModel = {textfield:"", idfield:""};
+			var dataSource = this.d(this.data.ds);
+			if(!dataSource) return;
+			for (j=0;j<dataSource.length ;j++ ){	
 				if(selectValue==null || selectValue==="") continue ;
-				if(this.data.dataSource[j][this.data.idfield]==selectValue){
-					dataModel.textfield = this.data.dataSource[j][this.data.textfield];
-					dataModel.idfield = this.data.dataSource[j][this.data.idfield];
+				if(dataSource[j][this.data.idfield]==selectValue){
+					dataModel.textfield = dataSource[j][this.data.textfield];
+					dataModel.idfield = dataSource[j][this.data.idfield];
 					break;
 				}
 				
 			}
-			this.data.selectData = dataModel;
-			if(_.isString(this.data.xValidate)){
-				$("#"+this.data.id).trigger("input");
+			if(dataModel.textfield!==""){
+				this.data.selectData = dataModel;
 			}
+			//if(_.isString(this.data.xValidate)){
+			//	$("#"+this.data.id).trigger("input");
+			//}
 		},
 		//点击选择选项
 		_clickOpt:function(){

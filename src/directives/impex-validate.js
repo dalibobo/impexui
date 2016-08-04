@@ -3,6 +3,7 @@
  * <br/>使用方式：<input x-validate="required,isint:'+',length:2:6}"></input>
  * true:表示需要校验，false:不做校验
  * msg:提示消息
+ * tipInner: 将提示消息插入哪个元素中
  * 例子：required,  需要做required校验，
  * isint:'+'
  */
@@ -17,13 +18,18 @@ impex.directive('validate',{
 		var msg = "验证通过！";
 		var v;
 		var validateResult = {result: true};
+		var tipInnerModel = null;//将提示框插入到哪个元素里
 		for ( var p in obj ){ // 方法 
 			v = obj[p];
 			var lr = v.split(":");
-			if(!lr[0] || lr[0] === 'msg'){
+			if(!lr[0] || lr[0] === 'msg' || lr[0]==='undefined' || lr[0]===undefined){
 				continue;
 			}
-			
+			if(lr[0] === 'tipInner'){
+				tipInnerModel = $("#"+lr[1]);
+				continue;
+			}
+
 			var rs = {type:true,msg:""};
 			if(undefined === impex.validate[lr[0]]){
 				rs.type = false;
@@ -44,16 +50,16 @@ impex.directive('validate',{
 		if(!validateResult.result){
 			var el = $(this.view.el);
 			var of = el.offset() ;
-			Tip.show("tip-"+this.view.el.id,{
-				left:of.left+of.width,
+			Tip.show("tip-"+(this.view.el.id || this.view.el.name).replace(/\./g,'-'),{
+				left:of.left+el.width(),
 				top:of.top,
 				right:0,
 				bottom:0,
 				dir:'right',
 				message:validateResult.msg
-			});
+			},tipInnerModel);
 		}else{
-			$("#tip-"+this.view.el.id).remove();
+			$("#tip-"+(this.view.el.id || this.view.el.name).replace(/\./g,'-')).remove();
 		}
 		this.emit("impex.validate.result",  validateResult);
 		return reType;
