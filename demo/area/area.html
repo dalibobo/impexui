@@ -4,8 +4,13 @@
         <title>Impexui</title>
 		<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
         <meta http-equiv="content-type" content="text/html;charset=utf-8">
-		<script type="text/javascript" src="../../impex.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../../themes/default/impexui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css"/>
+		<script type="text/javascript" src="../../impex.all.js"></script>
 		<script type="text/javascript" src="../../build/impexui.all.js"></script>
+		<script type="text/javascript" src="../../src/impex.util.js"></script>
+		<script type="text/javascript" src="../../src/components/impex-area.js"></script>
+		
     </head>
     <body>
 		<h3>省市县三级联动组件</h3>
@@ -19,19 +24,21 @@
 		</div>
 		<script>
 			var model = {
-				getVal: function() {
-					var v = document.getElementsByName("address")[0].value;
-					alert(v);
-				},
-				getPCAVal: function() {
-					var province = document.getElementsByName("province")[0].value;
-					var city = document.getElementsByName("city")[0].value;
-					var area = document.getElementsByName("area")[0].value;
-					alert("省：" + province + "，市：" + city + "，县：" + area);
-				},
-				setVal: function() {
-					impex.cget("address").setValue("陕西", "西安", "未央区");
-				}
+				methods:{
+					getVal: function() {
+						var v = document.getElementsByName("address")[0].value;
+						alert(v);
+					},
+					getPCAVal: function() {
+						var province = document.getElementsByName("province")[0].value;
+						var city = document.getElementsByName("city")[0].value;
+						var area = document.getElementsByName("area")[0].value;
+						alert("省：" + province + "，市：" + city + "，县：" + area);
+					},
+					setVal: function() {
+						impex.cget("address").setValue("陕西", "西安", "未央区");
+					}
+				}				
 			};
 			var page = impex.render(document.body, model);
 		</script>

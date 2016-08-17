@@ -5,13 +5,7 @@ var _impex_areaList = [{"p":"北京","c":[{"n":"东城区"},{"n":"西城区"},{"
  * impex-area组件
  */
 impex.component('impex-area', {
-	ps: [],
-	cs: [],
-	as: [],
-	class: "",
-	scss: "",
-	value: "",
-	id: "",
+	
 	template: '<div class="impex-area {{=class}}" id="{{=id}}">\
 				<select class="{{scss}}" name="{{=pname}}" :change="pchange(this)">\
 					<option x-each="ps as p" value="{{p.p}}">{{p.p}}</option>\
@@ -19,120 +13,133 @@ impex.component('impex-area', {
 				<select class="{{scss}}" name="{{=cname}}" :change="cchange(this)">\
 					<option x-each="cs as c" value="{{c.n}}">{{c.n}}</option>\
 				</select>\
-				<select class="{{scss}}" name="{{=aname}}" :change="achange(this)" x-show="as.length > 0">\
-					<option x-each="as as a" value="{{a.s}}">{{a.s}}</option>\
+				<select class="{{scss}}" name="{{=aname}}" :change="achange(this)" x-show="bs.length > 0">\
+					<option x-each="bs as a" value="{{a.s}}">{{a.s}}</option>\
 				</select>\
 				<input x-if="name" type="hidden" name="{{=name}}" value="{{value}}">\
 				</div>', 
 	onInit: function() {
-		this.ps = _impex_areaList;
-		this.cs = this.ps[0].c;
-		as = this.cs[0].a || [];
-		this.setHiddenValue(0 , 0, 0);
+		this.data.ps = _impex_areaList;
+		this.data.cs = this.data.ps[0].c;
+		bs = this.data.cs[0].a || [];
+		this.$setHiddenValue(0 , 0, 0);
 	},
-	// 设置隐藏域值
-	setHiddenValue: function(a, b, c) {
-		if (this.name) {
+	data:{
+		ps: [],
+		cs: [],
+		bs: [],
+		class: "",
+		scss: "",
+		value: "",
+		id: ""
+	},
+	methods:{
+		// 设置隐藏域值
+		setHiddenValue: function(a, b, c) {
+			if (this.name) {
+				var v = "";
+				v += this.data.ps[a].p;
+				if (this.data.cs.length > 0) {
+					v += "," + this.data.cs[b].n;
+				}
+				if (this.data.bs.length > 0) {
+					v += "," + this.data.bs[c].s;
+				}
+			}
+			this.data.value = v;
+		},
+		pchange: function(com) {
 			var v = "";
-			v += this.ps[a].p;
-			if (this.cs.length > 0) {
-				v += "," + this.cs[b].n;
+			if (com.view) {
+				v = com.view.el.selectedIndex;
+			}else{
+				v = com;
 			}
-			if (this.as.length > 0) {
-				v += "," + this.as[c].s;
-			}
-		}
-		this.value = v;
-	},
-	pchange: function(com) {
-		var v = "";
-		if (com.$view) {
-			v = com.$view.el.selectedIndex;
-		}else{
-			v = com;
-		}
-		this.cs = this.ps[v].c || [];
-		this.as = this.cs[0].a || [];
-		var el = this.$view.el;
-		setTimeout(function() {
+			this.data.cs = this.data.ps[v].c || [];
+			this.data.bs = this.data.cs[0].a || [];
+			var el = this.view.el;
+			setTimeout(function() {
+				var ss = el.querySelectorAll("select");
+				var pselect = ss[0];
+				var cselect = ss[1];
+				var bselect = ss[2];
+				if (cselect.options.length != 0) cselect.options[0].selected = true;
+				if (bselect.options.length != 0) bselect.options[0].selected = true;
+			}, 10);
+			this.$setHiddenValue(v, 0, 0);
+		},
+		cchange: function(com) {
+			var v = com.view.el.selectedIndex;
+			this.data.bs = this.data.cs[v].a || [];
+			var el = this.view.el;
 			var ss = el.querySelectorAll("select");
-			var pselect = ss[0];
-			var cselect = ss[1];
-			var aselect = ss[2];
-			if (cselect.options.length != 0) cselect.options[0].selected = true;
-			if (aselect.options.length != 0) aselect.options[0].selected = true;
-		}, 10);
-		this.setHiddenValue(v, 0, 0);
-	},
-	cchange: function(com) {
-		var v = com.$view.el.selectedIndex;
-		this.as = this.cs[v].a || [];
-		var el = this.$view.el;
-		var ss = el.querySelectorAll("select");
-		setTimeout(function() {
-			var aselect = ss[2];
-			aselect.options[0].selected = true;
-		}, 10);
-		this.setHiddenValue(ss[0].selectedIndex, v, 0);
-	},
-	achange: function(com) {
-		var el = this.$view.el;
-		var ss = el.querySelectorAll("select");
-		var v = com.$view.el.selectedIndex;
-		this.setHiddenValue(ss[0].selectedIndex, ss[1].selectedIndex, v);
+			setTimeout(function() {
+				var bselect = ss[2];
+				bselect.options[0].selected = true;
+			}, 10);
+			this.$setHiddenValue(ss[0].selectedIndex, v, 0);
+		},
+		achange: function(com) {
+			var el = this.view.el;
+			var ss = el.querySelectorAll("select");
+			var v = com.view.el.selectedIndex;
+			this.$setHiddenValue(ss[0].selectedIndex, ss[1].selectedIndex, v);
+		}
 	},
 	setValue: function(p, c, a) {
-		var ss = this.$view.el.querySelectorAll("select");
+		var ss = this.view.el.querySelectorAll("select");
 		var pselect = ss[0];
 		
 		var pv, po;
-		for (var i = this.ps.length; i--;) {
-			if (this.ps[i].p == p) {
+		for (var i = this.data.ps.length; i--;) {
+			if (this.data.ps[i].p == p) {
 				pv = i;
-				po = this.ps[i];
+				po = this.data.ps[i];
 			}
 		}
 		if (!pv) {
 			pselect.options[0].selected = true;
-			po = this.ps[0];
+			po = this.data.ps[0];
 		}else{
 			pselect.options[pv].selected = true;
 		}
 		
 		
 		if (!po) {
-			this.cs = [];
+			this.data.cs = [];
 		}else{
-			this.cs = po.c || [];
+			this.data.cs = po.c || [];
 		}
 		var cv, co;
-		for (var i = this.cs.length; i--;) {
-			if (this.cs[i].n == c) {
+		for (var i = this.data.cs.length; i--;) {
+			if (this.data.cs[i].n == c) {
 				cv = i;
-				co = this.cs[i];
+				co = this.data.cs[i];
 			}
 		}
 
 		if (!co) {
-			this.as = [];
+			this.data.bs = [];
 		}else{
-			this.as = co.a || [];
+			this.data.bs = co.a || [];
 		}
 		var av;
-		for (var i = this.as.length; i--;) {
-			if (this.as[i].s == a) {
+		for (var i = this.data.bs.length; i--;) {
+			if (this.data.bs[i].s == a) {
 				av = i;
 			}
 		}
 		
-		var el = this.$view.el;
+		var el = this.view.el;
 		setTimeout(function() {
 			var ss = el.querySelectorAll("select");
 			var cselect = ss[1];
-			var aselect = ss[2];
+			var bselect = ss[2];
 			if (cselect.options.length != 0) cselect.options[cv].selected = true;
-			if (aselect.options.length != 0) aselect.options[av].selected = true;
+			if (bselect.options.length != 0) bselect.options[av].selected = true;
 		}, 10);
-		this.setHiddenValue(pv, cv, av);
+		this.$setHiddenValue(pv, cv, av);
 	}
+
+	
 });

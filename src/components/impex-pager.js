@@ -32,7 +32,7 @@ impex.component("impex-pager", {
 	setConfig: function(config) {
 		this.data.current = config.current || this.data.current;
 		this.data.pageSize = config.pageSize || this.data.pageSize;
-		this.data.total = config.total || this.data.total;
+		this.data.total = (config.total!=null && config.total!=="" && config.total !== undefined) ? config.total : this.data.total;
 		this.data.pageNos = config.pageNos || this.data.pageNos;
 		
 		this.data.totalPage = Math.ceil(this.data.total/this.data.pageSize);

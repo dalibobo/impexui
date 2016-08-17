@@ -157,7 +157,7 @@ impex.component('impex-combobox-multipart', {
 		view.el.childNodes[1].childNodes[3].style.width = divWidth-22+"px";
 		view.el.childNodes[1].childNodes[3].style.height = divHeight-2+"px";
 		view.el.childNodes[1].childNodes[3].style.lineHeight = divHeight-2+"px";
-		addEvent(document.body,"mousedown",
+		addEvent(document.body,"click",
 			function(event){
 				setTimeout(function(){
 					if(that.data.mouseDownType){
@@ -379,7 +379,7 @@ impex.component('impex-combo', {
 		view.el.childNodes[1].childNodes[3].style.height = divHeight-2+"px";
 		view.el.childNodes[1].childNodes[3].style.lineHeight = divHeight-2+"px";
 
-		addEvent(document.body,"mousedown",
+		addEvent(document.body,"click",
 			function(event){
 				setTimeout(function(){
 					if(that.data.mouseDownType){
@@ -737,7 +737,7 @@ impex.component('impex-combobox', {
 		view.el.childNodes[1].childNodes[3].style.height = divHeight-2+"px";
 		view.el.childNodes[1].childNodes[3].style.lineHeight = divHeight-2+"px";
 
-		addEvent(document.body,"mousedown",
+		addEvent(document.body,"click",
 			function(event){
 				setTimeout(function(){
 					if(that.data.mouseDownType){
@@ -952,7 +952,7 @@ impex.component('impex-combogrid', {
 		view.el.childNodes[1].childNodes[3].style.width = divWidth-22+"px";
 		view.el.childNodes[1].childNodes[3].style.height = divHeight-2+"px";
 		view.el.childNodes[1].childNodes[3].style.lineHeight = divHeight-2+"px";
-		addEvent(document.body,"mousedown",
+		addEvent(document.body,"click",
 			function(event){
 				setTimeout(function(){
 					if(that.data.mouseDownType){
