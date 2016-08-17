@@ -50,18 +50,24 @@ impex.directive('validate',{
 		if(!validateResult.result){
 			var el = $(this.view.el);
 			var of = el.offset() ;
-			Tip.show("tip-"+(this.view.el.id || this.view.el.name).replace(/\./g,'-'),{
+			var top  = 0;
+			if(tipInnerModel){
+				top = tipInnerModel.scrollTop();
+			}else{
+				top = $(document).scrollTop() ;
+			}
+			Tip.show("tip-"+(this.view.el.id || this.view.el.name).replace(/\./g,'-'),tipInnerModel,{
 				left:of.left+el.width(),
-				top:of.top,
+				top:of.top+top,
 				right:0,
 				bottom:0,
 				dir:'right',
 				message:validateResult.msg
-			},tipInnerModel);
+			});
 		}else{
 			$("#tip-"+(this.view.el.id || this.view.el.name).replace(/\./g,'-')).remove();
 		}
-		this.emit("impex.validate.result",  validateResult);
+		this.emit("impex.validate.result",  validateResult,tipInnerModel);
 		return reType;
 	},
 	onInit: function() {

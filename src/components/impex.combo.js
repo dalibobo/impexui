@@ -28,7 +28,7 @@ impex.component('impex-combobox-multipart', {
 	events: {
 		"form.reset": function() {
 			if(this.data.value === ""){
-				this.$_setValue("");
+				this.$_setValue("","reset");
 			}else{
 				if(this.data.value){
 					var value = getData(this, this.data.value);
@@ -255,7 +255,7 @@ impex.component('impex-combo', {
 		//重置
 		"form.reset": function() {
 			if(this.data.value === ""){
-				this.$_setValue("");
+				this.$_setValue("","reset");
 			}else{
 				if(this.data.value){
 					var value = getData(this, this.data.value);
@@ -305,7 +305,9 @@ impex.component('impex-combo', {
 					dataModel.text = this.data.listData[j].text;
 					if(_.isString(this.data.xValidate)){
 						if(type!=="reset"){
-							$("#"+this.data.id).trigger("input");
+							setTimeout(function(){
+								$("#"+this.data.id).trigger("input");
+							},100);
 						}
 					}
 				}
@@ -471,7 +473,7 @@ impex.component('impex-combobox', {
 	events: {
 		"form.reset": function() {
 			if(this.data.value === ""){
-				this.$_setValue("");
+				this.$_setValue("","reset");
 			}else{
 				if(this.data.value){
 					var value = getData(this, this.data.value);
@@ -870,6 +872,10 @@ impex.component('impex-combogrid', {
 		height:"22px",
 		tipPosition:'right'
 	},
+	//赋值
+	setValue:function(valueModel){
+		this.data.selectData = {textfield:valueModel.textfield, idfield:valueModel.idfield}//赋值
+	},
 	methods:{
 		//下拉选项赋值
 		_setValue:function(selectValue){
@@ -960,6 +966,5 @@ impex.component('impex-combogrid', {
 		);
 
 	}
-	
 
 });

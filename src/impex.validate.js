@@ -4,7 +4,7 @@
 impex.validate = {
 
 	exp:function(objValue, typeValue) {
-				var expVal = typeValue.replace(/#v/ig, "'" + objValue + "'");
+				var expVal = typeValue[0].replace(/#v/ig, "'" + objValue + "'");
 				var rs = eval(expVal);
 				return {type: rs, msg: (rs ? "表达式校验成功" : "表达式校验失败")};
 	},
@@ -40,19 +40,19 @@ impex.validate = {
 		var reg = /^-?[0-9]+$/;
 		var typeName = "";
 	
-		if(typeValue === "0+"){
+		if(typeValue[0] === "0+"){
 			reg = /^[0-9]+$/;
 			typeName = "非负整数";
-		}else if(typeValue === "+"){
+		}else if(typeValue[0] === "+"){
 			reg = /^([1-9]\d*)$/;
 			typeName = "大于0正整数";
-		}else if(typeValue === "-0"){
+		}else if(typeValue[0] === "-0"){
 			reg = /^-(0|[1-9]\d*)$/;
 			typeName = "非正整数";
-		}else if(typeValue === "-"){
+		}else if(typeValue[0] === "-"){
 			reg = /^-[1-9]\d*$/;
 			typeName = "负整数";
-		}else if(typeValue === "0"){
+		}else if(typeValue[0] === "0"){
 			//整数
 			reg = /^[-\d][0-9]+$/;
 			typeName = "整数";
@@ -67,13 +67,13 @@ impex.validate = {
 	isnumber : function(objValue,typeValue){
 		var reg = /^-?(\d+(\.\d+)?)$/;
 		var msg = "请正确输入数字类型";
-		if(typeValue === "+"){
+		if(typeValue[0] === "+"){
 			reg = /^(\d+(\.\d+)?)$/;
 			msg = "请正确输入正数";
-		}else if(typeValue === "-"){
+		}else if(typeValue[0] === "-"){
 			reg = /^-(\d+(\.\d+)?)$/;
 			msg = "请正确输入负数";
-		}else if(typeValue === "="){
+		}else if(typeValue[0] === "="){
 			reg = /^-?(\d+(\.\d+)?)$/;
 			msg = "请正确输入数字";
 		}
@@ -88,19 +88,19 @@ impex.validate = {
 		//非负整数
 		var reg = /^-?([1-9]\d*\.\d+|0?\.0+|0)$/;
 		var typeName = "";
-		if(typeValue === "0+"){
+		if(typeValue[0] === "0+"){
 			reg = /^[0-9]\d*(\.\d+)?$/;
 			typeName = "非负浮点数";
-		}else if(typeValue === "+"){
+		}else if(typeValue[0] === "+"){
 			reg = /^[1-9]\d*(\.\d+)?$/;
 			typeName = "正浮点数";
-		}else if(typeValue === "-0"){
+		}else if(typeValue[0] === "-0"){
 			reg = /^(-([0-9]\d*(\.\d+)?))$/;
 			typeName = "非正浮点数";
-		}else if(typeValue === "-"){
+		}else if(typeValue[0] === "-"){
 			reg = /^-([1-9]\d*(\.\d+)?)$/;
 			typeName = "负浮点数";
-		}else if(typeValue === "."){
+		}else if(typeValue[0] === "."){
 			reg = /^-?([0-9]\d*(\.\d+)?)$/;
 			typeName = "浮点数";
 		}		
@@ -153,7 +153,7 @@ impex.validate = {
 	
 	//最大长度
 	maxLength : function(objValue,typeValue){
-		if (objValue.length!=0 && typeValue !="" && objValue.length>typeValue) {
+		if (objValue.length!=0 && typeValue !="" && objValue.length>typeValue[0]) {
 			return {type:false,msg:"超出最大长度"};
 		}
 		return {type:true,msg:"校验通过"};
@@ -161,7 +161,7 @@ impex.validate = {
 	
 	//最小长度
 	minLength : function(objValue,typeValue){
-		if (objValue.length!=0 && typeValue !="" && objValue.length < typeValue ) {
+		if (objValue.length!=0 && typeValue !="" && objValue.length < typeValue[0] ) {
 			return {type:false,msg:"小于最小长度"};
 		}
 		return {type:true,msg:"校验通过"};
@@ -169,7 +169,7 @@ impex.validate = {
 	
 	//正则表达式验证
 	pattern : function(objValue,typeValue){
-		if (objValue.length != 0 && !eval(typeValue).test(objValue)) {
+		if (objValue.length != 0 && !eval(typeValue[0]).test(objValue)) {
 			return {type:false,msg:"该验证未通过"};
 		}
 		return {type:true,msg:"校验通过"};
