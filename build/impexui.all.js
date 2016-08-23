@@ -496,7 +496,7 @@ impex.extend = function(parent, target) {
 impex.validate = {
 
 	exp:function(objValue, typeValue) {
-				var expVal = typeValue.replace(/#v/ig, "'" + objValue + "'");
+				var expVal = typeValue[0].replace(/#v/ig, "'" + objValue + "'");
 				var rs = eval(expVal);
 				return {type: rs, msg: (rs ? "表达式校验成功" : "表达式校验失败")};
 	},
@@ -532,19 +532,19 @@ impex.validate = {
 		var reg = /^-?[0-9]+$/;
 		var typeName = "";
 	
-		if(typeValue === "0+"){
+		if(typeValue[0] === "0+"){
 			reg = /^[0-9]+$/;
 			typeName = "非负整数";
-		}else if(typeValue === "+"){
+		}else if(typeValue[0] === "+"){
 			reg = /^([1-9]\d*)$/;
 			typeName = "大于0正整数";
-		}else if(typeValue === "-0"){
+		}else if(typeValue[0] === "-0"){
 			reg = /^-(0|[1-9]\d*)$/;
 			typeName = "非正整数";
-		}else if(typeValue === "-"){
+		}else if(typeValue[0] === "-"){
 			reg = /^-[1-9]\d*$/;
 			typeName = "负整数";
-		}else if(typeValue === "0"){
+		}else if(typeValue[0] === "0"){
 			//整数
 			reg = /^[-\d][0-9]+$/;
 			typeName = "整数";
@@ -559,13 +559,13 @@ impex.validate = {
 	isnumber : function(objValue,typeValue){
 		var reg = /^-?(\d+(\.\d+)?)$/;
 		var msg = "请正确输入数字类型";
-		if(typeValue === "+"){
+		if(typeValue[0] === "+"){
 			reg = /^(\d+(\.\d+)?)$/;
 			msg = "请正确输入正数";
-		}else if(typeValue === "-"){
+		}else if(typeValue[0] === "-"){
 			reg = /^-(\d+(\.\d+)?)$/;
 			msg = "请正确输入负数";
-		}else if(typeValue === "="){
+		}else if(typeValue[0] === "="){
 			reg = /^-?(\d+(\.\d+)?)$/;
 			msg = "请正确输入数字";
 		}
@@ -580,19 +580,19 @@ impex.validate = {
 		//非负整数
 		var reg = /^-?([1-9]\d*\.\d+|0?\.0+|0)$/;
 		var typeName = "";
-		if(typeValue === "0+"){
+		if(typeValue[0] === "0+"){
 			reg = /^[0-9]\d*(\.\d+)?$/;
 			typeName = "非负浮点数";
-		}else if(typeValue === "+"){
+		}else if(typeValue[0] === "+"){
 			reg = /^[1-9]\d*(\.\d+)?$/;
 			typeName = "正浮点数";
-		}else if(typeValue === "-0"){
+		}else if(typeValue[0] === "-0"){
 			reg = /^(-([0-9]\d*(\.\d+)?))$/;
 			typeName = "非正浮点数";
-		}else if(typeValue === "-"){
+		}else if(typeValue[0] === "-"){
 			reg = /^-([1-9]\d*(\.\d+)?)$/;
 			typeName = "负浮点数";
-		}else if(typeValue === "."){
+		}else if(typeValue[0] === "."){
 			reg = /^-?([0-9]\d*(\.\d+)?)$/;
 			typeName = "浮点数";
 		}		
@@ -645,7 +645,7 @@ impex.validate = {
 	
 	//最大长度
 	maxLength : function(objValue,typeValue){
-		if (objValue.length!=0 && typeValue !="" && objValue.length>typeValue) {
+		if (objValue.length!=0 && typeValue !="" && objValue.length>typeValue[0]) {
 			return {type:false,msg:"超出最大长度"};
 		}
 		return {type:true,msg:"校验通过"};
@@ -653,7 +653,7 @@ impex.validate = {
 	
 	//最小长度
 	minLength : function(objValue,typeValue){
-		if (objValue.length!=0 && typeValue !="" && objValue.length < typeValue ) {
+		if (objValue.length!=0 && typeValue !="" && objValue.length < typeValue[0] ) {
 			return {type:false,msg:"小于最小长度"};
 		}
 		return {type:true,msg:"校验通过"};
@@ -661,7 +661,7 @@ impex.validate = {
 	
 	//正则表达式验证
 	pattern : function(objValue,typeValue){
-		if (objValue.length != 0 && !eval(typeValue).test(objValue)) {
+		if (objValue.length != 0 && !eval(typeValue[0]).test(objValue)) {
 			return {type:false,msg:"该验证未通过"};
 		}
 		return {type:true,msg:"校验通过"};
@@ -799,18 +799,24 @@ impex.directive('validate',{
 		if(!validateResult.result){
 			var el = $(this.view.el);
 			var of = el.offset() ;
-			Tip.show("tip-"+(this.view.el.id || this.view.el.name).replace(/\./g,'-'),{
+			var top  = 0;
+			if(tipInnerModel){
+				top = tipInnerModel.scrollTop();
+			}else{
+				top = $(document).scrollTop() ;
+			}
+			Tip.show("tip-"+(this.view.el.id || this.view.el.name).replace(/\./g,'-'),tipInnerModel,{
 				left:of.left+el.width(),
-				top:of.top,
+				top:of.top+top,
 				right:0,
 				bottom:0,
 				dir:'right',
 				message:validateResult.msg
-			},tipInnerModel);
+			});
 		}else{
 			$("#tip-"+(this.view.el.id || this.view.el.name).replace(/\./g,'-')).remove();
 		}
-		this.emit("impex.validate.result",  validateResult);
+		this.emit("impex.validate.result",  validateResult,tipInnerModel);
 		return reType;
 	},
 	onInit: function() {
@@ -902,13 +908,7 @@ var _impex_areaList = [{"p":"北京","c":[{"n":"东城区"},{"n":"西城区"},{"
  * impex-area组件
  */
 impex.component('impex-area', {
-	ps: [],
-	cs: [],
-	as: [],
-	class: "",
-	scss: "",
-	value: "",
-	id: "",
+	
 	template: '<div class="impex-area {{=class}}" id="{{=id}}">\
 				<select class="{{scss}}" name="{{=pname}}" :change="pchange(this)">\
 					<option x-each="ps as p" value="{{p.p}}">{{p.p}}</option>\
@@ -916,122 +916,135 @@ impex.component('impex-area', {
 				<select class="{{scss}}" name="{{=cname}}" :change="cchange(this)">\
 					<option x-each="cs as c" value="{{c.n}}">{{c.n}}</option>\
 				</select>\
-				<select class="{{scss}}" name="{{=aname}}" :change="achange(this)" x-show="as.length > 0">\
-					<option x-each="as as a" value="{{a.s}}">{{a.s}}</option>\
+				<select class="{{scss}}" name="{{=aname}}" :change="achange(this)" x-show="bs.length > 0">\
+					<option x-each="bs as a" value="{{a.s}}">{{a.s}}</option>\
 				</select>\
 				<input x-if="name" type="hidden" name="{{=name}}" value="{{value}}">\
 				</div>', 
 	onInit: function() {
-		this.ps = _impex_areaList;
-		this.cs = this.ps[0].c;
-		as = this.cs[0].a || [];
-		this.setHiddenValue(0 , 0, 0);
+		this.data.ps = _impex_areaList;
+		this.data.cs = this.data.ps[0].c;
+		bs = this.data.cs[0].a || [];
+		this.$setHiddenValue(0 , 0, 0);
 	},
-	// 设置隐藏域值
-	setHiddenValue: function(a, b, c) {
-		if (this.name) {
+	data:{
+		ps: [],
+		cs: [],
+		bs: [],
+		class: "",
+		scss: "",
+		value: "",
+		id: ""
+	},
+	methods:{
+		// 设置隐藏域值
+		setHiddenValue: function(a, b, c) {
+			if (this.name) {
+				var v = "";
+				v += this.data.ps[a].p;
+				if (this.data.cs.length > 0) {
+					v += "," + this.data.cs[b].n;
+				}
+				if (this.data.bs.length > 0) {
+					v += "," + this.data.bs[c].s;
+				}
+			}
+			this.data.value = v;
+		},
+		pchange: function(com) {
 			var v = "";
-			v += this.ps[a].p;
-			if (this.cs.length > 0) {
-				v += "," + this.cs[b].n;
+			if (com.view) {
+				v = com.view.el.selectedIndex;
+			}else{
+				v = com;
 			}
-			if (this.as.length > 0) {
-				v += "," + this.as[c].s;
-			}
-		}
-		this.value = v;
-	},
-	pchange: function(com) {
-		var v = "";
-		if (com.$view) {
-			v = com.$view.el.selectedIndex;
-		}else{
-			v = com;
-		}
-		this.cs = this.ps[v].c || [];
-		this.as = this.cs[0].a || [];
-		var el = this.$view.el;
-		setTimeout(function() {
+			this.data.cs = this.data.ps[v].c || [];
+			this.data.bs = this.data.cs[0].a || [];
+			var el = this.view.el;
+			setTimeout(function() {
+				var ss = el.querySelectorAll("select");
+				var pselect = ss[0];
+				var cselect = ss[1];
+				var bselect = ss[2];
+				if (cselect.options.length != 0) cselect.options[0].selected = true;
+				if (bselect.options.length != 0) bselect.options[0].selected = true;
+			}, 10);
+			this.$setHiddenValue(v, 0, 0);
+		},
+		cchange: function(com) {
+			var v = com.view.el.selectedIndex;
+			this.data.bs = this.data.cs[v].a || [];
+			var el = this.view.el;
 			var ss = el.querySelectorAll("select");
-			var pselect = ss[0];
-			var cselect = ss[1];
-			var aselect = ss[2];
-			if (cselect.options.length != 0) cselect.options[0].selected = true;
-			if (aselect.options.length != 0) aselect.options[0].selected = true;
-		}, 10);
-		this.setHiddenValue(v, 0, 0);
-	},
-	cchange: function(com) {
-		var v = com.$view.el.selectedIndex;
-		this.as = this.cs[v].a || [];
-		var el = this.$view.el;
-		var ss = el.querySelectorAll("select");
-		setTimeout(function() {
-			var aselect = ss[2];
-			aselect.options[0].selected = true;
-		}, 10);
-		this.setHiddenValue(ss[0].selectedIndex, v, 0);
-	},
-	achange: function(com) {
-		var el = this.$view.el;
-		var ss = el.querySelectorAll("select");
-		var v = com.$view.el.selectedIndex;
-		this.setHiddenValue(ss[0].selectedIndex, ss[1].selectedIndex, v);
+			setTimeout(function() {
+				var bselect = ss[2];
+				bselect.options[0].selected = true;
+			}, 10);
+			this.$setHiddenValue(ss[0].selectedIndex, v, 0);
+		},
+		achange: function(com) {
+			var el = this.view.el;
+			var ss = el.querySelectorAll("select");
+			var v = com.view.el.selectedIndex;
+			this.$setHiddenValue(ss[0].selectedIndex, ss[1].selectedIndex, v);
+		}
 	},
 	setValue: function(p, c, a) {
-		var ss = this.$view.el.querySelectorAll("select");
+		var ss = this.view.el.querySelectorAll("select");
 		var pselect = ss[0];
 		
 		var pv, po;
-		for (var i = this.ps.length; i--;) {
-			if (this.ps[i].p == p) {
+		for (var i = this.data.ps.length; i--;) {
+			if (this.data.ps[i].p == p) {
 				pv = i;
-				po = this.ps[i];
+				po = this.data.ps[i];
 			}
 		}
 		if (!pv) {
 			pselect.options[0].selected = true;
-			po = this.ps[0];
+			po = this.data.ps[0];
 		}else{
 			pselect.options[pv].selected = true;
 		}
 		
 		
 		if (!po) {
-			this.cs = [];
+			this.data.cs = [];
 		}else{
-			this.cs = po.c || [];
+			this.data.cs = po.c || [];
 		}
 		var cv, co;
-		for (var i = this.cs.length; i--;) {
-			if (this.cs[i].n == c) {
+		for (var i = this.data.cs.length; i--;) {
+			if (this.data.cs[i].n == c) {
 				cv = i;
-				co = this.cs[i];
+				co = this.data.cs[i];
 			}
 		}
 
 		if (!co) {
-			this.as = [];
+			this.data.bs = [];
 		}else{
-			this.as = co.a || [];
+			this.data.bs = co.a || [];
 		}
 		var av;
-		for (var i = this.as.length; i--;) {
-			if (this.as[i].s == a) {
+		for (var i = this.data.bs.length; i--;) {
+			if (this.data.bs[i].s == a) {
 				av = i;
 			}
 		}
 		
-		var el = this.$view.el;
+		var el = this.view.el;
 		setTimeout(function() {
 			var ss = el.querySelectorAll("select");
 			var cselect = ss[1];
-			var aselect = ss[2];
+			var bselect = ss[2];
 			if (cselect.options.length != 0) cselect.options[cv].selected = true;
-			if (aselect.options.length != 0) aselect.options[av].selected = true;
+			if (bselect.options.length != 0) bselect.options[av].selected = true;
 		}, 10);
-		this.setHiddenValue(pv, cv, av);
+		this.$setHiddenValue(pv, cv, av);
 	}
+
+	
 });
 /**
  * impex-datagrid组件
@@ -1373,7 +1386,7 @@ impex.component("impex-pager", {
 	setConfig: function(config) {
 		this.data.current = config.current || this.data.current;
 		this.data.pageSize = config.pageSize || this.data.pageSize;
-		this.data.total = config.total || this.data.total;
+		this.data.total = (config.total!=null && config.total!=="" && config.total !== undefined) ? config.total : this.data.total;
 		this.data.pageNos = config.pageNos || this.data.pageNos;
 		
 		this.data.totalPage = Math.ceil(this.data.total/this.data.pageSize);
@@ -1578,7 +1591,7 @@ impex.component('impex-combobox-multipart', {
 	events: {
 		"form.reset": function() {
 			if(this.data.value === ""){
-				this.$_setValue("");
+				this.$_setValue("","reset");
 			}else{
 				if(this.data.value){
 					var value = getData(this, this.data.value);
@@ -1707,7 +1720,7 @@ impex.component('impex-combobox-multipart', {
 		view.el.childNodes[1].childNodes[3].style.width = divWidth-22+"px";
 		view.el.childNodes[1].childNodes[3].style.height = divHeight-2+"px";
 		view.el.childNodes[1].childNodes[3].style.lineHeight = divHeight-2+"px";
-		addEvent(document.body,"mousedown",
+		addEvent(document.body,"click",
 			function(event){
 				setTimeout(function(){
 					if(that.data.mouseDownType){
@@ -1805,7 +1818,7 @@ impex.component('impex-combo', {
 		//重置
 		"form.reset": function() {
 			if(this.data.value === ""){
-				this.$_setValue("");
+				this.$_setValue("","reset");
 			}else{
 				if(this.data.value){
 					var value = getData(this, this.data.value);
@@ -1855,7 +1868,9 @@ impex.component('impex-combo', {
 					dataModel.text = this.data.listData[j].text;
 					if(_.isString(this.data.xValidate)){
 						if(type!=="reset"){
-							$("#"+this.data.id).trigger("input");
+							setTimeout(function(){
+								$("#"+this.data.id).trigger("input");
+							},100);
 						}
 					}
 				}
@@ -1927,7 +1942,7 @@ impex.component('impex-combo', {
 		view.el.childNodes[1].childNodes[3].style.height = divHeight-2+"px";
 		view.el.childNodes[1].childNodes[3].style.lineHeight = divHeight-2+"px";
 
-		addEvent(document.body,"mousedown",
+		addEvent(document.body,"click",
 			function(event){
 				setTimeout(function(){
 					if(that.data.mouseDownType){
@@ -2021,7 +2036,7 @@ impex.component('impex-combobox', {
 	events: {
 		"form.reset": function() {
 			if(this.data.value === ""){
-				this.$_setValue("");
+				this.$_setValue("","reset");
 			}else{
 				if(this.data.value){
 					var value = getData(this, this.data.value);
@@ -2285,7 +2300,7 @@ impex.component('impex-combobox', {
 		view.el.childNodes[1].childNodes[3].style.height = divHeight-2+"px";
 		view.el.childNodes[1].childNodes[3].style.lineHeight = divHeight-2+"px";
 
-		addEvent(document.body,"mousedown",
+		addEvent(document.body,"click",
 			function(event){
 				setTimeout(function(){
 					if(that.data.mouseDownType){
@@ -2420,6 +2435,10 @@ impex.component('impex-combogrid', {
 		height:"22px",
 		tipPosition:'right'
 	},
+	//赋值
+	setValue:function(valueModel){
+		this.data.selectData = {textfield:valueModel.textfield, idfield:valueModel.idfield}//赋值
+	},
 	methods:{
 		//下拉选项赋值
 		_setValue:function(selectValue){
@@ -2496,7 +2515,7 @@ impex.component('impex-combogrid', {
 		view.el.childNodes[1].childNodes[3].style.width = divWidth-22+"px";
 		view.el.childNodes[1].childNodes[3].style.height = divHeight-2+"px";
 		view.el.childNodes[1].childNodes[3].style.lineHeight = divHeight-2+"px";
-		addEvent(document.body,"mousedown",
+		addEvent(document.body,"click",
 			function(event){
 				setTimeout(function(){
 					if(that.data.mouseDownType){
@@ -2510,7 +2529,6 @@ impex.component('impex-combogrid', {
 		);
 
 	}
-	
 
 });
 
