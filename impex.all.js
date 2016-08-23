@@ -7,7 +7,7 @@
  * Released under the MIT license
  *
  * website: http://impexjs.org
- * last build: 2016-07-25
+ * last build: 2016-08-23
  */
 !function (global) {
 	'use strict';
@@ -116,129 +116,108 @@ var Util = new function () {
         xhr.send(null);
     }
 }
-	function setArray(ary,index,value){
-		if(isNaN(index))return;
+	var Observer = null;
+	window.Proxy && !function(){
+		function setArray(ary,index,value){
+			if(isNaN(index))return;
 
-		ary[index>>0] = value;
-	}
-	function delArray(ary,index){
-		if(isNaN(index))return;
-
-		ary.splice(index,1);
-	}
-	function observeData(handler,propChains,data,component){
-		if(data && data.__im__propChain)return data;
-
-		var t = data instanceof Array?[]:{};
-		for(var k in data){
-			var o = data[k];
-			if(typeof o === 'object'){
-				var pcs = propChains.concat();
-				pcs.push(k);
-				var tmp = observeData(handler,pcs,o,component);
-				t[k] = tmp;
-			}else{
-				t[k] = o;
-			}
+			ary[index>>0] = value;
 		}
-		Object.defineProperty(t,'__im__propChain',{enumerable: false,writable: false,value:propChains});
-		Object.defineProperty(t,'__im__extPropChain',{enumerable: false,writable: true,value:[]});
-		
-		var p = new Proxy(t, handler);
-		Object.defineProperty(p,'__im__target',{enumerable: false,writable: false,value:t});
-		var id = Date.now() + Math.random();
-		Object.defineProperty(t,'__im__oid',{enumerable: false,writable: false,value:id});
-		return p;
-	}
+		function delArray(ary,index){
+			if(isNaN(index))return;
 
-	var Observer = {
-		observe:function(data,component){
+			ary.splice(index,1);
+		}
+		function observeData(handler,propChains,data,component){
 			if(data && data.__im__propChain)return data;
 
-			//build handler
-			var handler = {
-				comp:component,
-			    // get: function(target, name){
-			    //     return target[name];
-			    // },
-			    set: function(target,name,value) {
-			    	var isAdd = !(name in target);
-
-			    	var old = target[name];
-			    	var v = value;
-			    	if(old === v)return true;
-
-			    	if(typeof v === 'object'){
-			    		var pcs = target.__im__propChain.concat();
-						pcs.push(name);
-			    		v = observeData(this,pcs,v,this.comp);
-			    	}
-			    	if(target instanceof Array){
-			    		setArray(target,name,v);
-			    	}else{
-				    	target[name] = v;
-			    	}
-
-			    	var path = target.__im__propChain;//.concat();
-			    	var xpath = target.__im__extPropChain;
-
-			    	var changeObj = {object:target,name:name,pc:path,xpc:xpath,oldVal:old,newVal:v,comp:this.comp,type:isAdd?'add':'update'};
-			    	ChangeHandler.handle(changeObj);
-			    	
-			    	return true;
-			    },
-			    deleteProperty: function (target, name) {
-			    	var old = target[name];
-
-				    if(target instanceof Array){
-			    		delArray(target,name);
-			    	}else{
-			    		delete target[name];
-			    	}
-
-				    var path = target.__im__propChain;//.concat();
-			    	var xpath = target.__im__extPropChain;
-
-				    var changeObj = {object:target,name:name,pc:path,xpc:xpath,oldVal:old,comp:this.comp,type:'delete'};
-			    	ChangeHandler.handle(changeObj);
-
-				    return true;
+			var t = data instanceof Array?[]:{};
+			for(var k in data){
+				var o = data[k];
+				if(typeof o === 'object'){
+					var pcs = propChains.concat();
+					pcs.push(k);
+					var tmp = observeData(handler,pcs,o,component);
+					t[k] = tmp;
+				}else{
+					t[k] = o;
 				}
-			};
-
-			return observeData(handler,[],data,component);
+			}
+			Object.defineProperty(t,'__im__propChain',{enumerable: false,writable: false,value:propChains});
+			Object.defineProperty(t,'__im__extPropChain',{enumerable: false,writable: true,value:[]});
+			
+			var p = new Proxy(t, handler);
+			Object.defineProperty(p,'__im__target',{enumerable: false,writable: false,value:t});
+			var id = Date.now() + Math.random();
+			Object.defineProperty(t,'__im__oid',{enumerable: false,writable: false,value:id});
+			return p;
 		}
-	};
+
+		Observer = {
+			observe:function(data,component){
+				if(data && data.__im__propChain)return data;
+
+				//build handler
+				var handler = {
+					comp:component,
+				    // get: function(target, name){
+				    //     return target[name];
+				    // },
+				    set: function(target,name,value) {
+				    	var isAdd = !(name in target);
+
+				    	var old = target[name];
+				    	var v = value;
+				    	if(old === v)return true;
+
+				    	if(typeof v === 'object'){
+				    		var pcs = target.__im__propChain.concat();
+							pcs.push(name);
+				    		v = observeData(this,pcs,v,this.comp);
+				    	}
+				    	if(target instanceof Array){
+				    		setArray(target,name,v);
+				    	}else{
+					    	target[name] = v;
+				    	}
+
+				    	var path = target.__im__propChain;//.concat();
+				    	var xpath = target.__im__extPropChain;
+
+				    	var changeObj = {object:target,name:name,pc:path,xpc:xpath,oldVal:old,newVal:v,comp:this.comp,type:isAdd?'add':'update'};
+				    	ChangeHandler.handle(changeObj);
+				    	
+				    	return true;
+				    },
+				    deleteProperty: function (target, name) {
+				    	var old = target[name];
+
+					    if(target instanceof Array){
+				    		delArray(target,name);
+				    	}else{
+				    		delete target[name];
+				    	}
+
+					    var path = target.__im__propChain;//.concat();
+				    	var xpath = target.__im__extPropChain;
+
+					    var changeObj = {object:target,name:name,pc:path,xpc:xpath,oldVal:old,comp:this.comp,type:'delete'};
+				    	ChangeHandler.handle(changeObj);
+
+					    return true;
+					}
+				};
+
+				return observeData(handler,[],data,component);
+			}
+		};
+	}();
+	
 
 
 
 	///////////////////////////////////////// fallback ///////////////////////////////////////////
-	if(!window.Proxy){
-	// if(true){
-		//timer for dirty check
-		var RAF = (function(w){
-		    return  w.requestAnimationFrame       || 
-		            w.webkitRequestAnimationFrame ||
-		            w.msRequestAnimationFrame     ||
-		            w.mozRequestAnimationFrame    ||
-		            w.oRequestAnimationFrame      ||
-		            function(callback) {
-		                return w.setTimeout(function() {
-		                    callback(Date.now());
-		                },16.7);
-		            };
-		})(self);
-
-		var observedObjects = [],//用于保存监控对象
-		observedArys = [];//用于保存监控数组
-
-		var Observer = {};
-		Observer.observe = function(data,component){
-			if(data && data.__im__propChain)return data;
-
-			return observeData([],data,component);
-		}
-
+	!window.Proxy && !function(){
 		function getter(k){
 			return this.__im__innerProps[k];
 		}
@@ -263,7 +242,6 @@ var Util = new function () {
 	    		type:'update'
 	    	}],true);
 		}
-
 		function observeData(propChains,data,component){
 			if(data && data.__im__propChain)return data;
 			
@@ -311,8 +289,6 @@ var Util = new function () {
 
 			return t;
 		}
-
-		//start up check
 		function dirtyCheck(){
 			RAF(function(){
 				for(var i=observedObjects.length;i--;){
@@ -355,9 +331,7 @@ var Util = new function () {
 
 				dirtyCheck();
 			});
-		};
-		dirtyCheck();
-
+		}
 		function clearObserve(obj){
 			var oo = null;
 			for(var i=observedObjects.length;i--;){
@@ -371,7 +345,6 @@ var Util = new function () {
 				}
 			}
 		}
-
 		function handler(changes,fromSetter){
 			for(var i=changes.length;i--;){
 				var change = changes[i];
@@ -425,7 +398,31 @@ var Util = new function () {
 		    	ChangeHandler.handle(changeObj);
 		    }
 		}
-	}//end if
+		var observedObjects = [],//用于保存监控对象
+		observedArys = [];//用于保存监控数组
+
+		var RAF = (function(w){
+		    return  w.requestAnimationFrame       || 
+		            w.webkitRequestAnimationFrame ||
+		            w.msRequestAnimationFrame     ||
+		            w.mozRequestAnimationFrame    ||
+		            w.oRequestAnimationFrame      ||
+		            function(callback) {
+		                return w.setTimeout(function() {
+		                    callback(Date.now());
+		                },16.7);
+		            };
+		})(self);
+
+		Observer = {};
+		Observer.observe = function(data,component){
+			if(data && data.__im__propChain)return data;
+
+			return observeData([],data,component);
+		}
+
+		dirtyCheck();
+	}();
 var lexer = (function(){
 
     var STR_EXP_START = /(['"])/,
@@ -1560,7 +1557,7 @@ var Renderer = new function() {
                 for(var i=ks.length;i--;){
                     var k = ks[i],
                         v = obj[k];
-                    if(k.indexOf('$__impex__')===0)continue;
+                    if(k.indexOf('__im__')===0)continue;
                     rs[k] = typeof obj[k]==='object'? clone(obj[k]): obj[k];
                 }
             }
@@ -2142,7 +2139,6 @@ Util.ext(Component.prototype,{
 	 */
 	init:function(){
 		if(this.__state !== Component.state.created)return;
-		// impex._cs[this.__id] = this;
 
 		if(this.templateURL){
 			var that = this;
@@ -2214,9 +2210,6 @@ Util.ext(Component.prototype,{
 		}
 
 		this.onDisplay && this.onDisplay();
-		// this.children && this.children.forEach(function(child){
-		// 	child.display();
-		// });
 	},
 	/**
 	 * 销毁组件，会销毁组件模型，以及对应视图，以及子组件的模型和视图
@@ -3497,7 +3490,7 @@ var TransitionFactory = {
 	     */
 		this.version = {
 	        v:[0,20,0],
-	        state:'beta3',
+	        state:'beta4',
 	        toString:function(){
 	            return impex.version.v.join('.') + ' ' + impex.version.state;
 	        }
@@ -4175,11 +4168,11 @@ impex.service('Transitions',new function(){
 
                 //模型
                 var v = ds[k];
-                if(ds[k] && ds[k].$__impex__origin){
-                    v = ds[k].$__impex__origin;
+                if(ds[k] && ds[k].__im__origin){
+                    v = ds[k].__im__origin;
 
-                    ds[k].$__impex__origin = null;
-                    delete ds[k].$__impex__origin;
+                    ds[k].__im__origin = null;
+                    delete ds[k].__im__origin;
                 }
 
                 //k,index,each
@@ -4263,17 +4256,17 @@ impex.service('Transitions',new function(){
                 rs = {};
                 var ks = Object.keys(obj);
                 if(ks.length>0){
-                    var r = ref ===false ? false : !obj.$__impex__origin;
+                    var r = ref ===false ? false : !obj.__im__origin;
                     for(var i=ks.length;i--;){
                         var k = ks[i],
                             v = obj[k];
-                        if(k.indexOf('$__impex__')===0)continue;
+                        if(k.indexOf('__im__')===0)continue;
                         rs[k] = typeof obj[k]==='object'? clone(obj[k],r): obj[k];
                     }
                 }
 
-                if(ref !== false && !rs.$__impex__origin)
-                    rs.$__impex__origin = obj;
+                if(ref !== false && !rs.__im__origin)
+                    rs.__im__origin = obj;
             }
             return rs;
         }
@@ -4319,11 +4312,11 @@ impex.service('Transitions',new function(){
                 
                 //模型
                 var v = ds[k];
-                if(ds[k] && ds[k].$__impex__origin){
-                    v = ds[k].$__impex__origin;
+                if(ds[k] && ds[k].__im__origin){
+                    v = ds[k].__im__origin;
 
-                    ds[k].$__impex__origin = null;
-                    delete ds[k].$__impex__origin;
+                    ds[k].__im__origin = null;
+                    delete ds[k].__im__origin;
                 }
 
                 //k,index,each
@@ -4346,10 +4339,6 @@ impex.service('Transitions',new function(){
 
             var queue = this.subComponents.concat();
             renderEach(queue);
-
-            //insert DOM
-            // var p = this.__view.el.parentNode;
-            // p.insertBefore(this.fragment,this.placeholder.__nodes[0]);
         }
         function renderEach(queue){
             setTimeout(function(){
