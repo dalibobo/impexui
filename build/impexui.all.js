@@ -978,7 +978,7 @@ impex.component('impex-area', {
 			var ss = el.querySelectorAll("select");
 			setTimeout(function() {
 				var bselect = ss[2];
-				bselect.options[0].selected = true;
+				if (bselect.options.lengtg > 0) bselect.options[0].selected = true;
 			}, 10);
 			this.$setHiddenValue(ss[0].selectedIndex, v, 0);
 		},
