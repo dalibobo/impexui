@@ -42,8 +42,9 @@ impex.component('impex-area', {
 				if (this.data.cs.length > 0) {
 					v += "," + this.data.cs[b].n;
 				}
+				var cc = this.data.bs[c];
 				if (this.data.bs.length > 0) {
-					v += "," + this.data.bs[c].s;
+					v += "," + (!cc ? "" : cc.s);
 				}
 			}
 			this.data.value = v;
@@ -136,7 +137,13 @@ impex.component('impex-area', {
 			var cselect = ss[1];
 			var bselect = ss[2];
 			if (cselect.options.length != 0) cselect.options[cv].selected = true;
-			if (bselect.options.length != 0) bselect.options[av].selected = true;
+			if (bselect.options.length != 0) {
+				if (!av) {
+					bselect.options[av].selected = true;
+				}else{
+					bselect.options[0].selected = true;
+				}
+			}
 		}, 10);
 		this.$setHiddenValue(pv, cv, av);
 	}
